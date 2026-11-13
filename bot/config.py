@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 from dotenv import load_dotenv
 
-DEFAULT_DRINKS = ["Эспрессо", "Американо", "Капучино", "Латте", "Флэт уайт", "Раф", "Какао"]
+DEFAULT_DRINKS = ["Эспрессо", "Американо", "Капучино", "Латте", "Мокко", "Горячий шоколад"]
 
 
 @dataclass
