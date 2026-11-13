@@ -385,13 +385,13 @@ async def main() -> None:
                                BotCommand(command="cancel", description="Отменить действие")])
     log.info("Бот запущен, база: %s", "облачная (DATABASE_URL)" if cfg.database_url else cfg.db_path)
     if cfg.webhook_url:
-        await run_webhook(bot, dp, cfg)
+        await run_webhook(bot, dp, cfg, db)
     else:
         await bot.delete_webhook()
         await dp.start_polling(bot)
 
 
-async def run_webhook(bot: Bot, dp: Dispatcher, cfg: Config) -> None:
+async def run_webhook(bot: Bot, dp: Dispatcher, cfg: Config, db) -> None:
     """Режим для бесплатного Web Service: Telegram сам стучится к нам и будит службу."""
     from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
     from aiohttp import web
