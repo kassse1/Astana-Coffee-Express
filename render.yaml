@@ -1,7 +1,29 @@
-# Render Blueprint: сайт-лендинг как бесплатный Static Site
+# Render Blueprint: запускает сайт и Telegram-бота одной кнопкой
 services:
+  # Сайт-лендинг (бесплатно)
   - type: web
     name: astana-coffee-express
     runtime: static
     buildCommand: ""
     staticPublishPath: ./site
+
+  # Telegram-бот (платный тариф Starter + диск для Excel-базы)
+  - type: worker
+    name: astana-coffee-bot
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m bot.main
+    envVars:
+      - key: BOT_TOKEN # токен от @BotFather, Render спросит при запуске
+        sync: false
+      - key: ADMIN_IDS # Telegram ID админов через запятую
+        sync: false
+      - key: DB_PATH
+        value: /var/data/coffee.xlsx
+      - key: PYTHON_VERSION
+        value: 3.12.7
+    disk:
+      name: coffee-data
+      mountPath: /var/data
+      sizeGB: 1
