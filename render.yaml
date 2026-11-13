@@ -1,0 +1,7 @@
+# Render Blueprint: сайт-лендинг как бесплатный Static Site
+services:
+  - type: web
+    name: astana-coffee-express
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: ./site

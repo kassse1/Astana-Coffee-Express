@@ -57,6 +57,10 @@ pip install pytest && python -m pytest
 
 Статическая страница без сборки — откройте `site/index.html` или выложите папку `site/` на любой хостинг (GitHub Pages, Netlify и т.п.).
 
+Быстрый запуск на Render (бесплатно): откройте
+https://render.com/deploy?repo=https://github.com/kassse1/Astana-Coffee-Express,
+войдите через GitHub и нажмите Apply — настройки берутся из `render.yaml`.
+
 Перед публикацией поменяйте в `site/index.html`:
 - блок `SITE` внизу файла — ссылка на бота, адрес, часы работы, телефон;
 - цены в секции «Меню» (сейчас примерные).
