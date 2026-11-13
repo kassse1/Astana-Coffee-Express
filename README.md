@@ -61,6 +61,9 @@ pip install pytest && python -m pytest
 https://render.com/deploy?repo=https://github.com/kassse1/Astana-Coffee-Express,
 войдите через GitHub и нажмите Apply — настройки берутся из `render.yaml`.
 
+
+#67
+
 Перед публикацией поменяйте в `site/index.html`:
 - блок `SITE` внизу файла — ссылка на бота, адрес, часы работы, телефон;
 - цены в секции «Меню» (сейчас примерные).
