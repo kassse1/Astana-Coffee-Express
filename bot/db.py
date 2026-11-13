@@ -1,0 +1,207 @@
+"""Excel-база (один .xlsx файл).
+
+Листы:
+  Пользователи — кто зарегистрирован, сколько выпил и любимый напиток
+  Покупки      — журнал каждой отмеченной чашки
+  Напитки      — общий рейтинг напитков
+  Акции        — история рассылок
+"""
+import hashlib
+import hmac
+import os
+import secrets
+import threading
+from collections import Counter
+from dataclasses import dataclass
+from datetime import datetime
+
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Font
+
+S_USERS, S_LOG, S_DRINKS, S_PROMO = "Пользователи", "Покупки", "Напитки", "Акции"
+HEADERS = {
+    S_USERS: ["ID", "Логин", "Хеш пароля", "Telegram ID", "Код карты", "Дата регистрации",
+              "Всего кофе", "Любимый напиток"],
+    S_LOG: ["Дата", "ID пользователя", "Логин", "Напиток"],
+    S_DRINKS: ["Напиток", "Сколько раз взяли"],
+    S_PROMO: ["Дата", "Текст", "Получателей"],
+}
+WIDTHS = {S_USERS: [6, 20, 16, 16, 14, 20, 12, 20], S_LOG: [20, 16, 20, 20],
+          S_DRINKS: [22, 20], S_PROMO: [20, 70, 14]}
+
+
+class DBError(Exception):
+    """Ошибка с текстом, который можно показать пользователю."""
+
+
+@dataclass
+class User:
+    id: int
+    login: str
+    tg_id: int | None
+    card: str
+    registered: str
+    total: int
+    favorite: str | None
+
+
+def _now() -> str:
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _hash(password: str, salt: str | None = None) -> str:
+    salt = salt or secrets.token_hex(8)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000).hex()
+    return f"{salt}${digest}"
+
+
+def _check(password: str, stored: str) -> bool:
+    salt = str(stored).split("$", 1)[0]
+    return hmac.compare_digest(_hash(password, salt), str(stored))
+
+
+def _safe(text: str) -> str:
+    """Чтобы Excel не принял пользовательский текст за формулу."""
+    return "'" + text if text[:1] in "=+-@" else text
+
+
+class ExcelDB:
+    def __init__(self, path: str):
+        self.path = path
+        self._lock = threading.Lock()
+        if os.path.exists(path):
+            self.wb = load_workbook(path)
+            for name in HEADERS:
+                if name not in self.wb.sheetnames:
+                    self._make_sheet(name)
+        else:
+            self.wb = Workbook()
+            self.wb.remove(self.wb.active)
+            for name in HEADERS:
+                self._make_sheet(name)
+            self._save()
+
+    # ---------- служебное ----------
+    def _make_sheet(self, name: str) -> None:
+        ws = self.wb.create_sheet(name)
+        ws.append(HEADERS[name])
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+        for i, width in enumerate(WIDTHS[name]):
+            ws.column_dimensions[chr(ord("A") + i)].width = width
+        ws.freeze_panes = "A2"
+
+    def _save(self) -> None:
+        os.makedirs(os.path.dirname(os.path.abspath(self.path)), exist_ok=True)
+        tmp = self.path + ".tmp"
+        self.wb.save(tmp)
+        os.replace(tmp, self.path)  # файл не побьётся, если бот упадёт во время записи
+
+    def _user_rows(self):
+        return [r for r in self.wb[S_USERS].iter_rows(min_row=2) if r[0].value is not None]
+
+    @staticmethod
+    def _to_user(row) -> User:
+        v = [c.value for c in row]
+        return User(id=int(v[0]), login=str(v[1]), tg_id=int(v[3]) if v[3] else None, card=str(v[4]),
+                    registered=str(v[5]), total=int(v[6] or 0), favorite=v[7] or None)
+
+    def _find(self, col: int, value):
+        for row in self._user_rows():
+            cell = row[col].value
+            if cell is not None and str(cell).lower() == str(value).lower():
+                return row
+        return None
+
+    def _unlink_tg(self, tg_id: int) -> None:
+        for row in self._user_rows():
+            if row[3].value and int(row[3].value) == tg_id:
+                row[3].value = None
+
+    # ---------- пользователи ----------
+    def register(self, login: str, password: str, tg_id: int) -> User:
+        login = login.strip()
+        if not (3 <= len(login) <= 20) or not login.replace("_", "").isalnum():
+            raise DBError("Логин: 3–20 символов, только буквы, цифры и _.")
+        if len(password) < 4:
+            raise DBError("Пароль слишком короткий (минимум 4 символа).")
+        with self._lock:
+            if self._find(1, login):
+                raise DBError("Такой логин уже занят.")
+            self._unlink_tg(tg_id)
+            new_id = max((int(r[0].value) for r in self._user_rows()), default=0) + 1
+            self.wb[S_USERS].append(
+                [new_id, login, _hash(password), tg_id, f"ACE{new_id:06d}", _now(), 0, None])
+            self._save()
+            return self._to_user(self._find(0, new_id))
+
+    def login(self, login: str, password: str, tg_id: int) -> User:
+        with self._lock:
+            row = self._find(1, login.strip())
+            if not row or not _check(password, row[2].value):
+                raise DBError("Неверный логин или пароль.")
+            self._unlink_tg(tg_id)
+            row[3].value = tg_id
+            self._save()
+            return self._to_user(row)
+
+    def logout(self, tg_id: int) -> None:
+        with self._lock:
+            self._unlink_tg(tg_id)
+            self._save()
+
+    def by_tg(self, tg_id: int) -> User | None:
+        with self._lock:
+            row = self._find(3, tg_id)
+            return self._to_user(row) if row else None
+
+    def by_card(self, card: str) -> User | None:
+        with self._lock:
+            row = self._find(4, card)
+            return self._to_user(row) if row else None
+
+    def all_users(self) -> list[User]:
+        with self._lock:
+            return [self._to_user(r) for r in self._user_rows()]
+
+    # ---------- кофе ----------
+    def add_coffee(self, user_id: int, drink: str) -> User:
+        with self._lock:
+            row = self._find(0, user_id)
+            if not row:
+                raise DBError("Пользователь не найден.")
+            self.wb[S_LOG].append([_now(), user_id, row[1].value, drink])
+            counts = self._counts(user_id)
+            row[6].value = sum(counts.values())
+            row[7].value = counts.most_common(1)[0][0]
+            self._rebuild_drinks()
+            self._save()
+            return self._to_user(row)
+
+    def _counts(self, user_id: int | None = None) -> Counter:
+        c = Counter()
+        for _, uid, _, drink in self.wb[S_LOG].iter_rows(min_row=2, max_col=4, values_only=True):
+            if drink and (user_id is None or uid == user_id):
+                c[drink] += 1
+        return c
+
+    def _rebuild_drinks(self) -> None:
+        ws = self.wb[S_DRINKS]
+        if ws.max_row > 1:
+            ws.delete_rows(2, ws.max_row - 1)
+        for drink, n in self._counts().most_common():
+            ws.append([drink, n])
+
+    def user_stats(self, user_id: int) -> list[tuple[str, int]]:
+        with self._lock:
+            return self._counts(user_id).most_common()
+
+    def drink_stats(self) -> list[tuple[str, int]]:
+        with self._lock:
+            return self._counts().most_common()
+
+    # ---------- акции ----------
+    def log_promo(self, text: str, recipients: int) -> None:
+        with self._lock:
+            self.wb[S_PROMO].append([_now(), _safe(text), recipients])
+            self._save()
