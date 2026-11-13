@@ -124,6 +124,10 @@
   .loyalty span { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 1.15rem; background: rgba(255,255,255,.16); }
   .loyalty span.free { background: #fff; }
 
+  .people { display: grid; grid-template-columns: repeat(2, minmax(0, 360px)); gap: 20px; margin-top: 28px; }
+  .contact { display: block; margin-top: 10px; font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
+  .contact:hover { color: var(--accent); }
+
   /* Вопросы и ответы */
   .faq { max-width: 780px; margin-top: 26px; }
   .faq details { background: var(--card); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 10px; }
@@ -186,6 +190,7 @@
     .hero, .buy, .pricing { grid-template-columns: 1fr; }
     .grid3 { grid-template-columns: 1fr; }
     .facts, .places { grid-template-columns: 1fr 1fr; }
+    .people { grid-template-columns: 1fr; }
     .hero { padding-bottom: 100px; }
     .buy { padding: 34px 24px; }
   }
@@ -251,6 +256,7 @@
         <li><a href="#where">Где найти</a></li>
         <li><a href="#bot">Карта гостя</a></li>
         <li><a href="#faq">Вопросы</a></li>
+        <li><a href="#contacts">Контакты</a></li>
       </ul>
       <a class="btn btn-primary" data-bot href="#bot">Открыть бота</a>
     </nav>
@@ -359,7 +365,7 @@
         <h3>Хотите аппарат у себя?</h3>
         <p>Владельцам помещений: арендуем место под аппарат, сами устанавливаем, обслуживаем и пополняем. Нужны только розетка и 1 м² площади.</p>
       </div>
-      <a class="btn btn-ghost" data-mail href="#">Обсудить размещение</a>
+      <a class="btn btn-ghost" href="mailto:wamaff@gmail.com?subject=%D0%A0%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BA%D0%BE%D1%84%D0%B5-%D0%B0%D0%BF%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D0%B0">Обсудить размещение</a>
     </div>
   </div>
 </section>
@@ -378,7 +384,7 @@
       <ul>
         <li><small>Статистика</small>Сколько чашек выпито и какой напиток у вас любимый</li>
         <li><small>Акции</small>Скидки и новинки приходят сообщением в Telegram</li>
-        <li><small>Связь с нами</small><a data-phone></a></li>
+        <li><small>Связь с нами</small><a href="#contacts">Контакты команды ↓</a></li>
       </ul>
     </div>
   </div>
@@ -399,25 +405,41 @@
   </div>
 </section>
 
+<section id="contacts" style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow">Контакты</div>
+    <h2>Свяжитесь с нами</h2>
+    <p class="lead">По вопросам работы аппаратов, возвратов и размещения — пишите или звоните напрямую.</p>
+    <div class="people">
+      <div class="card">
+        <h3>Санжар Мурат</h3>
+        <p>Генеральный директор</p>
+        <a class="contact" href="tel:+77788139288">📞 +7 778 813 92 88</a>
+        <a class="contact" href="mailto:wamaff@gmail.com">✉️ wamaff@gmail.com</a>
+      </div>
+      <div class="card">
+        <h3>Рахман Даниал</h3>
+        <p>Финансовый директор</p>
+        <a class="contact" href="tel:+77012129449">📞 +7 701 212 94 49</a>
+        <a class="contact" href="mailto:rahmanzavisnik@gmail.com">✉️ rahmanzavisnik@gmail.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">© <span id="year"></span> Astana Coffee Express · умные кофе-аппараты в Астане</div>
 </footer>
 
 <script>
-  // ↓↓↓ Настройки сайта: поменяйте на свои ↓↓↓
+  // Ссылка на Telegram-бота
   const SITE = {
     bot: "https://t.me/astanacoffeeexpress_bot",
-    phone: "+7 700 000 00 00",
-    email: "hello@example.com",
   };
   document.querySelectorAll("[data-bot]").forEach(a => {
     if (SITE.bot) { a.href = SITE.bot; a.target = "_blank"; a.rel = "noopener"; }
     else { a.href = "#bot"; } // пока ссылка не задана — просто прокрутка к разделу
   });
-  const phone = document.querySelector("[data-phone]");
-  phone.textContent = SITE.phone;
-  phone.href = "tel:" + SITE.phone.replace(/[^+\d]/g, "");
-  document.querySelector("[data-mail]").href = "mailto:" + SITE.email + "?subject=" + encodeURIComponent("Размещение кофе-аппарата");
   // Плавное появление блоков при прокрутке
   if ("IntersectionObserver" in window) {
     document.documentElement.classList.add("js");
