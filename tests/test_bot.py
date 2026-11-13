@@ -13,6 +13,7 @@ from bot.barcodes import make_barcode_png, normalize_code, read_barcode
 from bot.config import Config
 from bot.db import DBError, ExcelDB, open_db
 from bot.sqldb import SqlDB, normalize_url
+from bot.main import B_KPI
 from bot.main import (B_CANCEL, B_FILE, B_LOGIN, B_LOGOUT, B_MARK, B_PROMO, B_REG, B_STATS, B_USERS,
                       build_router)
 
@@ -53,6 +54,7 @@ def test_db_flow(backend):
     assert [(u.login, u.total, u.favorite) for u in db.all_users()] == [("aida", 3, "Латте"), ("bek", 1, "Раф")]
     assert db.drink_stats() == [("Латте", 2), ("Раф", 2)]
     assert db.by_card("ACE000099") is None
+    assert [(u, d) for _, u, d in db.purchases()] == [(1, "Латте"), (1, "Раф"), (1, "Латте"), (2, "Раф")]
     wb = load_workbook(io.BytesIO(db.export_xlsx()))
     assert wb["Пользователи"]["H2"].value == "Латте" and wb["Покупки"].max_row == 5
     assert [r for r in wb["Напитки"].iter_rows(min_row=2, values_only=True)] == [("Латте", 2), ("Раф", 2)]
@@ -92,7 +94,7 @@ class FakeSession(BaseSession):
 class Harness:
     def __init__(self, tmp_path, sql):
         self.cfg = Config(token="1:x", admin_ids={ADMIN}, db_path=str(tmp_path / "coffee.xlsx"),
-                          database_url=f"sqlite:///{tmp_path / 'coffee.db'}" if sql else "")
+                          database_url=f"sqlite:///{tmp_path / 'coffee.db'}" if sql else "", free_every=3)
         self.db = open_db(self.cfg)
         self.session = FakeSession()
         self.bot = Bot("123456:TEST", session=self.session)
@@ -159,12 +161,21 @@ def test_full_scenario(tmp_path, sql):
         calls = await h.click(ADMIN, f"mark:1:{h.cfg.drinks.index('Латте')}")
         assert any(getattr(c, "chat_id", None) == GUEST for c in calls)  # гостю пришло уведомление
         assert "aida" in texts(await h.say(ADMIN, "1"))
-        await h.click(ADMIN, f"mark:1:{h.cfg.drinks.index('Латте')}")
+        assert "До бесплатной чашки: ещё <b>1</b>" in texts(await h.say(GUEST, B_STATS))
+        calls = await h.click(ADMIN, f"mark:1:{h.cfg.drinks.index('Латте')}")
+        assert "Следующая чашка — <b>бесплатно</b>" in texts(calls)
+        assert "Эта чашка — бесплатная" in texts(await h.say(ADMIN, "1"))
         assert "не найдена" in texts(await h.say(ADMIN, "777"))
         # кнопка меню во время сканирования работает как кнопка
         assert "Гостей: <b>1</b>" in texts(await h.say(ADMIN, B_USERS))
         await h.say(ADMIN, B_CANCEL)
-        await h.click(ADMIN, f"mark:1:{h.cfg.drinks.index('Мокко')}")
+        calls = await h.click(ADMIN, f"mark:1:{h.cfg.drinks.index('Мокко')}")
+        assert "(бесплатная)" in texts(calls) and "была бесплатной" in texts(calls)
+        t = texts(await h.say(ADMIN, B_KPI))
+        assert "Чашек сегодня: <b>3</b>" in t and "выдано: <b>1</b>" in t
+        assert "с 2+ покупками: <b>1</b>" in t and "<b>100%</b>" in t and "Латте (2)" in t
+        assert "меню" in texts(await h.say(GUEST, B_KPI))
+        assert "Каждая 3-я чашка" in texts(await h.say(GUEST, "/help"))
 
         t = texts(await h.say(GUEST, B_STATS))
         assert "Всего чашек: <b>3</b>" in t and "Любимый напиток: <b>Латте</b>" in t

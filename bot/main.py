@@ -4,6 +4,8 @@ import hashlib
 import html
 import io
 import logging
+from collections import Counter
+from datetime import datetime, timedelta
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
@@ -11,20 +13,22 @@ from aiogram.exceptions import TelegramAPIError, TelegramRetryAfter
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import (BufferedInputFile, CallbackQuery, InlineKeyboardButton,
+from aiogram.types import (BotCommand, BufferedInputFile, CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, KeyboardButton, Message, ReplyKeyboardMarkup)
 
 from .barcodes import make_barcode_png, normalize_code, read_barcode
 from .config import Config, load_config
-from .db import DBError, User, open_db
+from .db import ASTANA_TZ, DBError, User, open_db
 
 log = logging.getLogger("coffee-bot")
 
 B_REG, B_LOGIN = "📝 Регистрация", "🔑 Войти"
 B_CARD, B_STATS, B_LOGOUT = "🎫 Мой штрихкод", "☕ Моя статистика", "🚪 Выйти"
 B_MARK, B_USERS, B_PROMO, B_FILE = "✅ Отметить кофе", "👥 Гости", "📣 Акция", "📊 Excel-база"
+B_KPI = "📈 Статистика"
 B_CANCEL = "❌ Отмена"
-ALL_BUTTONS = {B_REG, B_LOGIN, B_CARD, B_STATS, B_LOGOUT, B_MARK, B_USERS, B_PROMO, B_FILE, B_CANCEL}
+ALL_BUTTONS = {B_REG, B_LOGIN, B_CARD, B_STATS, B_LOGOUT, B_MARK, B_USERS, B_PROMO, B_FILE, B_KPI,
+               B_CANCEL}
 
 
 class Auth(StatesGroup):
@@ -51,7 +55,7 @@ def build_router(db, cfg: Config) -> Router:
     def menu(tg_id: int) -> ReplyKeyboardMarkup:
         rows = ([[B_CARD, B_STATS], [B_LOGOUT]] if db.by_tg(tg_id) else [[B_REG, B_LOGIN]])
         if is_admin(tg_id):
-            rows += [[B_MARK, B_USERS], [B_PROMO, B_FILE]]
+            rows += [[B_MARK, B_USERS], [B_KPI, B_PROMO], [B_FILE]]
         return ReplyKeyboardMarkup(
             keyboard=[[KeyboardButton(text=t) for t in row] for row in rows], resize_keyboard=True)
 
@@ -62,10 +66,25 @@ def build_router(db, cfg: Config) -> Router:
                 for i, d in enumerate(cfg.drinks)]
         return InlineKeyboardMarkup(inline_keyboard=[btns[i:i + 2] for i in range(0, len(btns), 2)])
 
+    def loyalty(total: int) -> str:
+        """Строка про прогресс до бесплатной чашки (пустая, если программа выключена)."""
+        n = cfg.free_every
+        if n < 2:
+            return ""
+        done = total % n  # сколько чашек уже в текущем круге
+        if done == n - 1:
+            return "🎁 Следующая чашка — <b>бесплатно</b>!"
+        bar = "☕" * done + "▫️" * (n - 1 - done) + "🎁"
+        return f"{bar}\nДо бесплатной чашки: ещё <b>{n - 1 - done}</b>"
+
+    def next_is_free(total: int) -> bool:
+        return cfg.free_every >= 2 and total % cfg.free_every == cfg.free_every - 1
+
     async def send_card(message: Message, user: User) -> None:
         await message.answer_photo(
             BufferedInputFile(make_barcode_png(user.card), filename=f"{user.card}.png"),
-            caption=f"Ваша карта <b>{user.card}</b>\nСканируйте штрихкод у кофе-аппарата — чашка попадёт в вашу статистику.",
+            caption=(f"Ваша карта <b>{user.card}</b>\nСканируйте штрихкод у кофе-аппарата — "
+                     f"чашка попадёт в вашу статистику.\n\n{loyalty(user.total)}").strip(),
             reply_markup=menu(message.from_user.id))
 
     # ---------- общее ----------
@@ -87,6 +106,17 @@ def build_router(db, cfg: Config) -> Router:
     async def cancel(message: Message, state: FSMContext):
         await state.clear()
         await message.answer("Отменено.", reply_markup=menu(message.from_user.id))
+
+    @r.message(Command("help"))
+    async def help_cmd(message: Message):
+        text = ("<b>Как это работает</b>\n"
+                "1. Зарегистрируйтесь — придумайте логин и пароль.\n"
+                "2. Нажмите «Мой штрихкод» и сканируйте его у кофе-аппарата при покупке.\n"
+                "3. В «Моя статистика» — сколько чашек выпито и ваш любимый напиток.\n")
+        if cfg.free_every >= 2:
+            text += f"\n🎁 Каждая {cfg.free_every}-я чашка — бесплатно.\n"
+        text += "\nКоманды: /start — меню, /cancel — отменить действие, /id — ваш Telegram ID."
+        await message.answer(text, reply_markup=menu(message.from_user.id))
 
     @r.message(Command("id"))
     async def my_id(message: Message):
@@ -152,10 +182,12 @@ def build_router(db, cfg: Config) -> Router:
             return await message.answer("Сначала войдите.", reply_markup=menu(message.from_user.id))
         rows = db.user_stats(user.id)
         if not rows:
-            return await message.answer("Пока ни одной чашки. Сканируйте штрихкод у кофе-аппарата при покупке ☕")
+            return await message.answer(("Пока ни одной чашки. Сканируйте штрихкод у кофе-аппарата "
+                                         f"при покупке ☕\n\n{loyalty(0)}").strip())
         lines = "\n".join(f"• {html.escape(d)} — {n}" for d, n in rows)
         await message.answer(f"Всего чашек: <b>{user.total}</b>\n"
-                             f"Любимый напиток: <b>{html.escape(user.favorite)}</b> ❤️\n\n{lines}")
+                             f"Любимый напиток: <b>{html.escape(user.favorite)}</b> ❤️\n\n{lines}"
+                             f"\n\n{loyalty(user.total)}".rstrip())
 
     # ---------- админ: отметка кофе ----------
     @r.message(F.text == B_MARK, F.from_user.id.in_(cfg.admin_ids))
@@ -184,7 +216,9 @@ def build_router(db, cfg: Config) -> Router:
             return await message.answer(f"Карта {code} не найдена.")
         await message.answer(
             f"Гость: <b>{html.escape(user.login)}</b> ({user.card})\n"
-            f"Чашек: {user.total}, любит: {html.escape(user.favorite or '—')}\n\nЧто берёт?",
+            f"Чашек: {user.total}, любит: {html.escape(user.favorite or '—')}\n"
+            + ("🎁 <b>Эта чашка — бесплатная</b>\n" if next_is_free(user.total) else "")
+            + "\nЧто берёт?",
             reply_markup=drinks_kb(user.id))
 
     @r.callback_query(F.data.startswith("mark:"), F.from_user.id.in_(cfg.admin_ids))
@@ -195,13 +229,17 @@ def build_router(db, cfg: Config) -> Router:
             user = db.add_coffee(int(user_id), drink)
         except (DBError, IndexError) as e:
             return await call.answer(str(e) or "Ошибка", show_alert=True)
+        was_free = cfg.free_every >= 2 and user.total % cfg.free_every == 0
         await call.message.edit_text(
-            f"✅ {html.escape(user.login)}: {html.escape(drink)} отмечен. Всего чашек: {user.total}")
+            f"✅ {html.escape(user.login)}: {html.escape(drink)} отмечен"
+            f"{' 🎁 (бесплатная)' if was_free else ''}. Всего чашек: {user.total}")
         await call.answer("Отмечено")
         if user.tg_id:
+            note = "🎁 Эта чашка была бесплатной — спасибо, что вы с нами!\n\n" if was_free else ""
             try:
-                await bot.send_message(user.tg_id, f"☕ Отмечен <b>{html.escape(drink)}</b>. "
-                                                   f"Всего чашек: <b>{user.total}</b>")
+                await bot.send_message(
+                    user.tg_id, f"☕ Отмечен <b>{html.escape(drink)}</b>. Всего чашек: <b>{user.total}</b>\n\n"
+                                f"{note}{loyalty(user.total)}".rstrip())
             except TelegramAPIError:
                 pass
 
@@ -224,6 +262,35 @@ def build_router(db, cfg: Config) -> Router:
                 chunk = ""
             chunk += "\n" + line
         await message.answer(chunk)
+
+    @r.message(F.text == B_KPI, F.from_user.id.in_(cfg.admin_ids))
+    async def kpi(message: Message):
+        log_rows = db.purchases()
+        all_users = db.all_users()
+        now = datetime.now(ASTANA_TZ)
+        today, month = now.strftime("%Y-%m-%d"), now.strftime("%Y-%m")
+        week_ago = (now - timedelta(days=6)).strftime("%Y-%m-%d")
+        n_today = sum(ts.startswith(today) for ts, _, _ in log_rows)
+        n_week = sum(ts[:10] >= week_ago for ts, _, _ in log_rows)
+        in_month = [(uid, drink) for ts, uid, drink in log_rows if ts.startswith(month)]
+        per_user = Counter(uid for uid, _ in in_month)
+        active, repeat = len(per_user), sum(1 for n in per_user.values() if n >= 2)
+        text = (f"📈 <b>Статистика</b> на {now:%d.%m.%Y %H:%M}\n\n"
+                f"👥 Гостей: <b>{len(all_users)}</b> (в боте сейчас: {sum(1 for u in all_users if u.tg_id)})\n\n"
+                f"☕ Чашек сегодня: <b>{n_today}</b>\n"
+                f"☕ За 7 дней: <b>{n_week}</b> (в среднем {n_week / 7:.1f} в день)\n"
+                f"☕ За этот месяц: <b>{len(in_month)}</b>\n"
+                f"☕ За всё время: <b>{len(log_rows)}</b>\n")
+        if cfg.free_every >= 2:
+            free = sum(u.total // cfg.free_every for u in all_users)
+            text += f"🎁 Бесплатных чашек выдано: <b>{free}</b> (каждая {cfg.free_every}-я)\n"
+        text += (f"\n🔁 Активных гостей за месяц: <b>{active}</b>\n"
+                 f"🔁 Из них с 2+ покупками: <b>{repeat}</b>\n"
+                 f"🔁 Доля повторных покупателей: <b>{repeat / active * 100 if active else 0:.0f}%</b>\n")
+        top = Counter(drink for _, drink in in_month).most_common(3)
+        if top:
+            text += "\n🏆 Топ месяца: " + ", ".join(f"{html.escape(d)} ({n})" for d, n in top)
+        await message.answer(text)
 
     @r.message(F.text == B_FILE, F.from_user.id.in_(cfg.admin_ids))
     async def send_file(message: Message):
@@ -292,6 +359,9 @@ async def main() -> None:
     bot = Bot(cfg.token, default=DefaultBotProperties(parse_mode="HTML"))
     dp = Dispatcher()
     dp.include_router(build_router(db, cfg))
+    await bot.set_my_commands([BotCommand(command="start", description="Главное меню"),
+                               BotCommand(command="help", description="Как это работает"),
+                               BotCommand(command="cancel", description="Отменить действие")])
     log.info("Бот запущен, база: %s", "облачная (DATABASE_URL)" if cfg.database_url else cfg.db_path)
     if cfg.webhook_url:
         await run_webhook(bot, dp, cfg)
