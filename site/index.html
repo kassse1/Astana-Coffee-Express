@@ -151,20 +151,29 @@
   #card-form .btn[disabled] { opacity: .6; cursor: wait; }
   .form-note { font-size: .84rem; color: #cfdcd2; margin-top: 12px; min-height: 2.6em; }
   .form-note.err { color: #ffd0c2; }
-  .live-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 14px; }
-  .live-head h3 { margin: 0; }
-  .live-head b { font: 600 .95rem "IBM Plex Mono", monospace; color: var(--y); overflow-wrap: anywhere; }
-  .live-code { background: #fff; border-radius: 10px; padding: 14px 12px 8px; text-align: center; margin-bottom: 18px; }
+  .card-box.is-live { background: none; border: 0; padding: 0; border-radius: 0; }
+  #card-live { background: linear-gradient(140deg, #fffaf0 0%, #f4ead2 100%); color: var(--ink); border: 1px solid rgba(255,255,255,.5); border-radius: 18px; padding: 22px 22px 16px; box-shadow: 0 24px 48px rgba(0,0,0,.35); }
+  .live-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .live-head img { border-radius: 8px; flex: none; }
+  .live-head div { flex: 1; min-width: 0; }
+  .live-head b { display: block; font: 700 1rem Rubik, sans-serif; color: var(--green); }
+  .live-head span { display: block; font: 500 .7rem "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .06em; color: var(--grey); }
+  .live-name { font: 600 1.5rem/1.2 Rubik, sans-serif; color: var(--ink); overflow-wrap: anywhere; margin-bottom: 4px; }
+  .stamps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; max-width: 420px; margin: 16px 0 6px; }
+  .stamps span { aspect-ratio: 1; border: 1.5px dashed #b9a98a; border-radius: 50%; display: grid; place-items: center; font: 700 .8rem "IBM Plex Mono", monospace; color: #b0a288; }
+  .stamps span.on { border: 1.5px solid var(--green); background: var(--green); color: #fff; }
+  .stamps span.free { border: 1.5px solid var(--y); background: var(--y); color: var(--ink); font-size: .68rem; }
+  .live-progress { font-size: .9rem; color: #6a5d4c; margin: 0 0 16px; min-height: 1.5em; }
+  .live-code { background: #fff; border-radius: 10px; padding: 12px 12px 6px; text-align: center; margin-bottom: 14px; }
   .live-code img { display: block; width: 100%; height: auto; max-width: 300px; margin: 0 auto; }
   .live-code span { font: 500 .8rem "IBM Plex Mono", monospace; color: var(--ink); letter-spacing: .2em; }
-  .live-progress { font-size: .92rem; color: #cfdcd2; margin-top: 12px; min-height: 1.5em; }
-  .live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-  .live-stats div { background: rgba(0,0,0,.18); border-radius: 10px; padding: 12px; }
-  .live-stats b { display: block; font: 700 1.3rem Rubik, sans-serif; color: #fff; overflow-wrap: anywhere; }
-  .live-stats span { font-size: .78rem; color: #cfdcd2; }
+  .live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .live-stats div { background: rgba(35,71,58,.08); border-radius: 10px; padding: 10px 12px; }
+  .live-stats b { display: block; font: 700 1.2rem Rubik, sans-serif; color: var(--green); overflow-wrap: anywhere; }
+  .live-stats span { font-size: .76rem; color: #6a5d4c; }
   .live-actions { display: flex; gap: 8px; margin-top: 14px; }
-  .live-actions button { flex: 1; background: transparent; border: 1px solid rgba(255,255,255,.3); color: #fff; font: 500 .88rem Onest, sans-serif; padding: 9px; border-radius: 9px; cursor: pointer; }
-  .live-actions button:hover { background: rgba(255,255,255,.1); }
+  .live-actions button { flex: 1; background: transparent; border: 1px solid rgba(35,71,58,.35); color: var(--green); font: 500 .88rem Onest, sans-serif; padding: 9px; border-radius: 9px; cursor: pointer; }
+  .live-actions button:hover { background: rgba(35,71,58,.08); }
 
   /* вопросы */
   .faq { border-top: var(--line); }
@@ -426,9 +435,14 @@
     <div class="card-box" id="card-widget">
       <!-- до входа: пример карты; если задан SITE.api — ещё и форма -->
       <div id="card-demo">
-        <h3>Карта гостя</h3>
+        <div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div>
+        <div class="live-name">aida</div>
         <div class="stamps" aria-hidden="true">
           <span class="on">ACE</span><span class="on">ACE</span><span class="on">ACE</span><span>4</span><span>5</span><span class="free">0 ₸</span>
+        </div>
+        <p class="live-progress">До бесплатной чашки осталось: <b>2</b></p>
+        <div class="live-code">
+          <span>ACE000128</span>
         </div>
         <ul>
           <li>Сколько чашек выпито и какой напиток любимый</li>
@@ -449,7 +463,10 @@
       </form>
 
       <div id="card-live" hidden>
-        <div class="live-head"><h3>Карта гостя</h3><b id="live-login"></b></div>
+        <div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div>
+        <div class="live-name" id="live-login"></div>
+        <div class="stamps" id="live-stamps" aria-hidden="true"></div>
+        <p class="live-progress" id="live-progress"></p>
         <div class="live-code">
           <img id="live-barcode" alt="Штрихкод вашей карты" width="300" height="120">
           <span id="live-card"></span>
