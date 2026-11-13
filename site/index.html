@@ -254,11 +254,14 @@
 <script>
   // ↓↓↓ Настройки сайта: поменяйте на свои ↓↓↓
   const SITE = {
-    bot: "https://t.me/YOUR_BOT_USERNAME",
+    bot: "", // ссылка на бота, например "https://t.me/my_coffee_bot"
     phone: "+7 700 000 00 00",
     email: "hello@example.com",
   };
-  document.querySelectorAll("[data-bot]").forEach(a => { a.href = SITE.bot; a.target = "_blank"; a.rel = "noopener"; });
+  document.querySelectorAll("[data-bot]").forEach(a => {
+    if (SITE.bot) { a.href = SITE.bot; a.target = "_blank"; a.rel = "noopener"; }
+    else { a.href = "#bot"; } // пока ссылка не задана — просто прокрутка к разделу
+  });
   const phone = document.querySelector("[data-phone]");
   phone.textContent = SITE.phone;
   phone.href = "tel:" + SITE.phone.replace(/[^+\d]/g, "");
