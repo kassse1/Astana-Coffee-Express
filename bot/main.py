@@ -1,4 +1,4 @@
-"""Telegram-бот Astana Coffee Express: карта гостя, отметка кофе, админка, рассылки."""
+"""Telegram-бот сети кофе-аппаратов Astana Coffee Express: карта гостя, отметка кофе, админка, рассылки."""
 import asyncio
 import html
 import io
@@ -64,7 +64,7 @@ def build_router(db: ExcelDB, cfg: Config) -> Router:
     async def send_card(message: Message, user: User) -> None:
         await message.answer_photo(
             BufferedInputFile(make_barcode_png(user.card), filename=f"{user.card}.png"),
-            caption=f"Ваша карта <b>{user.card}</b>\nПокажите штрихкод бариста — он отметит ваш кофе.",
+            caption=f"Ваша карта <b>{user.card}</b>\nСканируйте штрихкод у кофе-аппарата — чашка попадёт в вашу статистику.",
             reply_markup=menu(message.from_user.id))
 
     # ---------- общее ----------
@@ -73,8 +73,9 @@ def build_router(db: ExcelDB, cfg: Config) -> Router:
         await state.clear()
         user = db.by_tg(message.from_user.id)
         text = (f"С возвращением, <b>{html.escape(user.login)}</b>! ☕" if user else
-                "Привет! Это <b>Astana Coffee Express</b> ☕\n\n"
-                "Зарегистрируйтесь, получите личный штрихкод и показывайте его при каждой покупке — "
+                "Привет! Это <b>Astana Coffee Express</b> — умные кофе-аппараты в Астане ☕\n"
+                "Кофе за 45 секунд, 24/7, оплата одним сканом Kaspi QR.\n\n"
+                "Зарегистрируйтесь, получите личный штрихкод и сканируйте его при каждой покупке — "
                 "мы запомним, что вы любите, и будем присылать акции.")
         if is_admin(message.from_user.id):
             text += "\n\n🛠 Вам доступно меню администратора."
@@ -150,7 +151,7 @@ def build_router(db: ExcelDB, cfg: Config) -> Router:
             return await message.answer("Сначала войдите.", reply_markup=menu(message.from_user.id))
         rows = db.user_stats(user.id)
         if not rows:
-            return await message.answer("Пока ни одной чашки. Покажите штрихкод бариста при покупке ☕")
+            return await message.answer("Пока ни одной чашки. Сканируйте штрихкод у кофе-аппарата при покупке ☕")
         lines = "\n".join(f"• {html.escape(d)} — {n}" for d, n in rows)
         await message.answer(f"Всего чашек: <b>{user.total}</b>\n"
                              f"Любимый напиток: <b>{html.escape(user.favorite)}</b> ❤️\n\n{lines}")

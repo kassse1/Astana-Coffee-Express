@@ -142,7 +142,7 @@ def test_full_scenario(tmp_path):
         # кнопка меню во время сканирования работает как кнопка
         assert "Гостей: <b>1</b>" in texts(await h.say(ADMIN, B_USERS))
         await h.say(ADMIN, B_CANCEL)
-        await h.click(ADMIN, f"mark:1:{h.cfg.drinks.index('Раф')}")
+        await h.click(ADMIN, f"mark:1:{h.cfg.drinks.index('Мокко')}")
 
         t = texts(await h.say(GUEST, B_STATS))
         assert "Всего чашек: <b>3</b>" in t and "Любимый напиток: <b>Латте</b>" in t
