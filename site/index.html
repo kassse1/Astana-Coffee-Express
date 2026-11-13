@@ -3,205 +3,175 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Astana Coffee Express — кофе-аппараты в Астане, 24/7</title>
-<meta name="description" content="Astana Coffee Express — кофе-аппараты в Астане. Кофе за 45 секунд, круглосуточно, оплата Kaspi QR, 600 ₸ за чашку. Карта гостя в Telegram.">
+<title>Astana Coffee Express — кофе за 45 секунд, 24/7</title>
+<meta name="description" content="Astana Coffee Express — сеть умных кофе-аппаратов в Астане. Кофе из зерна за 45 секунд, круглосуточно, оплата Kaspi QR, 600 ₸ за чашку. Каждая 6-я чашка бесплатно в Telegram-боте.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Astana Coffee Express — кофе за 45 секунд">
-<meta property="og:description" content="Кофе-аппараты в Астане. Kaspi QR, 600 ₸ за чашку, каждая 6-я бесплатно.">
-<meta name="theme-color" content="#e6eee7">
+<meta property="og:description" content="Умные кофе-аппараты в Астане. Kaspi QR, 600 ₸ за чашку, каждая 6-я бесплатно.">
+<meta name="theme-color" content="#f6efe4">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Onest:wght@400;500;700&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add("js");</script>
 <style>
-  :root { --y: #f0dd92; --butter: #f8f1d4; --ink: #1f2b25; --paper: #f7f5f0; --grey: #6c766f; --green: #23473a; --sage: #e6eee7; --line: 1px solid #d3d9d2; --r: 14px; }
+  :root {
+    --cream: #f6efe4; --paper: #fbf7f0; --card: #fffdf9;
+    --espresso: #2a1a12; --ink: #1c1512; --machine: #141110;
+    --copper: #b5703a; --copper-light: #d9a06b; --gold: #e3b866;
+    --muted: #75645a; --line: #e6dac8; --r: 14px;
+    --serif: Montserrat, "Segoe UI", Roboto, Arial, sans-serif;
+    --sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
   * { box-sizing: border-box; margin: 0; }
-  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
-  body { font: 17px/1.6 Onest, "Segoe UI", Arial, sans-serif; color: var(--ink); background: var(--paper); }
-  h1, h2, h3, .logo { font-family: Rubik, "Arial Black", Arial, sans-serif; line-height: 1.08; }
-  h1 { font-size: clamp(2.1rem, 5.4vw, 4rem); font-weight: 700; letter-spacing: -.015em; color: var(--green); }
-  h2 { font-size: clamp(1.5rem, 3.4vw, 2.4rem); font-weight: 600; letter-spacing: -.01em; }
-  h3 { font-size: 1.02rem; font-weight: 700; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  body { font: 17px/1.6 var(--sans); color: var(--ink); background: var(--cream); -webkit-font-smoothing: antialiased; }
   a { color: inherit; }
-  .tag, footer { font-family: "IBM Plex Mono", Consolas, monospace; }
-  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
-  section { padding: 88px 0; border-bottom: var(--line); }
-  #contacts { border-bottom: 0; }
-  .tag { display: inline-block; font-size: .72rem; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; background: var(--sage); color: var(--green); padding: 5px 12px; border-radius: 30px; margin-bottom: 18px; }
-  mark { background: linear-gradient(transparent 62%, var(--y) 62%); color: inherit; padding: 0 .08em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+  h1, h2, h3 { font-family: var(--serif); line-height: 1.12; letter-spacing: -.01em; }
+  h1 { font-size: clamp(2.5rem, 5.8vw, 4.5rem); font-weight: 800; }
+  h1 em, h2 em { font-style: italic; color: var(--copper); font-weight: 700; }
+  h2 { font-size: clamp(1.8rem, 3.6vw, 2.7rem); font-weight: 700; }
+  h3 { font-size: 1.22rem; font-weight: 700; }
+  section { padding: 92px 0; }
+  .eyebrow { font-size: .74rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--copper); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .eyebrow::before { content: ""; width: 26px; height: 1px; background: currentColor; }
+  .lead { color: var(--muted); max-width: 46ch; }
 
-  .btn { display: inline-block; font-size: .96rem; font-weight: 700; text-decoration: none; padding: 13px 22px; border: 1px solid var(--green); border-radius: 10px; background: var(--green); color: #fff; transition: transform .15s, background .15s; white-space: nowrap; }
-  .btn:hover { transform: translateY(-2px); background: #1b382d; }
-  .btn.alt { background: transparent; color: var(--green); }
-  .btn.alt:hover { background: rgba(35,71,58,.08); }
+  .btn { display: inline-block; font: 600 .95rem var(--sans); text-decoration: none; padding: 13px 24px; border-radius: 999px; border: 1px solid var(--espresso); background: var(--espresso); color: var(--cream); transition: transform .18s, background .18s, box-shadow .18s; white-space: nowrap; cursor: pointer; }
+  .btn:hover { transform: translateY(-2px); background: #3a2519; box-shadow: 0 12px 24px rgba(42,26,18,.22); }
+  .btn.ghost { background: transparent; color: var(--espresso); }
+  .btn.ghost:hover { background: rgba(42,26,18,.06); box-shadow: none; }
+  .btn.light { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .btn.light:hover { background: #edc77c; box-shadow: 0 12px 24px rgba(0,0,0,.3); }
 
-  /* шапка */
-  .topbar { position: sticky; top: 0; z-index: 20; background: rgba(247,245,240,.92); backdrop-filter: blur(8px); border-bottom: var(--line); }
-  nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 60px; }
-  .logo { display: flex; align-items: center; gap: 10px; font-size: .95rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
-  .logo img { border-radius: 9px; display: block; }
-  nav ul { display: flex; gap: 22px; list-style: none; padding: 0; font-size: .92rem; color: #45504a; }
+  /* навигация */
+  nav { position: sticky; top: 0; z-index: 30; background: rgba(246,239,228,.86); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 700 1.08rem var(--serif); white-space: nowrap; }
+  .logo img { border-radius: 9px; flex: none; }
+  nav ul { display: flex; gap: 26px; list-style: none; padding: 0; font-size: .9rem; font-weight: 500; color: #4a3b32; }
   nav ul a { text-decoration: none; }
-  nav ul a:hover { color: var(--green); }
-  nav .btn { padding: 9px 16px; font-size: .88rem; }
+  nav ul a:hover { color: var(--copper); }
+  nav .btn { padding: 9px 18px; font-size: .88rem; }
 
   /* первый экран */
-  .hero { background: var(--sage); overflow: hidden; }
-  .hero .tag { background: #fff; }
-  .hero .wrap { display: grid; grid-template-columns: 1.25fr .75fr; gap: 30px; align-items: end; padding-top: 64px; }
-  .hero-text { padding-bottom: 64px; }
-  .hero p { font-size: 1.14rem; max-width: 40ch; margin: 22px 0 30px; color: #3c4841; }
-  .cta { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero { padding: 76px 0 104px; overflow: hidden; }
+  .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; }
+  .hero p.lead { font-size: 1.12rem; margin: 22px 0 32px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-art { position: relative; justify-self: center; width: 100%; max-width: 400px; }
+  .machine { display: block; width: 100%; height: auto; }
+  .steam path { animation: steam 3.2s ease-in-out infinite; opacity: 0; }
+  .steam path:nth-child(2) { animation-delay: .8s; }
+  .steam path:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes steam { 0% { opacity: 0; transform: translateY(8px); } 35% { opacity: .7; } 100% { opacity: 0; transform: translateY(-12px); } }
+  .brew { animation: brew 4s linear infinite; transform-origin: left center; }
+  @keyframes brew { 0%, 8% { transform: scaleX(0); } 80%, 100% { transform: scaleX(1); } }
+  .chip { position: absolute; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 9px 13px; box-shadow: 0 14px 30px rgba(42,26,18,.14); font-size: .78rem; font-weight: 600; line-height: 1.3; animation: float 6s ease-in-out infinite; }
+  .chip b { display: block; font: 700 1.25rem var(--serif); color: var(--copper); }
+  .chip.c1 { top: 6%; right: -4%; }
+  .chip.c2 { bottom: 9%; left: -9%; animation-delay: 1.5s; }
+  @keyframes float { 50% { transform: translateY(-9px); } }
+  .loyalty-dots { display: flex; gap: 4px; margin-top: 5px; }
+  .loyalty-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--espresso); }
+  .loyalty-dots i.free { background: var(--gold); box-shadow: 0 0 0 2px rgba(227,184,102,.35); }
 
-  /* аппарат */
-  .machine { position: relative; justify-self: center; width: 250px; height: 400px; background: var(--ink); border-radius: 18px 18px 0 0; padding: 18px; color: #fff; box-shadow: 0 -10px 40px rgba(31,43,37,.18); }
-  .m-brand { font: 700 .62rem "IBM Plex Mono", monospace; letter-spacing: .1em; color: var(--y); margin-bottom: 12px; }
-  .m-screen { background: #16201b; border-radius: 8px; padding: 10px 12px; font: 500 .72rem/1.5 "IBM Plex Mono", monospace; color: #a9d8b4; }
-  .m-screen b { display: block; font-size: 1.5rem; color: #fff; }
-  .m-progress { height: 6px; background: #0e150e; margin-top: 8px; }
-  .m-progress i { display: block; height: 100%; background: #a9d8b4; transform-origin: left; animation: brew 4.5s linear infinite; }
-  @keyframes brew { 0% { transform: scaleX(0); } 80%, 100% { transform: scaleX(1); } }
-  .m-pay { display: flex; gap: 10px; align-items: center; margin: 14px 0; font: 500 .66rem/1.4 "IBM Plex Mono", monospace; }
-  .qr { width: 48px; height: 48px; flex: none; border: 4px solid #fff; border-radius: 6px; background: #fff conic-gradient(#111 25%, #fff 0 50%, #111 0 75%, #fff 0) 0 0 / 10px 10px; }
-  .m-nook { position: relative; height: 150px; background: #121915; border-radius: 8px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px; }
-  .m-nook::before { content: ""; position: absolute; top: 0; left: 50%; width: 4px; margin-left: -2px; height: 86px; background: #6a3d1f; transform-origin: top; animation: pour 4.5s ease-in-out infinite; }
-  @keyframes pour { 0%, 8% { transform: scaleY(0); } 18%, 70% { transform: scaleY(1); opacity: 1; } 80%, 100% { transform: scaleY(1); opacity: 0; } }
-  .cup { width: 46px; height: 54px; background: #fff; clip-path: polygon(0 0, 100% 0, 86% 100%, 14% 100%); position: relative; }
-  .cup::after { content: ""; position: absolute; left: 0; right: 0; top: 16px; height: 16px; background: var(--y); }
+  /* полоса фактов */
+  .stats { background: var(--espresso); color: var(--cream); padding: 30px 0; }
+  .stats .wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .stats div.s { display: flex; flex-direction: column; gap: 2px; padding-left: 18px; border-left: 1px solid rgba(246,239,228,.2); }
+  .stats div.s:first-child { border-left: 0; padding-left: 0; }
+  .stats b { font: 700 2rem var(--serif); color: var(--gold); line-height: 1.1; }
+  .stats span { font-size: .84rem; color: #cdbdae; }
 
-  /* бегущая строка */
-  .ticker { background: var(--green); color: #cfdcd2; overflow: hidden; white-space: nowrap; font: 500 .84rem "IBM Plex Mono", monospace; padding: 12px 0; }
-  .ticker div { display: inline-block; animation: ticker 45s linear infinite; }
-  .ticker span { margin: 0 22px; }
-  @keyframes ticker { to { transform: translateX(-50%); } }
-
-  /* о нас */
-  .split { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: start; }
-  .split > div > p { font-size: 1.1rem; margin-top: 18px; max-width: 44ch; }
-  .rows { border-top: var(--line); }
-  .rows > div { display: grid; grid-template-columns: 54px 1fr; gap: 6px 14px; padding: 20px 0; border-bottom: var(--line); }
-  .rows i { font: 700 .9rem "IBM Plex Mono", monospace; font-style: normal; color: var(--grey); padding-top: 2px; }
-  .rows p { grid-column: 2; color: #4a554f; font-size: .98rem; }
+  /* общие сетки */
+  .split { display: grid; grid-template-columns: .9fr 1.1fr; gap: 56px; align-items: start; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card-plain { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 26px; }
+  .card-plain p { color: var(--muted); font-size: .95rem; margin-top: 8px; }
+  .feature { display: grid; grid-template-columns: 44px 1fr; gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .feature:last-child { border-bottom: 1px solid var(--line); }
+  .feature .num { font: italic 700 1.5rem var(--serif); color: var(--copper); line-height: 1.1; }
+  .feature p { color: var(--muted); font-size: .95rem; margin-top: 4px; }
+  .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--espresso); display: grid; place-items: center; margin-bottom: 16px; }
 
   /* шаги */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); border: var(--line); border-radius: var(--r); overflow: hidden; margin-top: 36px; background: #fff; }
-  .steps > div { padding: 28px 26px 32px; border-right: var(--line); }
-  .steps > div:last-child { border-right: 0; background: var(--butter); }
-  .steps .n { font: 700 3.2rem/1 Rubik, Arial, sans-serif; color: var(--green); opacity: .25; margin-bottom: 16px; }
-  .steps p { margin-top: 8px; font-size: .98rem; color: #4a554f; }
+  #how { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .step .big { font: 800 3.4rem var(--serif); color: var(--copper-light); line-height: 1; margin-bottom: 14px; }
+  .step p { color: var(--muted); font-size: .95rem; margin-top: 8px; }
 
-  /* чек с ценами */
-  #menu { background: #f0eee7; }
-  .receipt { background: #fff; border-radius: 6px; box-shadow: 0 14px 40px rgba(31,43,37,.12); padding: 26px 24px 22px; font: 500 .92rem/1.6 "IBM Plex Mono", monospace; max-width: 380px; transform: rotate(-1.2deg); color: #2c3832; }
-  .receipt h3 { font: 700 .95rem "IBM Plex Mono", monospace; text-align: center; text-transform: uppercase; }
-  .receipt small { display: block; text-align: center; color: var(--grey); font-size: .74rem; margin-bottom: 14px; }
-  .receipt .l { display: flex; align-items: baseline; gap: 6px; }
-  .receipt .l::after { content: ""; flex: 1; order: 1; border-bottom: 1px dotted #aab3ad; }
-  .receipt .l span { order: 2; }
-  .receipt hr { border: 0; border-top: 1px dashed #9aa49d; margin: 14px 0; }
-  .receipt .total { font-weight: 700; font-size: 1.1rem; }
-  .receipt .bars { height: 40px; margin-top: 18px; opacity: .75; background: repeating-linear-gradient(90deg, #1f2b25 0 3px, #fff 3px 5px, #1f2b25 5px 6px, #fff 6px 10px, #1f2b25 10px 14px, #fff 14px 16px); }
-  .price { color: var(--green); font: 700 clamp(3.4rem, 9vw, 6rem)/1 Rubik, Arial, sans-serif; margin: 10px 0 14px; }
-  .price { white-space: nowrap; }
-  .price small { display: block; font-size: .2em; font-weight: 600; margin-top: 10px; color: var(--grey); }
+  /* меню */
+  #menu { background: var(--espresso); color: var(--cream); }
+  #menu .eyebrow { color: var(--gold); }
+  #menu .lead { color: #cdbdae; }
+  .price { font: 800 clamp(4rem, 9.5vw, 6.6rem) var(--serif); color: var(--gold); line-height: 1; margin: 16px 0 6px; white-space: nowrap; }
+  .price small { font: 500 1rem var(--sans); color: var(--cream); letter-spacing: 0; margin-left: 10px; }
+  .drinks { background: var(--machine); border: 1px solid #3a2c22; border-radius: var(--r); padding: 12px 26px; }
+  .drinks div { display: flex; align-items: baseline; gap: 8px; padding: 13px 0; border-bottom: 1px dashed rgba(246,239,228,.2); font-weight: 500; }
+  .drinks div:last-child { border-bottom: 0; }
+  .drinks i { flex: 1; border-bottom: 1px dotted rgba(246,239,228,.25); transform: translateY(-4px); }
+  .drinks span { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
 
-  /* где найти */
-  .places { display: grid; grid-template-columns: repeat(4, 1fr); border: var(--line); border-radius: var(--r); overflow: hidden; margin-top: 36px; background: #fff; }
-  .places > div { padding: 22px 20px 26px; border-right: var(--line); }
-  .places > div:last-child { border-right: 0; }
-  .places i { display: block; font: 700 .76rem "IBM Plex Mono", monospace; font-style: normal; color: var(--grey); margin-bottom: 34px; }
-  .places p { font-size: .94rem; color: #4a554f; margin-top: 6px; }
-  .partner { margin-top: 24px; background: var(--butter); border-radius: var(--r); padding: 26px; display: flex; justify-content: space-between; align-items: center; gap: 22px; flex-wrap: wrap; }
-  .partner p { max-width: 58ch; margin-top: 6px; }
+  /* лояльность */
+  .loyalty { background: #1c1512; color: var(--cream); border-radius: 18px; padding: 28px; box-shadow: 0 30px 60px rgba(28,21,18,.32); transform: rotate(-2deg); max-width: 380px; justify-self: center; width: 100%; }
+  .loyalty .top { display: flex; justify-content: space-between; align-items: center; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 20px; }
+  .loyalty .who { font: 700 1.5rem var(--serif); margin-bottom: 4px; }
+  .loyalty .left { font-size: .88rem; color: #cdbdae; margin-bottom: 18px; }
+  .loyalty .dots { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+  .loyalty .dots i { aspect-ratio: 1; border-radius: 50%; border: 1.5px dashed rgba(246,239,228,.35); display: grid; place-items: center; font-style: normal; font-size: .8rem; color: #cdbdae; }
+  .loyalty .dots i.on { background: var(--copper-light); border: 1.5px solid var(--copper-light); color: var(--espresso); font-weight: 700; }
+  .loyalty .dots i.gift { border-color: var(--gold); color: var(--gold); font-weight: 700; font-size: .68rem; }
 
-  /* акция */
-  #promo { padding: 56px 0; }
-  /* баннер показываем без светлых полей исходной картинки */
-  .promo-box { display: block; max-width: 920px; margin: 0 auto; aspect-ratio: 1120 / 550; overflow: hidden; border-radius: 22px; transition: transform .2s; }
-  .promo-box:hover { transform: translateY(-3px); }
-  .promo-img { display: block; width: 107.143%; max-width: none; height: auto; margin: -3.571% 0 0 -3.571%; }
-
-  /* бот */
-  #bot { background: var(--green); color: #fff; border-bottom: 0; }
-  #bot h2 { color: var(--y); }
-  #bot .tag { background: var(--y); color: var(--ink); }
-  #bot .split > div > p { color: #cfdcd2; }
-  #bot .btn { background: var(--y); color: var(--ink); border-color: var(--y); margin-top: 28px; }
-  #bot .btn:hover { background: #f5e6a8; }
-  .stamps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; max-width: 420px; }
-  .stamps span { aspect-ratio: 1; border: 1.5px dashed rgba(255,255,255,.4); border-radius: 50%; display: grid; place-items: center; font: 700 .8rem "IBM Plex Mono", monospace; color: rgba(255,255,255,.5); }
-  .stamps span.on { border: 1.5px solid var(--y); color: var(--y); transform: rotate(-12deg); }
-  .stamps span.free { border: 1.5px solid var(--y); background: var(--y); color: var(--ink); font-size: .68rem; }
-  .card-box { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.18); border-radius: var(--r); padding: 26px; }
-  .card-box h3 { margin-bottom: 18px; font-size: .9rem; }
-  .card-box ul { list-style: none; padding: 0; margin-top: 22px; font-size: .96rem; color: #cfdcd2; }
-  .card-box li { padding: 10px 0; border-top: 1px solid rgba(255,255,255,.14); }
-  .card-box li::before { content: "→ "; color: var(--y); font-family: "IBM Plex Mono", monospace; }
-
-  /* живая карта гостя */
+  /* карточка бота: пример карты, форма или живая карта */
+  .card-box { background: var(--espresso); color: var(--cream); border-radius: 18px; padding: 28px; box-shadow: 0 30px 60px rgba(42,26,18,.28); transform: rotate(-2deg); max-width: 380px; justify-self: center; width: 100%; }
+  .card-box.active { transform: none; }
+  .card-photo { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+  .card-photo img { border-radius: 9px; flex: none; }
+  .card-photo .live-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .card-photo .live-head b { display: block; font: 700 .95rem var(--serif); }
+  .card-photo .live-head span { display: block; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
   .tabs { display: flex; gap: 6px; background: rgba(0,0,0,.18); border-radius: 10px; padding: 4px; margin-bottom: 18px; }
-  .tabs button { flex: 1; border: 0; background: transparent; color: #cfdcd2; font: 600 .9rem Onest, sans-serif; padding: 9px 8px; border-radius: 7px; cursor: pointer; }
-  .tabs button.on { background: var(--y); color: var(--ink); }
-  #card-form label { display: block; font-size: .82rem; color: #cfdcd2; margin-bottom: 12px; }
-  #card-form input { display: block; width: 100%; margin-top: 5px; padding: 12px 13px; border-radius: 9px; border: 1px solid rgba(255,255,255,.25); background: rgba(0,0,0,.2); color: #fff; font: 400 1rem Onest, sans-serif; }
-  #card-form input:focus { outline: 2px solid var(--y); outline-offset: 1px; }
-  #card-form input::placeholder { color: rgba(255,255,255,.4); }
+  .tabs button { flex: 1; border: 0; background: transparent; color: #cdbdae; font: 600 .9rem var(--sans); padding: 9px 8px; border-radius: 7px; cursor: pointer; }
+  .tabs button.on { background: var(--copper-light); color: var(--espresso); }
+  #card-form label { display: block; font-size: .82rem; color: #cdbdae; margin-bottom: 12px; }
+  #card-form input { display: block; width: 100%; margin-top: 5px; padding: 12px 13px; border-radius: 9px; border: 1px solid rgba(246,239,228,.25); background: rgba(0,0,0,.2); color: #fff; font: 400 1rem var(--sans); }
+  #card-form input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+  #card-form input::placeholder { color: rgba(246,239,228,.4); }
   #card-form .btn { width: 100%; margin-top: 6px; text-align: center; cursor: pointer; }
   #card-form .btn[disabled] { opacity: .6; cursor: wait; }
-  .form-note { font-size: .84rem; color: #cfdcd2; margin-top: 12px; min-height: 2.6em; }
+  .form-note { font-size: .84rem; color: #cdbdae; margin-top: 12px; min-height: 2.6em; }
   .form-note.err { color: #ffd0c2; }
-  .card-box.is-live { background: none; border: 0; padding: 0; border-radius: 0; }
-  #card-live { background: linear-gradient(140deg, #fffaf0 0%, #f4ead2 100%); color: var(--ink); border: 1px solid rgba(255,255,255,.5); border-radius: 18px; padding: 22px 22px 16px; box-shadow: 0 24px 48px rgba(0,0,0,.35); }
-  .card-col { min-width: 0; }
-  .card-photo { position: relative; border-radius: 10px; overflow: hidden; margin-bottom: 16px; aspect-ratio: 16 / 7; background: rgba(0,0,0,.25); }
-  .card-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .card-photo .live-head { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 10px; margin: 0; padding: 28px 14px 10px; background: linear-gradient(transparent, rgba(20,30,25,.78)); }
-  .card-photo .live-head img { border-radius: 8px; flex: none; }
-  .card-photo .live-head div { min-width: 0; }
-  .card-photo .live-head b { display: block; font: 700 .95rem Rubik, sans-serif; color: #fff; }
-  .card-photo .live-head span { display: block; font: 500 .68rem "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .06em; color: var(--y); }
-  .designs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 12px; }
-  .designs button { padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; background: none; cursor: pointer; opacity: .6; aspect-ratio: 16 / 9; transition: opacity .15s, border-color .15s; }
-  .designs button img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .designs button:hover { opacity: .9; }
-  .designs button.on { border-color: var(--y); opacity: 1; }
-  .live-name { font: 600 1.5rem/1.2 Rubik, sans-serif; color: var(--ink); overflow-wrap: anywhere; margin-bottom: 4px; }
-  .stamps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; max-width: 420px; margin: 16px 0 6px; }
-  .stamps span { aspect-ratio: 1; border: 1.5px dashed #b9a98a; border-radius: 50%; display: grid; place-items: center; font: 700 .8rem "IBM Plex Mono", monospace; color: #b0a288; }
-  .stamps span.on { border: 1.5px solid var(--green); background: var(--green); color: #fff; }
-  .stamps span.free { border: 1.5px solid var(--y); background: var(--y); color: var(--ink); font-size: .68rem; }
-  .live-progress { font-size: .9rem; color: #6a5d4c; margin: 0 0 16px; min-height: 1.5em; }
-  .live-code { background: #fff; border-radius: 10px; padding: 12px 12px 6px; text-align: center; margin-bottom: 14px; }
-  .live-code img { display: block; width: 100%; height: auto; max-width: 300px; margin: 0 auto; }
-  .live-code span { font: 500 .8rem "IBM Plex Mono", monospace; color: var(--ink); letter-spacing: .2em; }
-  .live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .live-stats div { background: rgba(35,71,58,.08); border-radius: 10px; padding: 10px 12px; }
-  .live-stats b { display: block; font: 700 1.2rem Rubik, sans-serif; color: var(--green); overflow-wrap: anywhere; }
-  .live-stats span { font-size: .76rem; color: #6a5d4c; }
-  .live-actions { display: flex; gap: 8px; margin-top: 14px; }
-  .live-actions button { flex: 1; background: transparent; border: 1px solid rgba(35,71,58,.35); color: var(--green); font: 500 .88rem Onest, sans-serif; padding: 9px; border-radius: 9px; cursor: pointer; }
-  .live-actions button:hover { background: rgba(35,71,58,.08); }
+
+  /* карта города */
+  .map-box { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--card); margin-top: 36px; }
+  .map-box iframe { display: block; width: 100%; height: 420px; border: 0; }
+  .map-note { padding: 12px 18px; font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); }
+  .places { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
 
   /* вопросы */
-  .faq { border-top: var(--line); }
-  .faq details { border-bottom: var(--line); }
-  .faq summary { cursor: pointer; padding: 20px 0; font-weight: 700; font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
-  .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after { content: "+"; color: var(--green); font: 500 1.3rem/1 "IBM Plex Mono", monospace; }
-  .faq details[open] summary::after { content: "−"; }
-  .faq p { padding: 0 0 22px; max-width: 62ch; color: #4a554f; }
+  details { border-bottom: 1px solid var(--line); }
+  details:first-of-type { border-top: 1px solid var(--line); }
+  summary { cursor: pointer; padding: 18px 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font: 400 1.4rem var(--serif); color: var(--copper); line-height: 1; transition: transform .2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { color: var(--muted); padding: 0 0 18px; max-width: 62ch; }
 
   /* контакты */
-  .people { display: grid; grid-template-columns: 1fr 1fr; border: var(--line); border-radius: var(--r); background: #fff; }
-  .people > div { padding: 24px; }
-  .people > div:first-child { border-right: var(--line); }
-  .people p { font: 500 .78rem "IBM Plex Mono", monospace; text-transform: uppercase; color: var(--grey); margin: 6px 0 16px; }
-  .people a { font-weight: 700; font-size: .88rem; overflow-wrap: anywhere; color: var(--green); text-underline-offset: 3px; }
-  .people a:hover { text-decoration: none; }
+  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .people h3 { font-size: 1.1rem; }
+  .people .role { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 4px 0 12px; }
+  .people a { color: var(--copper); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+  .people a:hover { text-decoration: underline; }
 
-  footer { background: #1b382d; color: #a9bcae; font-size: .76rem; padding: 22px 0; }
-  footer .wrap { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  footer { background: var(--machine); color: #a39283; padding: 28px 0; font-size: .86rem; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  /* появление при прокрутке */
+  .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .js .reveal.in { opacity: 1; transform: none; }
 
   /* ---------- заставка: зёрна -> чашка кофе ---------- */
   .intro-lock { overflow: hidden; }
@@ -230,150 +200,139 @@
   .intro-steam { position: absolute; left: -3px; top: -110px; width: 6px; height: 46px; border-radius: 6px; background: linear-gradient(transparent, rgba(255,255,255,.45), transparent); opacity: 0; filter: blur(2px); animation: steam 1.3s ease-out 2.35s forwards; }
   .intro-steam:nth-of-type(2) { margin-left: -26px; animation-delay: 2.5s; }
   .intro-steam:nth-of-type(3) { margin-left: 26px; animation-delay: 2.6s; }
-  @keyframes steam { 0% { opacity: 0; transform: translateY(18px) scaleY(.6); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-26px) scaleY(1.2); } }
-  .intro-title { position: absolute; left: 0; right: 0; top: calc(46% + 124px); text-align: center; font: 700 clamp(1rem, 3.6vw, 1.5rem) Rubik, "Arial Black", sans-serif; color: #fff; opacity: 0; animation: title-in .7s ease 2.25s forwards, title-out .3s ease 3.45s forwards; padding: 0 20px; }
-  .intro-title span { color: var(--y); }
-  .intro-title small { display: block; margin-top: 10px; font: 500 .74rem "IBM Plex Mono", monospace; letter-spacing: .12em; text-transform: uppercase; opacity: .6; }
+  .intro-title { position: absolute; left: 0; right: 0; top: calc(46% + 124px); text-align: center; font: 700 clamp(1rem, 3.6vw, 1.5rem) var(--serif); color: #fff; opacity: 0; animation: title-in .7s ease 2.25s forwards; padding: 0 20px; }
+  .intro-title span { color: var(--gold); }
+  .intro-title small { display: block; margin-top: 10px; font: 600 .7rem var(--sans); letter-spacing: .16em; text-transform: uppercase; opacity: .6; }
   @keyframes title-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-  @keyframes title-out { to { opacity: 0; } }
-  .intro-flood { position: absolute; left: -70px; top: -70px; width: 140px; height: 140px; border-radius: 50%; background: var(--sage); transform: scale(0); animation: flood .8s cubic-bezier(.7,0,.3,1) 3.45s forwards; }
+  .intro-flood { position: absolute; left: -70px; top: -70px; width: 140px; height: 140px; border-radius: 50%; background: var(--cream); transform: scale(0); animation: flood .8s cubic-bezier(.7,0,.3,1) 3.45s forwards; }
   @keyframes flood { to { transform: scale(30); } }
 
-  @media (prefers-reduced-motion: reduce) { .ticker div, .m-progress i, .m-nook::before { animation: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    .steam path, .brew, .chip { animation: none; }
+    .steam path { opacity: 0; } .brew { transform: none; }
+  }
 
-  @media (max-width: 860px) {
-    section { padding: 56px 0; }
+  @media (max-width: 880px) {
+    section { padding: 62px 0; }
     nav ul { display: none; }
-    .logo span { display: none; }
-    .hero .wrap, .split { grid-template-columns: 1fr; gap: 34px; }
-    .hero .wrap { padding-top: 40px; }
-    .hero-text { padding-bottom: 0; }
-    .steps, .places { grid-template-columns: 1fr; }
-    .steps > div, .places > div { border-right: 0; border-bottom: var(--line); }
-    .steps > div:last-child, .places > div:last-child { border-bottom: 0; }
-    .places i { margin-bottom: 10px; }
-    .people { grid-template-columns: 1fr; }
-    .people > div:first-child { border-right: 0; border-bottom: var(--line); }
-    .receipt { margin: 0 auto; }
+    .logo { font-size: .98rem; gap: 8px; }
+    .hero { padding: 44px 0 72px; }
+    .hero .wrap, .split { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+    .hero-art { max-width: 380px; }
+    .chip.c2 { left: -2%; }
+    .chip.c1 { right: -2%; }
+    .stats .wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 16px; }
+    .stats div.s:nth-child(3) { border-left: 0; padding-left: 0; }
+    .grid3 { grid-template-columns: 1fr; }
+    .price { white-space: normal; }
+    .price small { display: block; margin: 6px 0 0; }
+    .places { grid-template-columns: 1fr 1fr; }
+    .loyalty { transform: none; }
+    .card-box { transform: none; }
+    footer .wrap { justify-content: center; text-align: center; }
   }
 </style>
 </head>
 <body>
-<script>
-  // Заставка: зёрна сыплются и собираются в чашку кофе. Один раз за визит, клик пропускает.
-  (function () {
-    var seen = false;
-    try { seen = sessionStorage.getItem("ace-intro") === "1"; sessionStorage.setItem("ace-intro", "1"); } catch (e) {}
-    if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    var bean = '<svg viewBox="0 0 34 46" width="34" height="46"><defs><radialGradient id="bg" cx="35%" cy="30%" r="80%">' +
-      '<stop offset="0" stop-color="#9a6336"/><stop offset=".6" stop-color="#6a3d1f"/><stop offset="1" stop-color="#3f2211"/></radialGradient></defs>' +
-      '<ellipse cx="17" cy="23" rx="15" ry="21" fill="url(#bg)"/>' +
-      '<path d="M19 3 C8 14 26 30 15 43" fill="none" stroke="#2a160b" stroke-width="2.6" stroke-linecap="round"/></svg>';
-    var html = "", n = 22;
-    for (var i = 0; i < n; i++) {
-      var a = (i / n) * Math.PI * 2 + Math.random() * .5, rad = 40 + Math.random() * 95;
-      html += '<div class="intro-bean" style="' +
-        "--sx:" + Math.round((Math.random() - .5) * 90) + "vw;" +
-        "--tx:" + Math.round(Math.cos(a) * rad * 1.25) + "px;" +
-        "--ty:" + Math.round(Math.sin(a) * rad * .8) + "px;" +
-        "--r0:" + Math.round(Math.random() * 720 - 360) + "deg;" +
-        "--r:" + Math.round(Math.random() * 360) + "deg;" +
-        "--s:" + (.7 + Math.random() * .6).toFixed(2) + ";" +
-        "--d:" + (Math.random() * .55).toFixed(2) + "s;" +
-        "--m:" + (Math.random() * .25).toFixed(2) + 's">' + bean + "</div>";
-    }
-    var el = document.createElement("div");
-    el.id = "intro";
-    el.setAttribute("aria-hidden", "true");
-    el.innerHTML = '<div class="center">' + html +
-      '<i class="intro-steam"></i><i class="intro-steam"></i><i class="intro-steam"></i>' +
-      '<div class="intro-cup"><div class="intro-coffee"></div></div><div class="intro-flood"></div></div>' +
-      '<div class="intro-title">Astana Coffee <span>Express</span><small>кофе за 45 секунд</small></div>';
-    document.body.appendChild(el);
-    document.documentElement.classList.add("intro-lock");
-
-    var finished = false;
-    function finish() {
-      if (finished) return;
-      finished = true;
-      el.classList.add("done");
-      document.documentElement.classList.remove("intro-lock");
-      setTimeout(function () { el.remove(); }, 600);
-    }
-    el.addEventListener("click", finish);
-    setTimeout(finish, 4150);
-  })();
-</script>
-
-<div class="topbar">
+<nav>
   <div class="wrap">
-    <nav>
-      <a class="logo" href="#"><img src="icon.svg" alt="" width="36" height="36"><span>Astana Coffee Express</span></a>
-      <ul>
-        <li><a href="#about">О нас</a></li>
-        <li><a href="#how">Как купить</a></li>
-        <li><a href="#menu">Цена</a></li>
-        <li><a href="#where">Где найти</a></li>
-        <li><a href="#bot">Бот</a></li>
-        <li><a href="#faq">Вопросы</a></li>
-        <li><a href="#contacts">Контакты</a></li>
-      </ul>
-      <a class="btn" data-bot href="#bot">Бот в Telegram</a>
-    </nav>
+    <a class="logo" href="#"><img src="icon.svg" width="34" height="34" alt=""><span>Astana Coffee Express</span></a>
+    <ul>
+      <li><a href="#about">О нас</a></li>
+      <li><a href="#how">Как купить</a></li>
+      <li><a href="#menu">Напитки</a></li>
+      <li><a href="#where">Где найти</a></li>
+      <li><a href="#bot">Бот</a></li>
+      <li><a href="#faq">Вопросы</a></li>
+      <li><a href="#contacts">Контакты</a></li>
+    </ul>
+    <a class="btn" data-bot href="#bot">Бот в Telegram</a>
   </div>
-</div>
+</nav>
 
 <header class="hero">
   <div class="wrap">
-    <div class="hero-text">
-      <span class="tag">Кофе-аппараты · Астана</span>
-      <h1>Кофе за <mark>45&nbsp;секунд.</mark> Без очереди.</h1>
-      <p>Выбрали напиток, оплатили Kaspi QR, забрали стакан. Аппараты работают круглосуточно.</p>
+    <div>
+      <div class="eyebrow">Умные кофе-аппараты · Астана</div>
+      <h1>Кофе за <em>45 секунд.</em> Без очереди.</h1>
+      <p class="lead">Выбрали напиток, оплатили Kaspi QR, забрали стакан. Аппараты работают круглосуточно.</p>
       <div class="cta">
         <a class="btn" href="#how">Как купить</a>
-        <a class="btn alt" href="#where">Где стоят аппараты</a>
+        <a class="btn ghost" href="#where">Где стоят аппараты</a>
       </div>
     </div>
-    <div class="machine" aria-hidden="true">
-      <div class="m-brand">ASTANA COFFEE EXPRESS</div>
-      <div class="m-screen">&gt; КАПУЧИНО<b>600 ₸</b>ГОТОВИМ... 45 СЕК<div class="m-progress"><i></i></div></div>
-      <div class="m-pay"><div class="qr"></div><span>KASPI QR<br>КАРТА / NFC</span></div>
-      <div class="m-nook"><div class="cup"></div></div>
+    <div class="hero-art" aria-hidden="true">
+      <svg class="machine" viewBox="0 0 360 480">
+        <defs>
+          <linearGradient id="wood" x1="0" x2="1"><stop offset="0" stop-color="#b98a5e"/><stop offset="1" stop-color="#8f6442"/></linearGradient>
+          <pattern id="slats" width="9" height="10" patternUnits="userSpaceOnUse"><rect width="6" height="10" fill="url(#wood)"/><rect x="6" width="3" height="10" fill="#6e4b30"/></pattern>
+          <radialGradient id="glow" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#d9a06b" stop-opacity=".35"/><stop offset="1" stop-color="#d9a06b" stop-opacity="0"/></radialGradient>
+        </defs>
+        <ellipse cx="180" cy="235" rx="175" ry="215" fill="url(#glow)"/>
+        <ellipse cx="180" cy="462" rx="120" ry="10" fill="#000" opacity=".15"/>
+        <rect x="60" y="20" width="20" height="436" rx="6" fill="url(#slats)"/>
+        <rect x="280" y="20" width="20" height="436" rx="6" fill="url(#slats)"/>
+        <rect x="76" y="20" width="208" height="436" rx="10" fill="#161210"/>
+        <text x="180" y="44" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700" letter-spacing="1.6" fill="#d9a06b">ASTANA COFFEE EXPRESS</text>
+        <rect x="94" y="56" width="172" height="118" rx="6" fill="#0c1512" stroke="#3a2c22"/>
+        <text x="104" y="74" font-family="Inter" font-size="8" font-weight="600" fill="#f6efe4">Выберите напиток</text>
+        <g class="s1"><circle cx="118" cy="96" r="14" fill="none" stroke="#d9a06b" stroke-width="1.5"/><path d="M111 92h12v6a5 5 0 0 1-10 0z M123 93h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#d9a06b" stroke-width="1.4" stroke-linejoin="round"/></g>
+        <g class="s1"><circle cx="152" cy="96" r="14" fill="none" stroke="#d9a06b" stroke-width="1.5"/><path d="M145 92h12v6a5 5 0 0 1-10 0z M157 93h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#d9a06b" stroke-width="1.4" stroke-linejoin="round"/></g>
+        <g class="s1 sel"><circle cx="186" cy="96" r="14" fill="#d9a06b"/><path d="M179 92h12v6a5 5 0 0 1-10 0z M191 93h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#161210" stroke-width="1.4" stroke-linejoin="round"/></g>
+        <g class="s1"><circle cx="220" cy="96" r="14" fill="none" stroke="#d9a06b" stroke-width="1.5"/><path d="M213 92h12v6a5 5 0 0 1-10 0z M225 93h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#d9a06b" stroke-width="1.4" stroke-linejoin="round"/></g>
+        <g class="s1"><circle cx="118" cy="138" r="14" fill="none" stroke="#d9a06b" stroke-width="1.5"/><path d="M111 134h12v6a5 5 0 0 1-10 0z M123 135h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#d9a06b" stroke-width="1.4" stroke-linejoin="round"/></g>
+        <g class="s1"><circle cx="152" cy="138" r="14" fill="none" stroke="#d9a06b" stroke-width="1.5"/><path d="M145 134h12v6a5 5 0 0 1-10 0z M157 135h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#d9a06b" stroke-width="1.4" stroke-linejoin="round"/></g>
+        <rect x="104" y="160" width="152" height="4" rx="2" fill="#2a3a33"/>
+        <rect class="brew" x="104" y="160" width="152" height="4" rx="2" fill="#d9a06b"/>
+        <rect x="94" y="188" width="66" height="56" rx="6" fill="#221b17"/>
+        <g class="qr"><rect x="100" y="194" width="36" height="36" rx="3" fill="#f6efe4"/><rect x="104" y="198" width="8" height="8" fill="#161210"/><rect x="124" y="198" width="8" height="8" fill="#161210"/><rect x="104" y="218" width="8" height="8" fill="#161210"/><rect x="116" y="198" width="4" height="4" fill="#161210"/><rect x="114" y="208" width="6" height="4" fill="#161210"/><rect x="122" y="212" width="4" height="6" fill="#161210"/><rect x="116" y="220" width="6" height="4" fill="#161210"/><rect x="126" y="222" width="6" height="4" fill="#161210"/></g>
+        <text x="170" y="212" font-family="Inter" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">KASPI QR</text>
+        <text x="170" y="222" font-family="Inter" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">КАРТА / NFC</text>
+        <rect x="110" y="262" width="140" height="110" rx="8" fill="#0a0807"/>
+        <g class="cup"><path d="M162 322h36l-4 38h-28z" fill="#f6efe4"/><rect x="160" y="316" width="40" height="7" rx="2" fill="#fff"/><rect x="164" y="334" width="32" height="10" fill="#b5703a"/></g>
+        <g class="steam" fill="none" stroke="#f6efe4" stroke-width="1.6" stroke-linecap="round" opacity=".7"><path d="M172 308c-4-6 4-8 0-14"/><path d="M180 306c-4-6 4-8 0-14"/><path d="M188 308c-4-6 4-8 0-14"/></g>
+        <rect x="94" y="390" width="172" height="44" rx="8" fill="#0d0907" stroke="#3a2c22"/>
+        <g fill="#3a2c22"><rect x="108" y="404" width="2" height="16"/><rect x="113" y="404" width="2" height="16"/><rect x="118" y="404" width="2" height="16"/><rect x="123" y="404" width="2" height="16"/><rect x="128" y="404" width="2" height="16"/><rect x="133" y="404" width="2" height="16"/></g>
+      </svg>
+      <div class="chip c1"><b>45 сек</b>готовим</div>
+      <div class="chip c2"><div class="loyalty-dots"><i></i><i></i><i></i><i></i><i></i><i class="free"></i></div>6-я бесплатно</div>
     </div>
   </div>
 </header>
 
-<div class="ticker" aria-hidden="true">
-  <div>
-    <span>45 секунд</span>/<span>24/7</span>/<span>600 ₸ за чашку</span>/<span>Kaspi QR</span>/<span>каждая 6-я бесплатно</span>/<span>зерновой кофе</span>/
-    <span>45 секунд</span>/<span>24/7</span>/<span>600 ₸ за чашку</span>/<span>Kaspi QR</span>/<span>каждая 6-я бесплатно</span>/<span>зерновой кофе</span>/
+<div class="stats">
+  <div class="wrap">
+    <div><b>45 сек</b><span>от выбора до готового стакана</span></div>
+    <div><b>24/7</b><span>аппараты работают без выходных</span></div>
+    <div><b>600 ₸</b><span>за чашку</span></div>
+    <div><b>1 скан</b><span>оплата Kaspi QR или картой</span></div>
   </div>
 </div>
 
 <section id="about">
-  <div class="wrap split">
-    <div>
-      <span class="tag">О нас</span>
-      <h2>Ставим кофе-аппараты там, где некогда стоять в очереди</h2>
-      <p>Astana Coffee Express — это сеть аппаратов самообслуживания в Астане. Университеты, бизнес-центры, клиники, транспортные узлы.</p>
-    </div>
-    <div class="rows">
-      <div><i>01</i><h3>Кофе из зерна</h3><p>Аппарат мелет зерно под каждую чашку. Есть молочные напитки и сиропы.</p></div>
-      <div><i>02</i><h3>Аппарат на связи</h3><p>Мы видим запасы и поломки онлайн и приезжаем до того, как что-то закончится.</p></div>
-      <div><i>03</i><h3>Чистота</h3><p>Чистим каждый день, фильтры меняем раз в две недели. Стаканы и размешиватели — эко.</p></div>
+  <div class="wrap">
+    <div class="eyebrow">Что такое Astana Coffee Express</div>
+    <h2>Кофейня размером с один аппарат</h2>
+    <p class="lead">Мы ставим умные кофе-аппараты там, где кофе нужен здесь и сейчас: в университетах, бизнес-центрах, клиниках и на транспортных узлах.</p>
+    <div class="grid3">
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/></svg></div><h3>Кофе из зерна</h3><p>Аппарат мелет зерно под каждую чашку. Есть молочные напитки и сиропы.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/></svg></div><h3>Аппарат на связи</h3><p>Мы видим запасы и неисправности онлайн и приезжаем раньше, чем что-то закончится.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></div><h3>Чисто и аккуратно</h3><p>Чистим каждый день, фильтры меняем раз в две недели. Стаканы и размешиватели — эко.</p></div>
     </div>
   </div>
 </section>
 
 <section id="how">
   <div class="wrap">
-    <span class="tag">Как купить</span>
-    <h2>Три действия</h2>
-    <div class="steps">
-      <div><div class="n">1</div><h3>Выберите напиток</h3><p>Эспрессо, капучино, латте и другие. Сахар и сироп — по вкусу.</p></div>
-      <div><div class="n">2</div><h3>Оплатите</h3><p>Kaspi QR, карта или телефон (NFC). Наличные не нужны.</p></div>
-      <div><div class="n">3</div><h3>Заберите стакан</h3><p>Через 45 секунд кофе готов. Сканируйте штрихкод из бота, и чашка пойдёт в зачёт.</p></div>
+    <div class="eyebrow">Как купить</div>
+    <h2>Три шага до чашки</h2>
+    <div class="grid3">
+      <div class="step"><div class="big">1</div><h3>Выберите напиток</h3><p>Эспрессо, капучино, латте и другие. Сахар и сироп — по вкусу.</p></div>
+      <div class="step"><div class="big">2</div><h3>Оплатите одним сканом</h3><p>Наведите камеру на Kaspi QR или приложите карту либо телефон (NFC). Наличные не нужны.</p></div>
+      <div class="step"><div class="big">3</div><h3>Заберите стакан</h3><p>Через 45 секунд кофе готов. Сканируйте штрихкод из бота, и чашка пойдёт в зачёт.</p></div>
     </div>
   </div>
 </section>
@@ -381,66 +340,51 @@
 <section id="menu">
   <div class="wrap split">
     <div>
-      <span class="tag">Цена</span>
-      <h2>Любой напиток стоит одинаково</h2>
+      <div class="eyebrow">Напитки и цена</div>
+      <h2>Любой напиток — <em>одна цена</em></h2>
       <div class="price">600 ₸ <small>за чашку</small></div>
-      <p>Если аппарат не выдал напиток, деньги вернутся.</p>
+      <p class="lead">Оплата Kaspi QR или банковской картой. Если аппарат не выдал напиток — деньги возвращаются.</p>
     </div>
     <!-- Список напитков: поменяйте под свои аппараты -->
-    <div class="receipt">
-      <h3>Astana Coffee Express</h3>
-      <small>аппарат самообслуживания · 24/7</small>
-      <div class="l">Эспрессо<span>600</span></div>
-      <div class="l">Американо<span>600</span></div>
-      <div class="l">Капучино<span>600</span></div>
-      <div class="l">Латте<span>600</span></div>
-      <div class="l">Мокко<span>600</span></div>
-      <div class="l">Горячий шоколад<span>600</span></div>
-      <hr>
-      <div class="l">Каждая 6-я чашка<span>0</span></div>
-      <hr>
-      <div class="l total">ОПЛАТА<span>KASPI QR</span></div>
-      <div class="bars"></div>
+    <div class="drinks">
+      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Эспрессо<i></i><span>600</span></div>
+      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Американо<i></i><span>600</span></div>
+      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Капучино<i></i><span>600</span></div>
+      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Латте<i></i><span>600</span></div>
+      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Мокко<i></i><span>600</span></div>
+      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Горячий шоколад<i></i><span>600</span></div>
     </div>
   </div>
 </section>
 
 <section id="where">
   <div class="wrap">
-    <span class="tag">Где найти</span>
-    <h2>Первые шесть аппаратов запускаем в Астане</h2>
+    <div class="eyebrow">Где найти</div>
+    <h2>Аппараты там, где вы бываете каждый день</h2>
     <div class="places">
-      <div><i>A</i><h3>Кампусы</h3><p>Между парами и перед экзаменом.</p></div>
-      <div><i>B</i><h3>Бизнес-центры</h3><p>Не выходя из здания.</p></div>
-      <div><i>C</i><h3>Клиники</h3><p>Пока ждёте приёма.</p></div>
-      <div><i>D</i><h3>Транспортные узлы</h3><p>По пути, в любое время.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c3 3 9 3 12 0v-5"/></svg></div><h3>Университеты</h3><p>Между парами и перед экзаменом.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-4h6v4M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/></svg></div><h3>Бизнес-центры</h3><p>Не выходя из здания.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></div><h3>Клиники</h3><p>Пока ждёте приёма.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6"/><circle cx="15.5" cy="14" r=".6"/></svg></div><h3>Транспортные узлы</h3><p>По пути, в любое время.</p></div>
     </div>
-    <div class="partner">
-      <div>
-        <h3>Хотите аппарат в своём здании?</h3>
-        <p>Арендуем место, сами ставим, обслуживаем и пополняем. От вас — розетка и квадратный метр.</p>
-      </div>
-      <a class="btn" href="mailto:wamaff@gmail.com?subject=%D0%A0%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BA%D0%BE%D1%84%D0%B5-%D0%B0%D0%BF%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D0%B0">Написать нам</a>
+    <div class="map-box">
+      <iframe title="Карта Астаны" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=71.20%2C50.95%2C71.70%2C51.30&amp;layer=mapnik"></iframe>
+      <div class="map-note">Астана, Казахстан. Точные адреса аппаратов и новые точки присылает <a data-bot href="#bot">Telegram-бот</a>.</div>
     </div>
-  </div>
-</section>
-
-<section id="promo">
-  <div class="wrap">
-    <a class="promo-box" data-bot href="#bot"><img class="promo-img" src="promo.svg" width="1200" height="630" loading="lazy" alt="Акция Astana Coffee Express: 5 кофе — 6-й в подарок. Отметки копятся в Telegram-боте."></a>
   </div>
 </section>
 
 <section id="bot">
   <div class="wrap split">
     <div>
-      <span class="tag">Telegram-бот</span>
-      <h2>Шестая чашка за наш счёт</h2>
-      <p>Зарегистрируйтесь в боте, получите личный штрихкод и сканируйте его при каждой покупке. Бот считает чашки сам.</p>
-      <a class="btn" data-bot href="#">Открыть бота</a>
+      <div class="eyebrow">Telegram-бот</div>
+      <h2>Шестая чашка <em>за наш счёт</em></h2>
+      <p class="lead">Зарегистрируйтесь в боте, получите личный штрихкод и сканируйте его при каждой покупке. Бот считает чашки сам.</p>
+      <div class="feature"><div class="num">i</div><div><h3>Личный штрихкод</h3><p>Регистрация по логину и паролю занимает полминуты.</p></div></div>
+      <div class="feature"><div class="num">ii</div><div><h3>Ваша статистика</h3><p>Сколько чашек выпито и какой напиток вы берёте чаще всего.</p></div></div>
+      <div class="feature"><div class="num">iii</div><div><h3>Акции первыми</h3><p>Новые точки и предложения приходят сообщением в Telegram.</p></div></div>
+      <a class="btn light" data-bot href="#" style="margin-top:28px">Открыть бота в Telegram</a>
     </div>
-    <!-- Число чашек должно совпадать с FREE_EVERY в настройках бота -->
-    <div class="card-col">
     <div class="card-box" id="card-widget">
       <!-- до входа: пример карты; если задан SITE.api — ещё и форма -->
       <div id="card-demo">
@@ -450,14 +394,10 @@
           <span class="on">ACE</span><span class="on">ACE</span><span class="on">ACE</span><span>4</span><span>5</span><span class="free">0 ₸</span>
         </div>
         <p class="live-progress">До бесплатной чашки осталось: <b>2</b></p>
-        <div class="live-code">
+        <div class="live-code demo">
+          <div class="bars" aria-hidden="true"></div>
           <span>ACE000128</span>
         </div>
-        <ul>
-          <li>Сколько чашек выпито и какой напиток любимый</li>
-          <li>Акции и новые точки приходят сообщением</li>
-          <li>Приложение ставить не нужно</li>
-        </ul>
       </div>
 
       <form id="card-form" hidden>
@@ -472,15 +412,14 @@
       </form>
 
       <div id="card-live" hidden>
-        <div class="card-photo"><img data-card-photo src="cards/card-1.jpg" width="1200" height="675" alt=""><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div><div class="live-name" id="live-login"></div></div>
+        <div class="card-photo"><img data-card-photo src="cards/card-1.jpg" width="1200" height="675" alt=""><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div></div>
+        <div class="live-name" id="live-login"></div>
         <div class="stamps" id="live-stamps" aria-hidden="true"></div>
         <p class="live-progress" id="live-progress"></p>
         <div class="live-code">
           <img id="live-barcode" alt="Штрихкод вашей карты" width="300" height="120">
           <span id="live-card"></span>
         </div>
-        <div class="stamps" id="live-stamps" aria-hidden="true"></div>
-        <p class="live-progress" id="live-progress"></p>
         <div class="live-stats">
           <div><b id="live-total">0</b><span>чашек выпито</span></div>
           <div><b id="live-fav">—</b><span>любимый напиток</span></div>
@@ -491,27 +430,18 @@
         </div>
       </div>
     </div>
-    <div class="designs" id="card-designs" role="group" aria-label="Дизайн карты">
-      <button type="button" class="on" data-card="1" aria-label="Дизайн 1"><img src="cards/card-1.jpg" width="1200" height="675" alt=""></button>
-      <button type="button" data-card="2" aria-label="Дизайн 2"><img src="cards/card-2.jpg" width="1200" height="675" loading="lazy" alt=""></button>
-      <button type="button" data-card="3" aria-label="Дизайн 3"><img src="cards/card-3.jpg" width="1200" height="675" loading="lazy" alt=""></button>
-      <button type="button" data-card="4" aria-label="Дизайн 4"><img src="cards/card-4.jpg" width="1200" height="675" loading="lazy" alt=""></button>
-      <button type="button" data-card="5" aria-label="Дизайн 5"><img src="cards/card-5.jpg" width="1200" height="675" loading="lazy" alt=""></button>
-      <button type="button" data-card="6" aria-label="Дизайн 6"><img src="cards/card-6.jpg" width="1200" height="675" loading="lazy" alt=""></button>
-    </div>
-    </div>
   </div>
 </section>
 
 <section id="faq">
   <div class="wrap split">
     <div>
-      <span class="tag">Вопросы</span>
+      <div class="eyebrow">Вопросы</div>
       <h2>Что обычно спрашивают</h2>
     </div>
-    <div class="faq">
+    <div>
       <details open><summary>Как оплатить?</summary><p>Kaspi QR на аппарате, банковская карта или телефон (NFC). Наличные аппарат не принимает.</p></details>
-      <details><summary>Аппарат не выдал напиток. Что делать?</summary><p>Деньги за невыданный напиток возвращаются. Если что-то пошло не так, напишите нам, почта ниже.</p></details>
+      <details><summary>Аппарат не выдал напиток. Что делать?</summary><p>Деньги за невыданный напиток возвращаются. Если что-то пошло не так, напишите нам — контакты ниже.</p></details>
       <details><summary>Когда работают аппараты?</summary><p>Круглосуточно, без выходных. Точнее — всегда, когда открыто здание, где стоит аппарат.</p></details>
       <details><summary>Как получить бесплатную чашку?</summary><p>Зарегистрироваться в Telegram-боте и сканировать свой штрихкод при каждой покупке. Каждая шестая чашка бесплатная, бот покажет, сколько осталось.</p></details>
       <details><summary>Нужно что-то скачивать?</summary><p>Нет. Для оплаты хватит Kaspi или карты, а карта гостя работает в обычном Telegram.</p></details>
@@ -520,23 +450,13 @@
 </section>
 
 <section id="contacts">
-  <div class="wrap split">
-    <div>
-      <span class="tag">Контакты</span>
-      <h2>Напишите нам</h2>
-      <p>Возвраты, работа аппаратов, размещение — по любому вопросу.</p>
-    </div>
+  <div class="wrap">
+    <div class="eyebrow">Контакты</div>
+    <h2>Напишите нам</h2>
+    <p class="lead">Возвраты, работа аппаратов, размещение — по любому вопросу.</p>
     <div class="people">
-      <div>
-        <h3>Санжар Мурат</h3>
-        <p>Генеральный директор</p>
-        <a href="mailto:wamaff@gmail.com">wamaff@gmail.com</a>
-      </div>
-      <div>
-        <h3>Рахман Даниал</h3>
-        <p>Финансовый директор</p>
-        <a href="mailto:rahmanzavisnik@gmail.com">rahmanzavisnik@gmail.com</a>
-      </div>
+      <div class="card-plain"><h3>Санжар Мурат</h3><div class="role">Генеральный директор</div><a href="mailto:wamaff@gmail.com">wamaff@gmail.com</a></div>
+      <div class="card-plain"><h3>Рахман Даниал</h3><div class="role">Финансовый директор</div><a href="mailto:rahmanzavisnik@gmail.com">rahmanzavisnik@gmail.com</a></div>
     </div>
   </div>
 </section>
@@ -547,6 +467,33 @@
 
 <script>
   // Ссылка на Telegram-бота
+  const SITE = {
+    bot: "https://t.me/astanacoffeeexpress_bot",
+  };
+  document.querySelectorAll("[data-bot]").forEach(a => {
+    if (SITE.bot) { a.href = SITE.bot; a.target = "_blank"; a.rel = "noopener"; }
+    else { a.href = "#bot"; }
+  });
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // Плавное появление блоков при прокрутке
+  (function () {
+    if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.documentElement.classList.remove("js");
+      return;
+    }
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    const sel = "section h2, section .lead, .stats .wrap > div, .card-plain, .step, .feature, .drinks, .loyalty, .map-box, .cta, .hero-art";
+    document.querySelectorAll(sel).forEach((el, i) => {
+      if (el.closest(".hero")) return;
+      el.classList.add("reveal");
+      io.observe(el);
+    });
+  })();
+
+  // Ссылка на Telegram-бота и адрес сервиса бота
   const SITE = {
     bot: "https://t.me/astanacoffeeexpress_bot",
     api: "https://astana-coffee-express-sa00.onrender.com", // адрес службы бота (Web Service) на Render
@@ -579,9 +526,9 @@
       stamps.hidden = n < 2;
       if (n >= 2) {
         let html = "";
-        for (let i = 1; i < n; i++) html += '<span' + (i <= card.done ? ' class="on">ACE' : ">" + i) + "</span>";
-        stamps.style.gridTemplateColumns = "repeat(" + n + ", 1fr)";
-        stamps.innerHTML = html + '<span class="free">0 ₸</span>';
+        for (let i = 1; i < n; i++) html += '<i' + (i <= card.done ? ' class="on">ACE' : ">" + i) + "</i>";
+        stamps.style.gridTemplateColumns = "repeat(" + n + ", minmax(0, 1fr))";
+        stamps.innerHTML = html + '<i class="free">0 ₸</i>';
         $("live-progress").textContent = card.next_free
           ? "Следующая чашка — бесплатно!"
           : "До бесплатной чашки осталось: " + (n - 1 - card.done);
@@ -589,21 +536,12 @@
         $("live-progress").textContent = "";
       }
       form.hidden = true; live.hidden = false;
+      $("card-widget").classList.add("active");
     }
-
-    // Дизайн карты: выбор гостя запоминается в браузере и применяется к примеру и к его карте.
-    function applyDesign(n) {
-      if (n) { try { localStorage.setItem("ace-card-design", n); } catch (e) {} }
-      else { try { n = localStorage.getItem("ace-card-design"); } catch (e) {} }
-      if (!/^[1-6]$/.test(n || "")) n = "1";
-      document.querySelectorAll("[data-card-photo]").forEach(img => { img.src = "cards/card-" + n + ".jpg"; });
-      document.querySelectorAll("#card-designs button").forEach(b => b.classList.toggle("on", b.dataset.card === n));
-    }
-    document.querySelectorAll("#card-designs button").forEach(b => b.addEventListener("click", () => applyDesign(b.dataset.card)));
-    applyDesign();
 
     function showForm(text) {
       live.hidden = true; form.hidden = false;
+      $("card-widget").classList.remove("active");
       setNote(text || "Тот же логин и пароль подойдут в Telegram-боте.");
     }
 
@@ -673,7 +611,72 @@
         .catch(err => { if (err.status === 401) { try { localStorage.removeItem(KEY); } catch (e) {} token = null; } });
     }
   })();
-</script>
+
+  // Плавное появление блоков при прокрутке
+  (function () {
+    if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.documentElement.classList.remove("js");
+      return;
+    }
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    const sel = "section h2, section .lead, .stats .wrap > div, .card-plain, .step, .feature, .drinks, .loyalty, .map-box, .cta, .hero-art";
+    document.querySelectorAll(sel).forEach((el, i) => {
+      if (el.closest(".hero")) return;
+      el.classList.add("reveal");
+      io.observe(el);
+    });
+  })();
+
+  // ---------- Заставка: зёрна сыплются и собираются в чашку кофе ----------
+  // Показывается один раз за визит; клик пропускает. При «уменьшении движения» в системе не показывается.
+  (function () {
+    let seen = false;
+    try { seen = sessionStorage.getItem("ace-intro") === "1"; sessionStorage.setItem("ace-intro", "1"); } catch (e) {}
+    if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const bean = '<svg viewBox="0 0 34 46" width="34" height="46"><use href="#i-bean"/></svg>';
+    const defs = '<svg width="0" height="0" style="position:absolute"><defs>' +
+      '<radialGradient id="bg" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#9a6336"/><stop offset=".6" stop-color="#6a3d1f"/><stop offset="1" stop-color="#3f2211"/></radialGradient>' +
+      '<g id="i-bean"><ellipse cx="17" cy="23" rx="15" ry="21" fill="url(#bg)"/><path d="M19 3 C8 14 26 30 15 43" fill="none" stroke="#2a160b" stroke-width="2.6" stroke-linecap="round"/></g>' +
+      '</defs></svg>';
+    let html = defs, n = 24;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + Math.random() * .5, rad = 40 + Math.random() * 95;
+      const vars = [
+        "--sx:" + Math.round((Math.random() - .5) * 90) + "vw",
+        "--tx:" + Math.round(Math.cos(a) * rad * 1.25) + "px",
+        "--ty:" + Math.round(Math.sin(a) * rad * .8) + "px",
+        "--r0:" + Math.round(Math.random() * 720 - 360) + "deg",
+        "--r:" + Math.round(Math.random() * 360) + "deg",
+        "--s:" + (.7 + Math.random() * .6).toFixed(2),
+        "--d:" + (Math.random() * .55).toFixed(2) + "s",
+        "--m:" + (Math.random() * .25).toFixed(2) + "s",
+      ].join(";");
+      html += '<div class="intro-bean" style="' + vars + '">' + bean + "</div>";
+    }
+    const el = document.createElement("div");
+    el.id = "intro";
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML = '<div class="center">' + html +
+      '<i class="intro-steam"></i><i class="intro-steam"></i><i class="intro-steam"></i>' +
+      '<div class="intro-cup"><div class="intro-coffee"></div></div><div class="intro-flood"></div></div>' +
+      '<div class="intro-title">Astana Coffee <span>Express</span><small>кофе за 45 секунд</small></div>';
+    document.body.appendChild(el);
+    document.documentElement.classList.add("intro-lock");
+
+    let finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      el.classList.add("done");
+      document.documentElement.classList.remove("intro-lock");
+      setTimeout(function () { el.remove(); }, 600);
+    }
+    el.addEventListener("click", finish);
+    setTimeout(finish, 4150);
+  })();
 </script>
 </body>
 </html>
