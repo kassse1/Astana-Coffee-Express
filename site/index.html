@@ -9,7 +9,8 @@
 <meta property="og:title" content="Astana Coffee Express — кофе за 45 секунд">
 <meta property="og:description" content="Кофе-аппараты в Астане. Kaspi QR, 600 ₸ за чашку, каждая 6-я бесплатно.">
 <meta name="theme-color" content="#e6eee7">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2323473a'/><text x='50' y='66' font-size='40' font-weight='800' font-family='Arial' fill='white' text-anchor='middle'>ACE</text></svg>">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
@@ -39,7 +40,7 @@
   .topbar { position: sticky; top: 0; z-index: 20; background: rgba(247,245,240,.92); backdrop-filter: blur(8px); border-bottom: var(--line); }
   nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 60px; }
   .logo { display: flex; align-items: center; gap: 10px; font-size: .95rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
-  .logo b { background: var(--green); color: #fff; border-radius: 7px; padding: 6px 8px; font-weight: 800; }
+  .logo img { border-radius: 9px; display: block; }
   nav ul { display: flex; gap: 22px; list-style: none; padding: 0; font-size: .92rem; color: #45504a; }
   nav ul a { text-decoration: none; }
   nav ul a:hover { color: var(--green); }
@@ -113,6 +114,13 @@
   .places p { font-size: .94rem; color: #4a554f; margin-top: 6px; }
   .partner { margin-top: 24px; background: var(--butter); border-radius: var(--r); padding: 26px; display: flex; justify-content: space-between; align-items: center; gap: 22px; flex-wrap: wrap; }
   .partner p { max-width: 58ch; margin-top: 6px; }
+
+  /* акция */
+  #promo { padding: 56px 0; }
+  /* баннер показываем без светлых полей исходной картинки */
+  .promo-box { display: block; max-width: 920px; margin: 0 auto; aspect-ratio: 1120 / 550; overflow: hidden; border-radius: 22px; transition: transform .2s; }
+  .promo-box:hover { transform: translateY(-3px); }
+  .promo-img { display: block; width: 107.143%; max-width: none; height: auto; margin: -3.571% 0 0 -3.571%; }
 
   /* бот */
   #bot { background: var(--green); color: #fff; border-bottom: 0; }
@@ -257,7 +265,7 @@
 <div class="topbar">
   <div class="wrap">
     <nav>
-      <a class="logo" href="#"><b>ACE</b><span>Astana Coffee Express</span></a>
+      <a class="logo" href="#"><img src="icon.svg" alt="" width="36" height="36"><span>Astana Coffee Express</span></a>
       <ul>
         <li><a href="#about">О нас</a></li>
         <li><a href="#how">Как купить</a></li>
@@ -370,6 +378,12 @@
       </div>
       <a class="btn" href="mailto:wamaff@gmail.com?subject=%D0%A0%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BA%D0%BE%D1%84%D0%B5-%D0%B0%D0%BF%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D0%B0">Написать нам</a>
     </div>
+  </div>
+</section>
+
+<section id="promo">
+  <div class="wrap">
+    <a class="promo-box" data-bot href="#bot"><img class="promo-img" src="promo.svg" width="1200" height="630" loading="lazy" alt="Акция Astana Coffee Express: 5 кофе — 6-й в подарок. Отметки копятся в Telegram-боте."></a>
   </div>
 </section>
 
