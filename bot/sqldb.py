@@ -127,6 +127,12 @@ class SqlDB:
             conn.execute(insert(purchases).values(ts=_now(), user_id=user_id, drink=drink))
             return self._one(conn, users.c.id == user_id)
 
+    def purchases(self) -> list[tuple[str, int, str]]:
+        """Журнал покупок: (дата-время, id гостя, напиток)."""
+        with self.engine.connect() as conn:
+            q = select(purchases.c.ts, purchases.c.user_id, purchases.c.drink).order_by(purchases.c.id)
+            return [tuple(r) for r in conn.execute(q)]
+
     def user_stats(self, user_id: int) -> list[tuple[str, int]]:
         with self.engine.connect() as conn:
             return self._counts(conn).get(user_id, Counter()).most_common()

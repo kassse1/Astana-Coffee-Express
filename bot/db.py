@@ -200,6 +200,12 @@ class ExcelDB:
         for drink, n in self._counts().most_common():
             ws.append([drink, n])
 
+    def purchases(self) -> list[tuple[str, int, str]]:
+        """Журнал покупок: (дата-время, id гостя, напиток)."""
+        with self._lock:
+            return [(str(ts), int(uid), drink) for ts, uid, _, drink in
+                    self.wb[S_LOG].iter_rows(min_row=2, max_col=4, values_only=True) if drink]
+
     def user_stats(self, user_id: int) -> list[tuple[str, int]]:
         with self._lock:
             return self._counts(user_id).most_common()
