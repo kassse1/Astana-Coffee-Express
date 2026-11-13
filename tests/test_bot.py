@@ -140,6 +140,46 @@ def texts(calls):
     return " | ".join(str(getattr(c, "text", None) or getattr(c, "caption", "")) for c in calls)
 
 
+def test_site_api(tmp_path):
+    """Сайт: гость регистрируется, получает карту со штрихкодом, входит заново и видит свежие данные."""
+    from aiohttp import web
+    from aiohttp.test_utils import TestClient, TestServer
+    from bot.webapi import setup_api
+
+    async def run():
+        cfg = Config(token="1:x", free_every=3, site_origin="https://site.example")
+        db = SqlDB(f"sqlite:///{tmp_path / 'api.db'}")
+        app = web.Application()
+        setup_api(app, db, cfg)
+        async with TestClient(TestServer(app)) as c:
+            r = await c.options("/api/register", headers={"Origin": "https://site.example"})
+            assert r.status == 204 and r.headers["Access-Control-Allow-Origin"] == "https://site.example"
+            assert (await c.post("/api/register", data="oops")).status == 400
+            assert (await c.post("/api/register", json={"login": "x", "password": "pass"})).status == 400
+            r = await c.post("/api/register", json={"login": "Aida", "password": "pass1"})
+            data = await r.json()
+            assert r.status == 200 and data["card"]["card"] == "ACE000001" and data["card"]["in_telegram"] is False
+            assert data["card"]["barcode"].startswith("data:image/png;base64,") and data["card"]["done"] == 0
+            token = data["token"]
+            assert (await c.post("/api/register", json={"login": "aida", "password": "zzzz"})).status == 400
+            assert (await c.post("/api/login", json={"login": "aida", "password": "wrong"})).status == 400
+            assert (await c.get("/api/me")).status == 401
+            assert (await c.get("/api/me", headers={"Authorization": "Bearer 1.deadbeef"})).status == 401
+            db.add_coffee(1, "Латте"); db.add_coffee(1, "Латте")
+            r = await c.get("/api/me", headers={"Authorization": f"Bearer {token}"})
+            card = (await r.json())["card"]
+            assert card["total"] == 2 and card["favorite"] == "Латте" and card["next_free"] is True
+            r = await c.post("/api/login", json={"login": "AIDA", "password": "pass1"})
+            assert r.status == 200 and (await r.json())["token"] == token
+            # аккаунт с сайта подходит и для входа в Telegram-боте
+            assert db.login("aida", "pass1", 77).tg_id == 77
+            for _ in range(25):
+                r = await c.post("/api/login", json={"login": "aida", "password": "wrong"})
+            assert r.status == 429
+
+    asyncio.run(run())
+
+
 def test_normalize_url():
     assert normalize_url("postgres://u:p@h/db?sslmode=require") == "postgresql+psycopg://u:p@h/db?sslmode=require"
     assert normalize_url("postgresql://u@h/db") == "postgresql+psycopg://u@h/db"

@@ -20,6 +20,7 @@ from .barcodes import make_barcode_png, normalize_code, read_barcode
 from .config import Config, load_config
 from .db import ASTANA_TZ, DBError, User, open_db
 from .demo import PREFIX as DEMO_PREFIX, build_demo
+from .webapi import setup_api
 
 log = logging.getLogger("coffee-bot")
 
@@ -399,6 +400,7 @@ async def run_webhook(bot: Bot, dp: Dispatcher, cfg: Config) -> None:
     app = web.Application()
     app.router.add_get("/", lambda _: web.Response(text="Astana Coffee Express bot is running"))
     SimpleRequestHandler(dp, bot, secret_token=secret).register(app, path="/webhook")
+    setup_api(app, db, cfg)
     setup_application(app, dp, bot=bot)
     runner = web.AppRunner(app)
     await runner.setup()
