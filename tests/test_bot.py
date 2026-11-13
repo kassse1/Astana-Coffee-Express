@@ -11,6 +11,7 @@ from openpyxl import load_workbook
 
 from bot.barcodes import make_barcode_png, normalize_code, read_barcode
 from bot.config import Config
+from bot.demo import PREFIX, build_demo
 from bot.db import DBError, ExcelDB, open_db
 from bot.sqldb import SqlDB, normalize_url
 from bot.main import B_KPI
@@ -54,6 +55,17 @@ def test_db_flow(backend):
     assert [(u.login, u.total, u.favorite) for u in db.all_users()] == [("aida", 3, "Латте"), ("bek", 1, "Раф")]
     assert db.drink_stats() == [("Латте", 2), ("Раф", 2)]
     assert db.by_card("ACE000099") is None
+    # демо-гости добавляются, не трогая настоящих, и убираются без следа
+    demo = build_demo(["Латте", "Раф", "Мокко"])
+    assert db.seed_demo(demo) == 12 and db.seed_demo(demo) == 0
+    assert len(db.all_users()) == 14 and len(db.purchases()) == 4 + sum(len(r) for _, r in demo)
+    top = max(db.all_users(), key=lambda u: u.total)
+    assert top.login == PREFIX + "aigerim" and top.total == 14 and top.favorite in ("Латте", "Раф", "Мокко")
+    assert load_workbook(io.BytesIO(db.export_xlsx()))["Пользователи"].max_row == 15
+    assert db.clear_demo(PREFIX) == 12 and db.clear_demo(PREFIX) == 0
+    assert [u.login for u in db.all_users()] == ["aida", "bek"]
+    assert db.drink_stats() == [("Латте", 2), ("Раф", 2)]
+    assert db.register("cara", "pass", 30).login == "cara"
     assert [(u, d) for _, u, d in db.purchases()] == [(1, "Латте"), (1, "Раф"), (1, "Латте"), (2, "Раф")]
     wb = load_workbook(io.BytesIO(db.export_xlsx()))
     assert wb["Пользователи"]["H2"].value == "Латте" and wb["Покупки"].max_row == 5
@@ -175,6 +187,12 @@ def test_full_scenario(tmp_path, sql):
         assert "Чашек сегодня: <b>3</b>" in t and "выдано: <b>1</b>" in t
         assert "с 2+ покупками: <b>1</b>" in t and "<b>100%</b>" in t and "Латте (2)" in t
         assert "меню" in texts(await h.say(GUEST, B_KPI))
+        assert "меню" in texts(await h.say(GUEST, "/demo"))
+        assert "демо-гостей: <b>12</b>" in texts(await h.say(ADMIN, "/demo"))
+        assert "Гостей: <b>13</b>" in texts(await h.say(ADMIN, B_USERS))
+        assert "Гостей: <b>13</b>" in texts(await h.say(ADMIN, B_KPI))
+        assert "удалено: <b>12</b>" in texts(await h.say(ADMIN, "/demo_clear"))
+        assert "Гостей: <b>1</b>" in texts(await h.say(ADMIN, B_USERS))
         assert "Каждая 3-я чашка" in texts(await h.say(GUEST, "/help"))
 
         t = texts(await h.say(GUEST, B_STATS))

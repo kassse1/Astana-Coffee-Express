@@ -9,8 +9,10 @@ from collections import Counter, defaultdict
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from sqlalchemy import (BigInteger, Column, ForeignKey, Integer, MetaData, String, Table, Text,
-                        create_engine, func, insert, select, update)
+                        create_engine, delete, func, insert, select, update)
 from sqlalchemy.exc import IntegrityError
+
+import secrets
 
 from .db import (HEADERS, S_DRINKS, S_LOG, S_PROMO, S_USERS, WIDTHS, DBError, User, _check, _hash,
                  _now, _safe, validate_credentials)
@@ -149,6 +151,33 @@ class SqlDB:
     def log_promo(self, text: str, recipients: int) -> None:
         with self.engine.begin() as conn:
             conn.execute(insert(promos).values(ts=_now(), text=text, recipients=recipients))
+
+    # ---------- демо-гости ----------
+    def seed_demo(self, guests) -> int:
+        """guests: [(логин, [(дата-время, напиток), ...]), ...]. Возвращает число созданных гостей."""
+        created = 0
+        with self._lock, self.engine.begin() as conn:
+            taken = {r[0] for r in conn.execute(select(users.c.login_lower))}
+            for login, rows in guests:
+                if login.lower() in taken:
+                    continue
+                first = min((ts for ts, _ in rows), default=_now())
+                new_id = conn.execute(insert(users).values(
+                    login=login, login_lower=login.lower(), password_hash=_hash(secrets.token_hex(16)),
+                    tg_id=None, registered=first)).inserted_primary_key[0]
+                if rows:
+                    conn.execute(insert(purchases), [{"ts": ts, "user_id": new_id, "drink": d} for ts, d in rows])
+                created += 1
+        return created
+
+    def clear_demo(self, prefix: str) -> int:
+        """Удаляет гостей с логином на prefix и их покупки. Возвращает число удалённых гостей."""
+        with self._lock, self.engine.begin() as conn:
+            ids = [r[0] for r in conn.execute(select(users.c.id).where(users.c.login_lower.startswith(prefix.lower())))]
+            if ids:
+                conn.execute(delete(purchases).where(purchases.c.user_id.in_(ids)))
+                conn.execute(delete(users).where(users.c.id.in_(ids)))
+            return len(ids)
 
     # ---------- выгрузка в Excel ----------
     def export_xlsx(self) -> bytes:
