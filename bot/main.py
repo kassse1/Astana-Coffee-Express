@@ -19,6 +19,7 @@ from aiogram.types import (BotCommand, BufferedInputFile, CallbackQuery, InlineK
 from .barcodes import make_barcode_png, normalize_code, read_barcode
 from .config import Config, load_config
 from .db import ASTANA_TZ, DBError, User, open_db
+from .demo import PREFIX as DEMO_PREFIX, build_demo
 
 log = logging.getLogger("coffee-bot")
 
@@ -116,7 +117,26 @@ def build_router(db, cfg: Config) -> Router:
         if cfg.free_every >= 2:
             text += f"\n🎁 Каждая {cfg.free_every}-я чашка — бесплатно.\n"
         text += "\nКоманды: /start — меню, /cancel — отменить действие, /id — ваш Telegram ID."
+        if is_admin(message.from_user.id):
+            text += "\n\n🛠 Админу: /demo — добавить демо-гостей для показа, /demo_clear — убрать их."
         await message.answer(text, reply_markup=menu(message.from_user.id))
+
+    # ---------- админ: демо-гости ----------
+    @r.message(Command("demo"), F.from_user.id.in_(cfg.admin_ids))
+    async def demo(message: Message):
+        removed = await asyncio.to_thread(db.clear_demo, DEMO_PREFIX)
+        created = await asyncio.to_thread(db.seed_demo, build_demo(cfg.drinks))
+        await message.answer(
+            f"🧪 Добавлено демо-гостей: <b>{created}</b>" + (f" (старых удалено: {removed})" if removed else "")
+            + ".\nПосмотрите «Гости», «Статистика» и «Excel-база».\n"
+              f"Их логины начинаются с <code>{DEMO_PREFIX}</code>. Убрать: /demo_clear",
+            reply_markup=menu(message.from_user.id))
+
+    @r.message(Command("demo_clear"), F.from_user.id.in_(cfg.admin_ids))
+    async def demo_clear(message: Message):
+        removed = await asyncio.to_thread(db.clear_demo, DEMO_PREFIX)
+        await message.answer(f"Демо-гостей удалено: <b>{removed}</b>. Настоящие гости не затронуты.",
+                             reply_markup=menu(message.from_user.id))
 
     @r.message(Command("id"))
     async def my_id(message: Message):

@@ -220,6 +220,41 @@ class ExcelDB:
             self.wb[S_PROMO].append([_now(), _safe(text), recipients])
             self._save()
 
+    # ---------- демо-гости ----------
+    def seed_demo(self, guests) -> int:
+        """guests: [(логин, [(дата-время, напиток), ...]), ...]. Возвращает число созданных гостей."""
+        with self._lock:
+            new_id = max((int(r[0].value) for r in self._user_rows()), default=0)
+            log_rows = []
+            for login, rows in guests:
+                if self._find(1, login):
+                    continue
+                new_id += 1
+                counts = Counter(drink for _, drink in rows)
+                first = min((ts for ts, _ in rows), default=_now())
+                self.wb[S_USERS].append([new_id, login, _hash(secrets.token_hex(16)), None, f"ACE{new_id:06d}",
+                                         first, len(rows), counts.most_common(1)[0][0] if rows else None])
+                log_rows += [(ts, new_id, login, drink) for ts, drink in rows]
+            for row in sorted(log_rows):
+                self.wb[S_LOG].append(list(row))
+            self._rebuild_drinks()
+            self._save()
+            return len({r[1] for r in log_rows})
+
+    def clear_demo(self, prefix: str) -> int:
+        """Удаляет гостей с логином на prefix и их покупки. Возвращает число удалённых гостей."""
+        with self._lock:
+            ids = {int(r[0].value) for r in self._user_rows() if str(r[1].value).startswith(prefix)}
+            for name, col in ((S_USERS, 0), (S_LOG, 1)):
+                ws = self.wb[name]
+                for idx in range(ws.max_row, 1, -1):
+                    value = ws.cell(row=idx, column=col + 1).value
+                    if value is not None and int(value) in ids:
+                        ws.delete_rows(idx)
+            self._rebuild_drinks()
+            self._save()
+            return len(ids)
+
     # ---------- выгрузка ----------
     def export_xlsx(self) -> bytes:
         with self._lock, open(self.path, "rb") as f:
