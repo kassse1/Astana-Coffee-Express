@@ -1,5 +1,6 @@
 """Telegram-бот сети кофе-аппаратов Astana Coffee Express: карта гостя, отметка кофе, админка, рассылки."""
 import asyncio
+import hashlib
 import html
 import io
 import logging
@@ -10,12 +11,12 @@ from aiogram.exceptions import TelegramAPIError, TelegramRetryAfter
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import (BufferedInputFile, CallbackQuery, FSInputFile, InlineKeyboardButton,
+from aiogram.types import (BufferedInputFile, CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, KeyboardButton, Message, ReplyKeyboardMarkup)
 
 from .barcodes import make_barcode_png, normalize_code, read_barcode
 from .config import Config, load_config
-from .db import DBError, ExcelDB, User
+from .db import DBError, User, open_db
 
 log = logging.getLogger("coffee-bot")
 
@@ -39,7 +40,7 @@ class Admin(StatesGroup):
     promo_confirm = State()
 
 
-def build_router(db: ExcelDB, cfg: Config) -> Router:
+def build_router(db, cfg: Config) -> Router:
     r = Router()
 
     typed = F.text & ~F.text.in_(ALL_BUTTONS)  # обычный текст, а не кнопка меню
@@ -226,7 +227,8 @@ def build_router(db: ExcelDB, cfg: Config) -> Router:
 
     @r.message(F.text == B_FILE, F.from_user.id.in_(cfg.admin_ids))
     async def send_file(message: Message):
-        await message.answer_document(FSInputFile(cfg.db_path, filename="coffee.xlsx"),
+        data = await asyncio.to_thread(db.export_xlsx)
+        await message.answer_document(BufferedInputFile(data, filename="coffee.xlsx"),
                                       caption="Актуальная база")
 
     # ---------- админ: рассылка ----------
@@ -286,12 +288,34 @@ async def main() -> None:
     cfg = load_config()
     if not cfg.admin_ids:
         log.warning("ADMIN_IDS пуст — админ-меню никому не доступно. Узнать ID: команда /id в боте.")
-    db = ExcelDB(cfg.db_path)
+    db = open_db(cfg)
     bot = Bot(cfg.token, default=DefaultBotProperties(parse_mode="HTML"))
     dp = Dispatcher()
     dp.include_router(build_router(db, cfg))
-    log.info("Бот запущен, база: %s", cfg.db_path)
-    await dp.start_polling(bot)
+    log.info("Бот запущен, база: %s", "облачная (DATABASE_URL)" if cfg.database_url else cfg.db_path)
+    if cfg.webhook_url:
+        await run_webhook(bot, dp, cfg)
+    else:
+        await bot.delete_webhook()
+        await dp.start_polling(bot)
+
+
+async def run_webhook(bot: Bot, dp: Dispatcher, cfg: Config) -> None:
+    """Режим для бесплатного Web Service: Telegram сам стучится к нам и будит службу."""
+    from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+    from aiohttp import web
+
+    secret = hashlib.sha256(cfg.token.encode()).hexdigest()[:32]
+    app = web.Application()
+    app.router.add_get("/", lambda _: web.Response(text="Astana Coffee Express bot is running"))
+    SimpleRequestHandler(dp, bot, secret_token=secret).register(app, path="/webhook")
+    setup_application(app, dp, bot=bot)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    await web.TCPSite(runner, "0.0.0.0", cfg.port).start()
+    await bot.set_webhook(f"{cfg.webhook_url}/webhook", secret_token=secret)
+    log.info("Вебхук: %s/webhook, порт %s", cfg.webhook_url, cfg.port)
+    await asyncio.Event().wait()
 
 
 if __name__ == "__main__":

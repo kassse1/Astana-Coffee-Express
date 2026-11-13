@@ -13,7 +13,7 @@ import secrets
 import threading
 from collections import Counter
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font
@@ -45,8 +45,20 @@ class User:
     favorite: str | None
 
 
+ASTANA_TZ = timezone(timedelta(hours=5))  # сервер живёт в UTC, а время пишем астанинское
+
+
 def _now() -> str:
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(ASTANA_TZ).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def validate_credentials(login: str, password: str) -> str:
+    login = login.strip()
+    if not (3 <= len(login) <= 20) or not login.replace("_", "").isalnum():
+        raise DBError("Логин: 3–20 символов, только буквы, цифры и _.")
+    if len(password) < 4:
+        raise DBError("Пароль слишком короткий (минимум 4 символа).")
+    return login
 
 
 def _hash(password: str, salt: str | None = None) -> str:
@@ -120,11 +132,7 @@ class ExcelDB:
 
     # ---------- пользователи ----------
     def register(self, login: str, password: str, tg_id: int) -> User:
-        login = login.strip()
-        if not (3 <= len(login) <= 20) or not login.replace("_", "").isalnum():
-            raise DBError("Логин: 3–20 символов, только буквы, цифры и _.")
-        if len(password) < 4:
-            raise DBError("Пароль слишком короткий (минимум 4 символа).")
+        login = validate_credentials(login, password)
         with self._lock:
             if self._find(1, login):
                 raise DBError("Такой логин уже занят.")
@@ -205,3 +213,16 @@ class ExcelDB:
         with self._lock:
             self.wb[S_PROMO].append([_now(), _safe(text), recipients])
             self._save()
+
+    # ---------- выгрузка ----------
+    def export_xlsx(self) -> bytes:
+        with self._lock, open(self.path, "rb") as f:
+            return f.read()
+
+
+def open_db(cfg):
+    """DATABASE_URL задан — облачная база (Postgres), иначе локальный Excel-файл."""
+    if cfg.database_url:
+        from .sqldb import SqlDB
+        return SqlDB(cfg.database_url)
+    return ExcelDB(cfg.db_path)
