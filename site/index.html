@@ -139,6 +139,33 @@
   .card-box li { padding: 10px 0; border-top: 1px solid rgba(255,255,255,.14); }
   .card-box li::before { content: "→ "; color: var(--y); font-family: "IBM Plex Mono", monospace; }
 
+  /* живая карта гостя */
+  .tabs { display: flex; gap: 6px; background: rgba(0,0,0,.18); border-radius: 10px; padding: 4px; margin-bottom: 18px; }
+  .tabs button { flex: 1; border: 0; background: transparent; color: #cfdcd2; font: 600 .9rem Onest, sans-serif; padding: 9px 8px; border-radius: 7px; cursor: pointer; }
+  .tabs button.on { background: var(--y); color: var(--ink); }
+  #card-form label { display: block; font-size: .82rem; color: #cfdcd2; margin-bottom: 12px; }
+  #card-form input { display: block; width: 100%; margin-top: 5px; padding: 12px 13px; border-radius: 9px; border: 1px solid rgba(255,255,255,.25); background: rgba(0,0,0,.2); color: #fff; font: 400 1rem Onest, sans-serif; }
+  #card-form input:focus { outline: 2px solid var(--y); outline-offset: 1px; }
+  #card-form input::placeholder { color: rgba(255,255,255,.4); }
+  #card-form .btn { width: 100%; margin-top: 6px; text-align: center; cursor: pointer; }
+  #card-form .btn[disabled] { opacity: .6; cursor: wait; }
+  .form-note { font-size: .84rem; color: #cfdcd2; margin-top: 12px; min-height: 2.6em; }
+  .form-note.err { color: #ffd0c2; }
+  .live-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .live-head h3 { margin: 0; }
+  .live-head b { font: 600 .95rem "IBM Plex Mono", monospace; color: var(--y); overflow-wrap: anywhere; }
+  .live-code { background: #fff; border-radius: 10px; padding: 14px 12px 8px; text-align: center; margin-bottom: 18px; }
+  .live-code img { display: block; width: 100%; height: auto; max-width: 300px; margin: 0 auto; }
+  .live-code span { font: 500 .8rem "IBM Plex Mono", monospace; color: var(--ink); letter-spacing: .2em; }
+  .live-progress { font-size: .92rem; color: #cfdcd2; margin-top: 12px; min-height: 1.5em; }
+  .live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .live-stats div { background: rgba(0,0,0,.18); border-radius: 10px; padding: 12px; }
+  .live-stats b { display: block; font: 700 1.3rem Rubik, sans-serif; color: #fff; overflow-wrap: anywhere; }
+  .live-stats span { font-size: .78rem; color: #cfdcd2; }
+  .live-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .live-actions button { flex: 1; background: transparent; border: 1px solid rgba(255,255,255,.3); color: #fff; font: 500 .88rem Onest, sans-serif; padding: 9px; border-radius: 9px; cursor: pointer; }
+  .live-actions button:hover { background: rgba(255,255,255,.1); }
+
   /* вопросы */
   .faq { border-top: var(--line); }
   .faq details { border-bottom: var(--line); }
@@ -396,16 +423,48 @@
       <a class="btn" data-bot href="#">Открыть бота</a>
     </div>
     <!-- Число чашек должно совпадать с FREE_EVERY в настройках бота -->
-    <div class="card-box">
-      <h3>Карта гостя</h3>
-      <div class="stamps" aria-hidden="true">
-        <span class="on">ACE</span><span class="on">ACE</span><span class="on">ACE</span><span>4</span><span>5</span><span class="free">0 ₸</span>
+    <div class="card-box" id="card-widget">
+      <!-- до входа: пример карты; если задан SITE.api — ещё и форма -->
+      <div id="card-demo">
+        <h3>Карта гостя</h3>
+        <div class="stamps" aria-hidden="true">
+          <span class="on">ACE</span><span class="on">ACE</span><span class="on">ACE</span><span>4</span><span>5</span><span class="free">0 ₸</span>
+        </div>
+        <ul>
+          <li>Сколько чашек выпито и какой напиток любимый</li>
+          <li>Акции и новые точки приходят сообщением</li>
+          <li>Приложение ставить не нужно</li>
+        </ul>
       </div>
-      <ul>
-        <li>Сколько чашек выпито и какой напиток любимый</li>
-        <li>Акции и новые точки приходят сообщением</li>
-        <li>Приложение ставить не нужно</li>
-      </ul>
+
+      <form id="card-form" hidden>
+        <div class="tabs" role="tablist">
+          <button type="button" class="on" data-mode="register">Создать карту</button>
+          <button type="button" data-mode="login">У меня есть карта</button>
+        </div>
+        <label>Логин<input name="login" autocomplete="username" required minlength="3" maxlength="20" placeholder="например, aida"></label>
+        <label>Пароль<input name="password" type="password" autocomplete="new-password" required minlength="4" placeholder="минимум 4 символа"></label>
+        <button class="btn" type="submit">Создать карту</button>
+        <p class="form-note" id="card-note">Тот же логин и пароль подойдут в Telegram-боте.</p>
+      </form>
+
+      <div id="card-live" hidden>
+        <div class="live-head"><h3>Карта гостя</h3><b id="live-login"></b></div>
+        <div class="live-code">
+          <img id="live-barcode" alt="Штрихкод вашей карты" width="300" height="120">
+          <span id="live-card"></span>
+        </div>
+        <div class="stamps" id="live-stamps" aria-hidden="true"></div>
+        <p class="live-progress" id="live-progress"></p>
+        <div class="live-stats">
+          <div><b id="live-total">0</b><span>чашек выпито</span></div>
+          <div><b id="live-fav">—</b><span>любимый напиток</span></div>
+        </div>
+        <div class="live-actions">
+          <button type="button" id="live-refresh">Обновить</button>
+          <button type="button" id="live-logout">Выйти</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -456,12 +515,120 @@
   // Ссылка на Telegram-бота
   const SITE = {
     bot: "https://t.me/astanacoffeeexpress_bot",
+    api: "", // адрес службы бота на Render, например "https://astana-coffee-bot.onrender.com"
   };
   document.querySelectorAll("[data-bot]").forEach(a => {
     if (SITE.bot) { a.href = SITE.bot; a.target = "_blank"; a.rel = "noopener"; }
     else { a.href = "#bot"; }
   });
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ---------- Карта гостя на сайте ----------
+  (function () {
+    const $ = id => document.getElementById(id);
+    const demo = $("card-demo"), form = $("card-form"), live = $("card-live"), note = $("card-note");
+    if (!SITE.api) return; // без адреса API остаётся пример карты
+    demo.hidden = true; form.hidden = false;
+    const KEY = "ace-site-token";
+    const FREE = 6; // должно совпадать с FREE_EVERY в настройках бота
+    let mode = "register", token = null;
+
+    function setNote(text, isError) { note.textContent = text; note.classList.toggle("err", !!isError); }
+
+    function show(card) {
+      $("live-login").textContent = card.login;
+      $("live-barcode").src = card.barcode;
+      $("live-card").textContent = card.card;
+      $("live-total").textContent = card.total;
+      $("live-fav").textContent = card.favorite || "—";
+      const n = card.free_every || 0, stamps = $("live-stamps");
+      stamps.hidden = n < 2;
+      if (n >= 2) {
+        let html = "";
+        for (let i = 1; i < n; i++) html += '<span' + (i <= card.done ? ' class="on">ACE' : ">" + i) + "</span>";
+        stamps.style.gridTemplateColumns = "repeat(" + n + ", 1fr)";
+        stamps.innerHTML = html + '<span class="free">0 ₸</span>';
+        $("live-progress").textContent = card.next_free
+          ? "Следующая чашка — бесплатно!"
+          : "До бесплатной чашки осталось: " + (n - 1 - card.done);
+      } else {
+        $("live-progress").textContent = "";
+      }
+      form.hidden = true; live.hidden = false;
+    }
+
+    function showForm(text) {
+      live.hidden = true; form.hidden = false;
+      setNote(text || "Тот же логин и пароль подойдут в Telegram-боте.");
+    }
+
+    async function call(path, options) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 90000);
+      try {
+        const res = await fetch(SITE.api + path, { ...options, signal: ctrl.signal });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw Object.assign(new Error(data.error || "Что-то пошло не так. Попробуйте ещё раз."), { status: res.status });
+        return data;
+      } catch (e) {
+        if (e.status) throw e;
+        throw new Error("Не получилось связаться с сервисом. Попробуйте ещё раз через минуту.");
+      } finally { clearTimeout(timer); }
+    }
+
+    form.querySelectorAll(".tabs button").forEach(btn => btn.addEventListener("click", () => {
+      mode = btn.dataset.mode;
+      form.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b === btn));
+      form.querySelector(".btn").textContent = mode === "register" ? "Создать карту" : "Войти";
+      form.password.autocomplete = mode === "register" ? "new-password" : "current-password";
+      setNote(mode === "register" ? "Тот же логин и пароль подойдут в Telegram-боте." : "Введите логин и пароль от карты.");
+    }));
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const btn = form.querySelector(".btn");
+      btn.disabled = true;
+      setNote("Секунду… Если сервис спал, первый запрос занимает до минуты.");
+      try {
+        const data = await call("/api/" + mode, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ login: form.login.value, password: form.password.value }),
+        });
+        token = data.token;
+        try { localStorage.setItem(KEY, token); } catch (e) {}
+        form.password.value = "";
+        show(data.card);
+      } catch (err) { setNote(err.message, true); }
+      finally { btn.disabled = false; }
+    });
+
+    $("live-refresh").addEventListener("click", async () => {
+      $("live-refresh").disabled = true;
+      $("live-progress").textContent = "Обновляем…";
+      try {
+        const data = await call("/api/me", { headers: { Authorization: "Bearer " + token } });
+        show(data.card);
+      } catch (err) {
+        if (err.status === 401) { try { localStorage.removeItem(KEY); } catch (e) {} token = null; showForm("Войдите заново."); }
+        else $("live-progress").textContent = err.message;
+      } finally { $("live-refresh").disabled = false; }
+    });
+
+    $("live-logout").addEventListener("click", () => {
+      token = null;
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      showForm();
+    });
+
+    // вернувшийся гость: проверяем сохранённый вход и показываем свежую карту
+    try { token = localStorage.getItem(KEY); } catch (e) {}
+    if (token) {
+      call("/api/me", { headers: { Authorization: "Bearer " + token } })
+        .then(data => show(data.card))
+        .catch(err => { if (err.status === 401) { try { localStorage.removeItem(KEY); } catch (e) {} token = null; } });
+    }
+  })();
+</script>
 </script>
 </body>
 </html>

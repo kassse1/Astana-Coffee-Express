@@ -131,12 +131,13 @@ class ExcelDB:
                 row[3].value = None
 
     # ---------- пользователи ----------
-    def register(self, login: str, password: str, tg_id: int) -> User:
+    def register(self, login: str, password: str, tg_id: int | None) -> User:
         login = validate_credentials(login, password)
         with self._lock:
             if self._find(1, login):
                 raise DBError("Такой логин уже занят.")
-            self._unlink_tg(tg_id)
+            if tg_id is not None:
+                self._unlink_tg(tg_id)
             new_id = max((int(r[0].value) for r in self._user_rows()), default=0) + 1
             self.wb[S_USERS].append(
                 [new_id, login, _hash(password), tg_id, f"ACE{new_id:06d}", _now(), 0, None])
@@ -152,6 +153,19 @@ class ExcelDB:
             row[3].value = tg_id
             self._save()
             return self._to_user(row)
+
+    def verify(self, login: str, password: str) -> User:
+        """Проверка логина и пароля без привязки к Telegram (для входа с сайта)."""
+        with self._lock:
+            row = self._find(1, login.strip())
+            if not row or not _check(password, row[2].value):
+                raise DBError("Неверный логин или пароль.")
+            return self._to_user(row)
+
+    def by_id(self, user_id: int) -> User | None:
+        with self._lock:
+            row = self._find(0, user_id)
+            return self._to_user(row) if row else None
 
     def logout(self, tg_id: int) -> None:
         with self._lock:

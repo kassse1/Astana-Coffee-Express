@@ -80,11 +80,12 @@ class SqlDB:
         return self._to_user(row, self._counts(conn).get(row.id)) if row else None
 
     # ---------- пользователи ----------
-    def register(self, login: str, password: str, tg_id: int) -> User:
+    def register(self, login: str, password: str, tg_id: int | None) -> User:
         login = validate_credentials(login, password)
         with self._lock, self.engine.begin() as conn:
             try:
-                conn.execute(update(users).where(users.c.tg_id == tg_id).values(tg_id=None))
+                if tg_id is not None:
+                    conn.execute(update(users).where(users.c.tg_id == tg_id).values(tg_id=None))
                 new_id = conn.execute(insert(users).values(
                     login=login, login_lower=login.lower(), password_hash=_hash(password),
                     tg_id=tg_id, registered=_now())).inserted_primary_key[0]
@@ -100,6 +101,18 @@ class SqlDB:
             conn.execute(update(users).where(users.c.tg_id == tg_id).values(tg_id=None))
             conn.execute(update(users).where(users.c.id == row.id).values(tg_id=tg_id))
             return self._one(conn, users.c.id == row.id)
+
+    def verify(self, login: str, password: str) -> User:
+        """Проверка логина и пароля без привязки к Telegram (для входа с сайта)."""
+        with self.engine.connect() as conn:
+            row = conn.execute(select(users).where(users.c.login_lower == login.strip().lower())).first()
+            if not row or not _check(password, row.password_hash):
+                raise DBError("Неверный логин или пароль.")
+            return self._one(conn, users.c.id == row.id)
+
+    def by_id(self, user_id: int) -> User | None:
+        with self.engine.connect() as conn:
+            return self._one(conn, users.c.id == user_id)
 
     def logout(self, tg_id: int) -> None:
         with self.engine.begin() as conn:
