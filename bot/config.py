@@ -11,6 +11,9 @@ class Config:
     token: str
     admin_ids: set[int] = field(default_factory=set)
     db_path: str = "data/coffee.xlsx"
+    database_url: str = ""
+    webhook_url: str = ""
+    port: int = 10000
     drinks: list[str] = field(default_factory=lambda: list(DEFAULT_DRINKS))
 
 
@@ -25,5 +28,9 @@ def load_config() -> Config:
         token=token,
         admin_ids=admins,
         db_path=os.getenv("DB_PATH", "data/coffee.xlsx"),
+        database_url=os.getenv("DATABASE_URL", "").strip(),
+        # Render сам задаёт RENDER_EXTERNAL_URL и PORT для Web Service
+        webhook_url=(os.getenv("WEBHOOK_URL") or os.getenv("RENDER_EXTERNAL_URL") or "").strip().rstrip("/"),
+        port=int(os.getenv("PORT", "10000")),
         drinks=drinks or list(DEFAULT_DRINKS),
     )

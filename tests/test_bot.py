@@ -11,7 +11,8 @@ from openpyxl import load_workbook
 
 from bot.barcodes import make_barcode_png, normalize_code, read_barcode
 from bot.config import Config
-from bot.db import DBError, ExcelDB
+from bot.db import DBError, ExcelDB, open_db
+from bot.sqldb import SqlDB, normalize_url
 from bot.main import (B_CANCEL, B_FILE, B_LOGIN, B_LOGOUT, B_MARK, B_PROMO, B_REG, B_STATS, B_USERS,
                       build_router)
 
@@ -19,9 +20,18 @@ ADMIN, GUEST = 1, 2
 
 
 # ---------- база ----------
-def test_db_flow(tmp_path):
+@pytest.fixture(params=["excel", "sql"])
+def backend(request, tmp_path):
+    """Фабрика: каждый вызов заново открывает ту же базу (как перезапуск бота)."""
     path = str(tmp_path / "d" / "coffee.xlsx")
-    db = ExcelDB(path)
+    if request.param == "excel":
+        return lambda: ExcelDB(path)
+    url = f"sqlite:///{tmp_path / 'coffee.db'}"
+    return lambda: SqlDB(url)
+
+
+def test_db_flow(backend):
+    db = backend()
     u = db.register("aida", "pass1", 10)
     assert u.card == "ACE000001" and u.total == 0
     with pytest.raises(DBError):
@@ -36,11 +46,15 @@ def test_db_flow(tmp_path):
     db.add_coffee(db.register("bek", "pass", 20).id, "Раф")
     db.log_promo("=1+1", 2)
 
-    db = ExcelDB(path)  # перечитываем с диска
+    db = backend()  # перечитываем с диска
     assert db.by_card("ace000001").login == "aida"
     assert db.login("aida", "pass1", 99).tg_id == 99 and db.by_tg(10) is None
     assert db.user_stats(1) == [("Латте", 2), ("Раф", 1)]
-    wb = load_workbook(path)
+    assert [(u.login, u.total, u.favorite) for u in db.all_users()] == [("aida", 3, "Латте"), ("bek", 1, "Раф")]
+    assert db.drink_stats() == [("Латте", 2), ("Раф", 2)]
+    assert db.by_card("ACE000099") is None
+    wb = load_workbook(io.BytesIO(db.export_xlsx()))
+    assert wb["Пользователи"]["H2"].value == "Латте" and wb["Покупки"].max_row == 5
     assert [r for r in wb["Напитки"].iter_rows(min_row=2, values_only=True)] == [("Латте", 2), ("Раф", 2)]
     assert "pass1" not in str(wb["Пользователи"]["C2"].value)
     assert wb["Акции"]["B2"].value == "'=1+1"
@@ -76,9 +90,10 @@ class FakeSession(BaseSession):
 
 
 class Harness:
-    def __init__(self, tmp_path):
-        self.cfg = Config(token="1:x", admin_ids={ADMIN}, db_path=str(tmp_path / "coffee.xlsx"))
-        self.db = ExcelDB(self.cfg.db_path)
+    def __init__(self, tmp_path, sql):
+        self.cfg = Config(token="1:x", admin_ids={ADMIN}, db_path=str(tmp_path / "coffee.xlsx"),
+                          database_url=f"sqlite:///{tmp_path / 'coffee.db'}" if sql else "")
+        self.db = open_db(self.cfg)
         self.session = FakeSession()
         self.bot = Bot("123456:TEST", session=self.session)
         self.dp = Dispatcher()
@@ -111,9 +126,16 @@ def texts(calls):
     return " | ".join(str(getattr(c, "text", None) or getattr(c, "caption", "")) for c in calls)
 
 
-def test_full_scenario(tmp_path):
+def test_normalize_url():
+    assert normalize_url("postgres://u:p@h/db?sslmode=require") == "postgresql+psycopg://u:p@h/db?sslmode=require"
+    assert normalize_url("postgresql://u@h/db") == "postgresql+psycopg://u@h/db"
+    assert normalize_url("sqlite:///x.db") == "sqlite:///x.db"
+
+
+@pytest.mark.parametrize("sql", [False, True])
+def test_full_scenario(tmp_path, sql):
     async def run():
-        h = Harness(tmp_path)
+        h = Harness(tmp_path, sql)
         assert "Astana Coffee Express" in texts(await h.say(GUEST, "/start"))
 
         # регистрация: пароль удаляется, приходит штрихкод
