@@ -8,6 +8,12 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Astana Coffee Express — кофе за 45 секунд">
 <meta property="og:description" content="Умные кофе-аппараты в Астане. Kaspi QR, 600 ₸ за чашку, каждая 6-я бесплатно.">
+<meta property="og:url" content="https://astana-coffee-express-site.onrender.com/">
+<meta property="og:image" content="https://astana-coffee-express-site.onrender.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://astana-coffee-express-site.onrender.com/">
 <meta name="theme-color" content="#f6efe4">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon.png">
@@ -418,7 +424,7 @@
       <!-- до входа: пример карты; если задан SITE.api — ещё и форма -->
       <div id="card-demo">
         <p class="card-cap">Так будет выглядеть ваша карта</p>
-        <div class="card-photo"><img data-card-photo src="cards/card-1.jpg" width="1200" height="675" alt=""><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div></div>
+        <div class="card-photo"><img data-card-photo src="cards/card-1.webp" width="960" height="540" alt="" loading="lazy" decoding="async"><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div></div>
         <div class="live-name" id="demo-name">aida</div>
         <div class="stamps" aria-hidden="true"><i class="on">ACE</i><i class="on">ACE</i><i class="on">ACE</i><i>4</i><i>5</i><i class="free">0 ₸</i></div>
         <p class="live-progress">До бесплатной чашки осталось: 2</p>
@@ -426,7 +432,7 @@
       </div>
 
       <div id="card-live" hidden>
-        <div class="card-photo"><img data-card-photo src="cards/card-1.jpg" width="1200" height="675" alt=""><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div></div>
+        <div class="card-photo"><img data-card-photo src="cards/card-1.webp" width="960" height="540" alt="" loading="lazy" decoding="async"><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div></div>
         <div class="live-name" id="live-login"></div>
         <div class="stamps" id="live-stamps" aria-hidden="true"></div>
         <p class="live-progress" id="live-progress"></p>
@@ -446,12 +452,12 @@
 
       <p class="designs-cap"><span>Дизайн карты</span><a href="design.html">Смотреть все дизайны</a></p>
       <div class="designs" id="card-designs" role="group" aria-label="Дизайн карты">
-        <button type="button" data-card="1" aria-label="Дизайн 1" class="on"><img src="cards/card-1.jpg" alt="" loading="lazy"></button>
-        <button type="button" data-card="2" aria-label="Дизайн 2"><img src="cards/card-2.jpg" alt="" loading="lazy"></button>
-        <button type="button" data-card="3" aria-label="Дизайн 3"><img src="cards/card-3.jpg" alt="" loading="lazy"></button>
-        <button type="button" data-card="4" aria-label="Дизайн 4"><img src="cards/card-4.jpg" alt="" loading="lazy"></button>
-        <button type="button" data-card="5" aria-label="Дизайн 5"><img src="cards/card-5.jpg" alt="" loading="lazy"></button>
-        <button type="button" data-card="6" aria-label="Дизайн 6"><img src="cards/card-6.jpg" alt="" loading="lazy"></button>
+        <button type="button" data-card="1" aria-label="Дизайн 1" class="on"><img src="cards/card-1-s.webp" width="320" height="180" alt="" loading="lazy" decoding="async"></button>
+        <button type="button" data-card="2" aria-label="Дизайн 2"><img src="cards/card-2-s.webp" width="320" height="180" alt="" loading="lazy" decoding="async"></button>
+        <button type="button" data-card="3" aria-label="Дизайн 3"><img src="cards/card-3-s.webp" width="320" height="180" alt="" loading="lazy" decoding="async"></button>
+        <button type="button" data-card="4" aria-label="Дизайн 4"><img src="cards/card-4-s.webp" width="320" height="180" alt="" loading="lazy" decoding="async"></button>
+        <button type="button" data-card="5" aria-label="Дизайн 5"><img src="cards/card-5-s.webp" width="320" height="180" alt="" loading="lazy" decoding="async"></button>
+        <button type="button" data-card="6" aria-label="Дизайн 6"><img src="cards/card-6-s.webp" width="320" height="180" alt="" loading="lazy" decoding="async"></button>
       </div>
 
       <form id="card-form" hidden>
@@ -743,7 +749,7 @@
       if (n) { try { localStorage.setItem("ace-card-design", n); } catch (e) {} }
       else { try { n = localStorage.getItem("ace-card-design"); } catch (e) {} }
       if (!/^[1-6]$/.test(n)) n = "1";
-      const src = "cards/card-" + n + ".jpg";
+      const src = "cards/card-" + n + ".webp";
       document.querySelectorAll("#card-designs button").forEach(b => {
         b.classList.toggle("on", b.dataset.card === n);
         b.setAttribute("aria-pressed", b.dataset.card === n);

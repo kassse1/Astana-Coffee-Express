@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /design.html
+Sitemap: https://astana-coffee-express-site.onrender.com/sitemap.xml
