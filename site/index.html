@@ -110,6 +110,16 @@
   .drink span { color: var(--gold); font-size: .9rem; }
   .js .drink .fill { transform: translateY(84px); transition: transform 1.3s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--i) * .09s); }
   .js .drinks.in .fill { transform: none; }
+  .drink { cursor: pointer; transition: transform .3s cubic-bezier(.2,.8,.2,1), background .3s; border-radius: 0 0 14px 14px; }
+  .drink:hover, .drink.pour { transform: translateY(-6px); background: rgba(244,236,223,.05); }
+  .drink .stream { transform-origin: 50% 0; transform-box: fill-box; transform: scaleY(0); }
+  .drink.pour .stream { animation: stream var(--t) ease-in-out both; }
+  .drink.pour .fill rect { transform-origin: 50% 100%; transform-box: fill-box; animation: layer .6s cubic-bezier(.3,.9,.3,1) both; }
+  .drink.pour .fill rect:nth-child(2) { animation-delay: .45s; }
+  .drink.pour .fill rect:nth-child(3) { animation-delay: .9s; }
+  .drink.pour .fill rect:nth-child(4) { animation-delay: 1.35s; }
+  @keyframes layer { from { transform: scaleY(0); } }
+  @keyframes stream { 0% { transform: scaleY(0); } 12%, 85% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
   .menu-note { margin-top: 34px; color: #cdbdae; font-size: .95rem; max-width: 62ch; }
 
   /* как купить */
@@ -308,7 +318,7 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .js .reveal { opacity: 1; transform: none; transition: none; }
-    .steam path, .brew, .hero h1 span, .stamps.pulse > .on { animation: none; }
+    .steam path, .brew, .hero h1 span, .stamps.pulse > .on, .drink.pour .fill rect, .drink.pour .stream { animation: none; }
     .designs button, .designs button img, .designs button::after { transition: none; }
     .steam path { opacity: 0; } .brew { transform: none; }
   }
@@ -1067,6 +1077,19 @@
       } finally { btn.disabled = false; }
     });
   })();
+
+  // ---------- Напитки: наведение или нажатие «наливает» стакан заново, слой за слоем ----------
+  document.querySelectorAll(".drink").forEach(d => {
+    const svg = d.querySelector("svg"), layers = d.querySelectorAll(".fill rect").length;
+    svg.insertAdjacentHTML("afterbegin", '<rect class="stream" x="38.5" y="0" width="3" height="90" rx="1.5" fill="#c98d4f"/>');
+    d.style.setProperty("--t", (layers * .45 + .25) + "s");
+    d.tabIndex = 0;
+    const pour = () => { d.classList.remove("pour"); void d.offsetWidth; d.classList.add("pour"); };
+    d.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") pour(); });
+    d.addEventListener("click", pour);
+    d.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pour(); } });
+    d.addEventListener("pointerleave", () => d.classList.remove("pour"));
+  });
 
   // ---------- Калькулятор дохода для владельца помещения ----------
   (function () {
