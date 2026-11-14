@@ -16,7 +16,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (BotCommand, BufferedInputFile, CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, KeyboardButton, Message, ReplyKeyboardMarkup)
 
-from .barcodes import make_barcode_png, normalize_code, read_barcode
+from .barcodes import make_card_png, normalize_code, read_barcode
 from .config import Config, load_config
 from .db import ASTANA_TZ, DBError, User, open_db
 from .demo import PREFIX as DEMO_PREFIX, build_demo
@@ -83,11 +83,16 @@ def build_router(db, cfg: Config) -> Router:
         return cfg.free_every >= 2 and total % cfg.free_every == cfg.free_every - 1
 
     async def send_card(message: Message, user: User) -> None:
+        png = await asyncio.to_thread(make_card_png, user.card, user.login, user.design)
+        markup = menu(message.from_user.id)
+        if cfg.site_origin.startswith("https://"):  # кнопка под картой: выбрать другой фон на сайте
+            markup = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
+                text="🎨 Сменить дизайн карты", url=cfg.site_origin.rstrip("/") + "/design.html")]])
         await message.answer_photo(
-            BufferedInputFile(make_barcode_png(user.card), filename=f"{user.card}.png"),
+            BufferedInputFile(png, filename=f"{user.card}.png"),
             caption=(f"Ваша карта <b>{user.card}</b>\nСканируйте штрихкод у кофе-аппарата — "
                      f"чашка попадёт в вашу статистику.\n\n{loyalty(user.total)}").strip(),
-            reply_markup=menu(message.from_user.id))
+            reply_markup=markup)
 
     # ---------- общее ----------
     @r.message(CommandStart())
@@ -179,7 +184,8 @@ def build_router(db, cfg: Config) -> Router:
             await message.answer(f"⚠️ {e}\nВведите логин ещё раз:", reply_markup=cancel_kb)
             return
         await state.clear()
-        await message.answer("Готово, вы зарегистрированы! 🎉" if registering else "Вы вошли ✅")
+        await message.answer("Готово, вы зарегистрированы! 🎉" if registering else "Вы вошли ✅",
+                             reply_markup=menu(message.from_user.id))
         await send_card(message, user)
 
     @r.message(F.text == B_LOGOUT)
