@@ -143,11 +143,28 @@
   .live-actions button { flex: 1; background: transparent; border: 1px solid rgba(244,236,223,.3); color: var(--cream); font: 500 .88rem var(--sans); padding: 9px; border-radius: 9px; cursor: pointer; }
   .live-actions button:hover { background: rgba(244,236,223,.08); }
   .designs-cap { font-size: .84rem; color: #cdbdae; margin: 18px 0 8px; }
-  .designs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
-  .designs button { padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; background: none; cursor: pointer; opacity: .55; aspect-ratio: 16 / 10; transition: opacity .15s, border-color .15s; }
-  .designs button img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .designs button:hover { opacity: .9; }
-  .designs button.on { border-color: var(--gold); opacity: 1; }
+  .designs { display: flex; gap: 7px; height: 58px; }
+  .designs button { position: relative; flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #000; cursor: pointer; transition: flex-grow .5s cubic-bezier(.3,1.3,.4,1), transform .25s, box-shadow .3s; }
+  .designs button img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .5; filter: saturate(.6); transform: scale(1.15); transition: opacity .35s, filter .35s, transform .6s cubic-bezier(.2,.7,.2,1); }
+  .designs button:hover { transform: translateY(-4px); }
+  .designs button:hover img { opacity: .85; filter: none; }
+  .designs button.on { flex-grow: 3.2; box-shadow: 0 0 0 2px var(--gold), 0 10px 22px -8px rgba(224,181,106,.55); }
+  .designs button.on img { opacity: 1; filter: none; transform: none; }
+  .designs button::after { content: ""; position: absolute; right: 6px; top: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.7 2.6L13 6.6' fill='none' stroke='%231d1410' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain; transform: scale(0) rotate(-90deg); transition: transform .4s cubic-bezier(.3,1.6,.5,1) .15s; }
+  .designs button.on::after { transform: none; }
+  /* карта: наклон за курсором, блик и переворот при смене дизайна */
+  .card-photo { transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .4s; will-change: transform; }
+  .card-photo.tilt { transition: transform .08s linear, box-shadow .4s; box-shadow: 0 18px 30px -14px rgba(0,0,0,.7); }
+  .card-photo::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,240,210,.34), transparent 55%); }
+  .card-photo.tilt::before { opacity: 1; }
+  .card-photo::after { content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 38%; z-index: 1; pointer-events: none; background: linear-gradient(100deg, transparent, rgba(255,246,224,.6), transparent); transform: translateX(-140%) skewX(-12deg); }
+  .card-photo.shine::after { animation: shine .8s ease-out .3s; }
+  @keyframes shine { to { transform: translateX(420%) skewX(-12deg); } }
+  .card-photo .live-head { z-index: 2; }
+  .stamps.pulse > .on { animation: stamp .5s cubic-bezier(.3,1.6,.5,1) both; }
+  .stamps.pulse > .on:nth-child(2) { animation-delay: .07s; } .stamps.pulse > .on:nth-child(3) { animation-delay: .14s; }
+  .stamps.pulse > .on:nth-child(4) { animation-delay: .21s; } .stamps.pulse > .on:nth-child(5) { animation-delay: .28s; }
+  @keyframes stamp { 0% { transform: scale(.6) rotate(-25deg); } }
   .tabs { display: flex; gap: 6px; background: rgba(0,0,0,.25); border-radius: 10px; padding: 4px; margin: 18px 0; }
   .tabs button { flex: 1; border: 0; background: transparent; color: #cdbdae; font: 600 .9rem var(--sans); padding: 9px 8px; border-radius: 7px; cursor: pointer; }
   .tabs button.on { background: var(--copper-light); color: var(--espresso); }
@@ -250,7 +267,8 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .js .reveal { opacity: 1; transform: none; transition: none; }
-    .steam path, .brew, .hero h1 span { animation: none; }
+    .steam path, .brew, .hero h1 span, .stamps.pulse > .on { animation: none; }
+    .designs button, .designs button img, .designs button::after { transition: none; }
     .steam path { opacity: 0; } .brew { transform: none; }
   }
 
@@ -718,14 +736,51 @@
     const demo = $("card-demo"), form = $("card-form"), live = $("card-live"), note = $("card-note");
 
     // дизайн карты: выбор запоминается в браузере
-    function applyDesign(n) {
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function applyDesign(n, animate) {
       if (n) { try { localStorage.setItem("ace-card-design", n); } catch (e) {} }
       else { try { n = localStorage.getItem("ace-card-design"); } catch (e) {} }
       if (!/^[1-6]$/.test(n)) n = "1";
-      document.querySelectorAll("[data-card-photo]").forEach(img => { img.src = "cards/card-" + n + ".jpg"; });
-      document.querySelectorAll("#card-designs button").forEach(b => b.classList.toggle("on", b.dataset.card === n));
+      const src = "cards/card-" + n + ".jpg";
+      document.querySelectorAll("#card-designs button").forEach(b => {
+        b.classList.toggle("on", b.dataset.card === n);
+        b.setAttribute("aria-pressed", b.dataset.card === n);
+      });
+      document.querySelectorAll("[data-card-photo]").forEach(img => {
+        const box = img.parentElement;
+        if (!animate || calm || !box.animate || !box.offsetParent || img.getAttribute("src") === src) { img.src = src; return; }
+        // карта поворачивается ребром, в этот момент меняется картинка, затем пробегает блик
+        box.classList.remove("shine");
+        box.animate([{ transform: "perspective(800px) rotateY(0) scale(1)" }, { transform: "perspective(800px) rotateY(90deg) scale(.94)" }],
+          { duration: 190, easing: "ease-in" }).onfinish = () => {
+          img.src = src;
+          box.animate([{ transform: "perspective(800px) rotateY(-90deg) scale(.94)" }, { transform: "perspective(800px) rotateY(0) scale(1)" }],
+            { duration: 460, easing: "cubic-bezier(.2,1.4,.4,1)" });
+          void box.offsetWidth; box.classList.add("shine");
+        };
+        const stamps = box.parentElement.querySelector(".stamps");
+        if (stamps) { stamps.classList.remove("pulse"); void stamps.offsetWidth; stamps.classList.add("pulse"); }
+      });
     }
-    document.querySelectorAll("#card-designs button").forEach(b => b.addEventListener("click", () => applyDesign(b.dataset.card)));
+    document.querySelectorAll("#card-designs button").forEach(b => b.addEventListener("click", () => applyDesign(b.dataset.card, true)));
+    // наклон карты за курсором (только мышь)
+    if (!calm && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      document.querySelectorAll(".card-photo").forEach(box => {
+        box.addEventListener("pointermove", e => {
+          const r = box.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+          box.classList.add("tilt");
+          box.style.setProperty("--ry", ((x - .5) * 14).toFixed(1) + "deg");
+          box.style.setProperty("--rx", ((.5 - y) * 12).toFixed(1) + "deg");
+          box.style.setProperty("--gx", (x * 100).toFixed(0) + "%");
+          box.style.setProperty("--gy", (y * 100).toFixed(0) + "%");
+        });
+        box.addEventListener("pointerleave", () => {
+          box.classList.remove("tilt");
+          box.style.setProperty("--rx", "0deg"); box.style.setProperty("--ry", "0deg");
+        });
+      });
+    }
+    applyDesign();
     applyDesign();
 
     if (!SITE.api) return; // без адреса API остаётся пример карты
