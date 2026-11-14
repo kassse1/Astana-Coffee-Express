@@ -84,9 +84,6 @@
 
   /* общие сетки */
   .split { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
-  .card-plain { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 26px; }
-  .card-plain p { color: var(--muted); font-size: .95rem; margin-top: 8px; }
-  .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--espresso); display: grid; place-items: center; margin-bottom: 16px; }
 
   /* напитки */
   #menu { background: var(--espresso); color: var(--cream); }
@@ -158,27 +155,51 @@
   .form-note { font-size: .84rem; color: #cdbdae; margin-top: 12px; min-height: 2.6em; }
   .form-note.err { color: #ffd0c2; }
 
-  /* карта города */
-  .map-box { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--card); margin-top: 36px; }
-  .map-box iframe { display: block; width: 100%; height: 420px; border: 0; }
-  .map-note { padding: 12px 18px; font-size: .88rem; color: var(--muted); border-top: 1px solid var(--line); }
-  .places { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+  /* где найти */
+  #where { background: var(--paper); }
+  .where { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 56px; align-items: start; }
+  .rows { list-style: none; padding: 0; margin-top: 30px; border-top: 1px solid var(--line); }
+  .rows li { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+  .rows b { font-weight: 600; }
+  .rows span { color: var(--muted); font-size: .93rem; text-align: right; }
+  .where-note { margin-top: 22px; color: var(--muted); font-size: .95rem; }
+  .where-note a, .people a { color: var(--copper); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .map-box { border-radius: 18px; overflow: hidden; background: var(--line); box-shadow: 0 34px 70px -34px rgba(38,23,15,.5); }
+  .map-box iframe { display: block; width: 100%; height: 460px; border: 0; filter: sepia(.28) saturate(.85); }
+
+  /* партнёрам */
+  #partners { background: var(--machine); color: var(--cream); position: relative; overflow: hidden; }
+  #partners::before { content: ""; position: absolute; inset: 0 auto 0 0; width: min(9vw, 120px);
+    background: linear-gradient(180deg, rgba(255,228,186,.2), rgba(0,0,0,.35)), repeating-linear-gradient(90deg, #ab7948 0 13px, #946339 13px 15px, #5a3a20 15px 21px); }
+  #partners .wrap { position: relative; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 64px; align-items: end; }
+  #partners h2 { font-size: clamp(2rem, 4.4vw, 3.4rem); }
+  #partners .lead { color: #cdbdae; margin: 20px 0 30px; }
+  #partners .eyebrow { color: var(--gold); }
+  #partners .rows { margin: 0; border-color: rgba(244,236,223,.18); }
+  #partners .rows li { border-color: rgba(244,236,223,.18); display: block; }
+  #partners .rows p { color: #cdbdae; font-size: .94rem; margin-top: 2px; }
+
+  /* о нас */
+  .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px; margin-top: 44px; }
+  .cols > div { border-top: 1px solid var(--espresso); padding-top: 20px; }
+  .cols p { color: var(--muted); font-size: .96rem; margin-top: 8px; }
+  #about .lead { margin-top: 18px; max-width: 58ch; }
 
   /* вопросы */
+  #faq { background: var(--paper); }
   details { border-bottom: 1px solid var(--line); }
   details:first-of-type { border-top: 1px solid var(--line); }
   summary { cursor: pointer; padding: 18px 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
   summary::-webkit-details-marker { display: none; }
-  summary::after { content: "+"; font: 400 1.4rem var(--serif); color: var(--copper); line-height: 1; transition: transform .2s; }
+  summary::after { content: "+"; font: 400 1.4rem/1 var(--sans); color: var(--copper); transition: transform .2s; }
   details[open] summary::after { transform: rotate(45deg); }
   details p { color: var(--muted); padding: 0 0 18px; max-width: 62ch; }
 
   /* контакты */
-  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .people h3 { font-size: 1.1rem; }
-  .people .role { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 4px 0 12px; }
-  .people a { color: var(--copper); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
-  .people a:hover { text-decoration: underline; }
+  .people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px; margin-top: 40px; }
+  .people > div { border-top: 1px solid var(--espresso); padding-top: 20px; }
+  .people .role { font-size: .9rem; color: var(--muted); margin: 2px 0 14px; }
+  .people a { font: 400 clamp(1.05rem, 2.2vw, 1.45rem) var(--serif); overflow-wrap: anywhere; }
 
   footer { background: var(--machine); color: #a39283; padding: 28px 0; font-size: .86rem; }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -230,7 +251,10 @@
 
   @media (max-width: 880px) {
     section { padding: 62px 0; }
-    nav ul { display: none; }
+    html { scroll-padding-top: 112px; }
+    nav .wrap { flex-wrap: wrap; height: auto; padding-top: 10px; gap: 8px 12px; }
+    nav ul { order: 3; width: calc(100% + 44px); margin: 0 -22px; padding: 0 22px 8px; gap: 20px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+    nav ul::-webkit-scrollbar { display: none; }
     .logo { font-size: .98rem; gap: 8px; }
     .hero { padding: 44px 0 72px; }
     .hero .wrap, .split { grid-template-columns: minmax(0, 1fr); gap: 36px; }
@@ -243,7 +267,9 @@
     .drink { border-left: 0; border-top: 1px solid rgba(244,236,223,.18); padding: 26px 6px 22px; }
     .drink svg { width: 60px; }
     .steps { grid-template-columns: minmax(0, 1fr); gap: 30px; margin-top: 36px; }
-    .places { grid-template-columns: 1fr 1fr; }
+    .where, #partners .wrap, .cols, .people { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .map-box iframe { height: 340px; }
+    #partners::before { display: none; }
     footer .wrap { justify-content: center; text-align: center; }
   }
 </style>
@@ -411,18 +437,49 @@
 </section>
 
 <section id="where">
-  <div class="wrap">
-    <div class="eyebrow">Где найти</div>
-    <h2>Аппараты там, где вы бываете каждый день</h2>
-    <div class="places">
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c3 3 9 3 12 0v-5"/></svg></div><h3>Университеты</h3><p>Между парами и перед экзаменом.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-4h6v4M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/></svg></div><h3>Бизнес-центры</h3><p>Не выходя из здания.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></div><h3>Клиники</h3><p>Пока ждёте приёма.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6"/><circle cx="15.5" cy="14" r=".6"/></svg></div><h3>Транспортные узлы</h3><p>По пути, в любое время.</p></div>
+  <div class="wrap where">
+    <div>
+      <p class="eyebrow">Где найти</p>
+      <h2>Там, где вы бываете каждый день</h2>
+      <ul class="rows">
+        <li><b>Университеты</b><span>между парами и перед экзаменом</span></li>
+        <li><b>Бизнес-центры</b><span>не выходя из здания</span></li>
+        <li><b>Клиники</b><span>пока ждёте приёма</span></li>
+        <li><b>Транспортные узлы</b><span>по пути, в любое время</span></li>
+      </ul>
+      <p class="where-note">Точные адреса аппаратов и новые точки присылает <a data-bot href="#bot">Telegram-бот</a>.</p>
     </div>
     <div class="map-box">
       <iframe title="Карта Астаны" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=71.20%2C50.95%2C71.70%2C51.30&amp;layer=mapnik"></iframe>
-      <div class="map-note">Астана, Казахстан. Точные адреса аппаратов и новые точки присылает <a data-bot href="#bot">Telegram-бот</a>.</div>
+    </div>
+  </div>
+</section>
+
+<section id="partners">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Владельцам зданий</p>
+      <h2>Хотите аппарат в своём здании?</h2>
+      <p class="lead">Ставим аппараты в университетах, бизнес-центрах, клиниках и на транспортных узлах. Напишите нам — расскажем об условиях размещения.</p>
+      <a class="btn light" href="mailto:wamaff@gmail.com?subject=%D0%A0%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B0%D0%BF%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D0%B0">Написать о размещении</a>
+    </div>
+    <ul class="rows">
+      <li><b>Аппарат на связи</b><p>Запасы и неисправности видим онлайн и приезжаем раньше, чем что-то закончится.</p></li>
+      <li><b>Чисто каждый день</b><p>Чистим ежедневно, фильтры меняем раз в две недели.</p></li>
+      <li><b>Работает сам</b><p>Круглосуточно, без персонала и наличных: Kaspi QR, карта или NFC.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <p class="eyebrow">О нас</p>
+    <h2>Кофейня размером с один аппарат</h2>
+    <p class="lead">Astana Coffee Express — сеть кофе-аппаратов самообслуживания в Астане. Мы ставим их там, где кофе нужен здесь и сейчас.</p>
+    <div class="cols">
+      <div><h3>Кофе из зерна</h3><p>Аппарат мелет зерно под каждую чашку. Есть молочные напитки и сиропы.</p></div>
+      <div><h3>Всегда в наличии</h3><p>Мы видим запасы онлайн и пополняем аппарат заранее.</p></div>
+      <div><h3>Чисто и аккуратно</h3><p>Чистим каждый день, фильтры меняем раз в две недели. Стаканы и размешиватели — эко.</p></div>
     </div>
   </div>
 </section>
@@ -430,27 +487,27 @@
 <section id="faq">
   <div class="wrap split">
     <div>
-      <div class="eyebrow">Вопросы</div>
+      <p class="eyebrow">Вопросы</p>
       <h2>Что обычно спрашивают</h2>
     </div>
     <div>
       <details open><summary>Как оплатить?</summary><p>Kaspi QR на аппарате, банковская карта или телефон (NFC). Наличные аппарат не принимает.</p></details>
       <details><summary>Аппарат не выдал напиток. Что делать?</summary><p>Деньги за невыданный напиток возвращаются. Если что-то пошло не так, напишите нам — контакты ниже.</p></details>
       <details><summary>Когда работают аппараты?</summary><p>Круглосуточно, без выходных. Точнее — всегда, когда открыто здание, где стоит аппарат.</p></details>
-      <details><summary>Как получить бесплатную чашку?</summary><p>Зарегистрироваться в Telegram-боте и сканировать свой штрихкод при каждой покупке. Каждая шестая чашка бесплатная, бот покажет, сколько осталось.</p></details>
-      <details><summary>Нужно что-то скачивать?</summary><p>Нет. Для оплаты хватит Kaspi или карты, а карта гостя работает в обычном Telegram.</p></details>
+      <details><summary>Как получить бесплатную чашку?</summary><p>Завести карту гостя на сайте или в Telegram-боте и сканировать свой штрихкод при каждой покупке. Каждая шестая чашка бесплатная, карта покажет, сколько осталось.</p></details>
+      <details><summary>Нужно что-то скачивать?</summary><p>Нет. Для оплаты хватит Kaspi или карты, а карта гостя работает в обычном Telegram и на этом сайте.</p></details>
     </div>
   </div>
 </section>
 
 <section id="contacts">
   <div class="wrap">
-    <div class="eyebrow">Контакты</div>
+    <p class="eyebrow">Контакты</p>
     <h2>Напишите нам</h2>
-    <p class="lead">Возвраты, работа аппаратов, размещение — по любому вопросу.</p>
+    <p class="lead" style="margin-top:18px">Возвраты, работа аппаратов, размещение — по любому вопросу.</p>
     <div class="people">
-      <div class="card-plain"><h3>Санжар Мурат</h3><div class="role">Генеральный директор</div><a href="mailto:wamaff@gmail.com">wamaff@gmail.com</a></div>
-      <div class="card-plain"><h3>Рахман Даниал</h3><div class="role">Финансовый директор</div><a href="mailto:rahmanzavisnik@gmail.com">rahmanzavisnik@gmail.com</a></div>
+      <div><h3>Санжар Мурат</h3><p class="role">Генеральный директор</p><a href="mailto:wamaff@gmail.com">wamaff@gmail.com</a></div>
+      <div><h3>Рахман Даниал</h3><p class="role">Финансовый директор</p><a href="mailto:rahmanzavisnik@gmail.com">rahmanzavisnik@gmail.com</a></div>
     </div>
   </div>
 </section>
@@ -602,7 +659,7 @@
     const io = new IntersectionObserver(entries => entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
     }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-    document.querySelectorAll(".drinks, .steps, .card-box, .map-box").forEach(el => {
+    document.querySelectorAll(".drinks, .steps, .card-box, .map-box, #partners .rows").forEach(el => {
       el.classList.add("reveal");
       io.observe(el);
     });
