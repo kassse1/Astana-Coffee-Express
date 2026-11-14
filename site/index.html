@@ -83,59 +83,77 @@
   @keyframes brew { 0%, 8% { transform: scaleX(0); } 80%, 100% { transform: scaleX(1); } }
 
   /* общие сетки */
-  .split { display: grid; grid-template-columns: .9fr 1.1fr; gap: 56px; align-items: start; }
-  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .split { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
   .card-plain { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 26px; }
   .card-plain p { color: var(--muted); font-size: .95rem; margin-top: 8px; }
-  .feature { display: grid; grid-template-columns: 44px 1fr; gap: 14px; padding: 18px 0; border-top: 1px solid var(--line); }
-  .feature:last-child { border-bottom: 1px solid var(--line); }
-  .feature .num { font: italic 700 1.5rem var(--serif); color: var(--copper); line-height: 1.1; }
-  .feature p { color: var(--muted); font-size: .95rem; margin-top: 4px; }
   .ico { width: 40px; height: 40px; border-radius: 10px; background: var(--espresso); display: grid; place-items: center; margin-bottom: 16px; }
 
-  /* шаги */
-  #how { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .step .big { font: 800 3.4rem var(--serif); color: var(--copper-light); line-height: 1; margin-bottom: 14px; }
-  .step p { color: var(--muted); font-size: .95rem; margin-top: 8px; }
-
-  /* меню */
+  /* напитки */
   #menu { background: var(--espresso); color: var(--cream); }
   #menu .eyebrow { color: var(--gold); }
-  #menu .lead { color: #cdbdae; }
-  .price { font: 700 clamp(4rem, 9.5vw, 6.6rem) var(--serif); color: var(--gold); line-height: 1; margin: 16px 0 6px; white-space: nowrap; }
-  .price small { font: 500 1rem var(--sans); color: var(--cream); letter-spacing: 0; margin-left: 10px; }
-  .drinks { background: var(--machine); border: 1px solid #3a2c22; border-radius: var(--r); padding: 12px 26px; }
-  .drinks div { display: flex; align-items: baseline; gap: 8px; padding: 13px 0; border-bottom: 1px dashed rgba(246,239,228,.2); font-weight: 500; }
-  .drinks div:last-child { border-bottom: 0; }
-  .drinks i { flex: 1; border-bottom: 1px dotted rgba(246,239,228,.25); transform: translateY(-4px); }
-  .drinks span { color: var(--gold); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .menu-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: 52px; }
+  .price { font: 400 clamp(3.6rem, 8.5vw, 6.2rem)/1 var(--serif); color: var(--gold); white-space: nowrap; }
+  .price small { font: 500 1rem var(--sans); color: #cdbdae; margin-left: 12px; }
+  .drinks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid rgba(244,236,223,.18); }
+  .drink { padding: 34px 10px 6px; text-align: center; border-left: 1px solid rgba(244,236,223,.18); }
+  .drink:first-child { border-left: 0; }
+  .drink svg { display: block; width: 74px; height: auto; margin: 0 auto 18px; }
+  .drink b { display: block; font-weight: 600; line-height: 1.3; }
+  .drink span { color: var(--gold); font-size: .9rem; }
+  .js .drink .fill { transform: translateY(84px); transition: transform 1.3s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--i) * .09s); }
+  .js .drinks.in .fill { transform: none; }
+  .menu-note { margin-top: 34px; color: #cdbdae; font-size: .95rem; max-width: 62ch; }
 
-  /* лояльность */
-  .loyalty { background: #1c1512; color: var(--cream); border-radius: 18px; padding: 28px; box-shadow: 0 30px 60px rgba(28,21,18,.32); transform: rotate(-2deg); max-width: 380px; justify-self: center; width: 100%; }
-  .loyalty .top { display: flex; justify-content: space-between; align-items: center; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 20px; }
-  .loyalty .who { font: 700 1.5rem var(--serif); margin-bottom: 4px; }
-  .loyalty .left { font-size: .88rem; color: #cdbdae; margin-bottom: 18px; }
-  .loyalty .dots { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
-  .loyalty .dots i { aspect-ratio: 1; border-radius: 50%; border: 1.5px dashed rgba(246,239,228,.35); display: grid; place-items: center; font-style: normal; font-size: .8rem; color: #cdbdae; }
-  .loyalty .dots i.on { background: var(--copper-light); border: 1.5px solid var(--copper-light); color: var(--espresso); font-weight: 700; }
-  .loyalty .dots i.gift { border-color: var(--gold); color: var(--gold); font-weight: 700; font-size: .68rem; }
+  /* как купить */
+  #how { background: var(--paper); }
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px; margin-top: 48px; padding: 0; list-style: none; counter-reset: s; }
+  .steps li { border-top: 1px solid var(--espresso); padding-top: 22px; counter-increment: s; }
+  .steps li::before { content: counter(s); display: block; font: 400 3.2rem/1 var(--serif); color: var(--copper); margin-bottom: 20px; }
+  .steps p { color: var(--muted); font-size: .96rem; margin-top: 8px; }
 
-  /* карточка бота: пример карты, форма или живая карта */
-  .card-box { background: var(--espresso); color: var(--cream); border-radius: 18px; padding: 28px; box-shadow: 0 30px 60px rgba(42,26,18,.28); transform: rotate(-2deg); max-width: 380px; justify-self: center; width: 100%; }
-  .card-box.active { transform: none; }
-  .card-photo { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
-  .card-photo img { border-radius: 9px; flex: none; }
-  .card-photo .live-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .card-photo .live-head b { display: block; font: 700 .95rem var(--serif); }
-  .card-photo .live-head span { display: block; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
-  .tabs { display: flex; gap: 6px; background: rgba(0,0,0,.18); border-radius: 10px; padding: 4px; margin-bottom: 18px; }
+  /* карта гостя */
+  .perks { list-style: none; padding: 0; margin: 34px 0; border-top: 1px solid var(--line); }
+  .perks li { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .perks p { color: var(--muted); font-size: .95rem; margin-top: 2px; }
+  .card-box { background: var(--espresso); color: var(--cream); border-radius: 20px; padding: 22px; box-shadow: 0 34px 70px -28px rgba(38,23,15,.6); max-width: 410px; justify-self: center; width: 100%; }
+  .card-cap { font-size: .84rem; color: #cdbdae; margin-bottom: 10px; }
+  .card-photo { position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 16px; aspect-ratio: 16 / 7; background: rgba(0,0,0,.3); }
+  .card-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .card-photo .live-head { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 10px; padding: 30px 14px 10px; background: linear-gradient(transparent, rgba(18,16,14,.82)); }
+  .card-photo .live-head img { border-radius: 8px; flex: none; }
+  .card-photo .live-head b { display: block; font: 400 .98rem var(--serif); color: #fff; }
+  .card-photo .live-head span { display: block; font-size: .74rem; color: var(--gold); }
+  .live-name { font: 400 1.5rem/1.2 var(--serif); overflow-wrap: anywhere; }
+  .stamps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 14px 0 8px; }
+  .stamps > * { aspect-ratio: 1; border: 1.5px dashed rgba(244,236,223,.35); border-radius: 50%; display: grid; place-items: center; font: 600 .74rem var(--sans); font-style: normal; color: #cdbdae; }
+  .stamps > .on { border: 1.5px solid var(--copper-light); background: var(--copper-light); color: var(--espresso); }
+  .stamps > .free { border: 1.5px solid var(--gold); color: var(--gold); font-size: .68rem; }
+  .live-progress { font-size: .9rem; color: #cdbdae; margin-bottom: 14px; min-height: 1.5em; }
+  .live-code { background: #fff; border-radius: 10px; padding: 12px 12px 6px; text-align: center; color: var(--ink); }
+  .live-code img { display: block; width: 100%; height: auto; max-width: 300px; margin: 0 auto; }
+  .live-code .bars { height: 54px; margin: 0 8px 4px; background: repeating-linear-gradient(90deg, #1d1410 0 2px, #fff 2px 4px, #1d1410 4px 7px, #fff 7px 9px, #1d1410 9px 10px, #fff 10px 13px, #1d1410 13px 17px, #fff 17px 19px); }
+  .live-code span { font-size: .8rem; font-weight: 500; letter-spacing: .2em; }
+  .live-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .live-stats div { background: rgba(244,236,223,.07); border-radius: 10px; padding: 10px 12px; }
+  .live-stats b { display: block; font: 600 1.15rem var(--sans); color: var(--gold); overflow-wrap: anywhere; }
+  .live-stats span { font-size: .76rem; color: #cdbdae; }
+  .live-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .live-actions button { flex: 1; background: transparent; border: 1px solid rgba(244,236,223,.3); color: var(--cream); font: 500 .88rem var(--sans); padding: 9px; border-radius: 9px; cursor: pointer; }
+  .live-actions button:hover { background: rgba(244,236,223,.08); }
+  .designs-cap { font-size: .84rem; color: #cdbdae; margin: 18px 0 8px; }
+  .designs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
+  .designs button { padding: 0; border: 2px solid transparent; border-radius: 8px; overflow: hidden; background: none; cursor: pointer; opacity: .55; aspect-ratio: 16 / 10; transition: opacity .15s, border-color .15s; }
+  .designs button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .designs button:hover { opacity: .9; }
+  .designs button.on { border-color: var(--gold); opacity: 1; }
+  .tabs { display: flex; gap: 6px; background: rgba(0,0,0,.25); border-radius: 10px; padding: 4px; margin: 18px 0; }
   .tabs button { flex: 1; border: 0; background: transparent; color: #cdbdae; font: 600 .9rem var(--sans); padding: 9px 8px; border-radius: 7px; cursor: pointer; }
   .tabs button.on { background: var(--copper-light); color: var(--espresso); }
-  #card-form label { display: block; font-size: .82rem; color: #cdbdae; margin-bottom: 12px; }
-  #card-form input { display: block; width: 100%; margin-top: 5px; padding: 12px 13px; border-radius: 9px; border: 1px solid rgba(246,239,228,.25); background: rgba(0,0,0,.2); color: #fff; font: 400 1rem var(--sans); }
+  #card-form label { display: block; font-size: .84rem; color: #cdbdae; margin-bottom: 12px; }
+  #card-form input { display: block; width: 100%; margin-top: 5px; padding: 12px 13px; border-radius: 9px; border: 1px solid rgba(244,236,223,.25); background: rgba(0,0,0,.22); color: #fff; font: 400 1rem var(--sans); }
   #card-form input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
-  #card-form input::placeholder { color: rgba(246,239,228,.4); }
-  #card-form .btn { width: 100%; margin-top: 6px; text-align: center; cursor: pointer; }
+  #card-form input::placeholder { color: rgba(244,236,223,.4); }
+  #card-form .btn { width: 100%; margin-top: 6px; text-align: center; }
   #card-form .btn[disabled] { opacity: .6; cursor: wait; }
   .form-note { font-size: .84rem; color: #cdbdae; margin-top: 12px; min-height: 2.6em; }
   .form-note.err { color: #ffd0c2; }
@@ -220,12 +238,12 @@
     .facts { margin-top: 36px; gap: 12px; }
     .facts dt { font-size: 1.5rem; }
     nav .btn { padding: 8px 12px; }
-    .grid3 { grid-template-columns: 1fr; }
-    .price { white-space: normal; }
-    .price small { display: block; margin: 6px 0 0; }
+    .menu-head { margin-bottom: 36px; }
+    .drinks { grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 0; }
+    .drink { border-left: 0; border-top: 1px solid rgba(244,236,223,.18); padding: 26px 6px 22px; }
+    .drink svg { width: 60px; }
+    .steps { grid-template-columns: minmax(0, 1fr); gap: 30px; margin-top: 36px; }
     .places { grid-template-columns: 1fr 1fr; }
-    .loyalty { transform: none; }
-    .card-box { transform: none; }
     footer .wrap { justify-content: center; text-align: center; }
   }
 </style>
@@ -291,104 +309,63 @@
   </div>
 </header>
 
-<section id="about">
+<section id="menu">
   <div class="wrap">
-    <div class="eyebrow">Что такое Astana Coffee Express</div>
-    <h2>Кофейня размером с один аппарат</h2>
-    <p class="lead">Мы ставим умные кофе-аппараты там, где кофе нужен здесь и сейчас: в университетах, бизнес-центрах, клиниках и на транспортных узлах.</p>
-    <div class="grid3">
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/></svg></div><h3>Кофе из зерна</h3><p>Аппарат мелет зерно под каждую чашку. Есть молочные напитки и сиропы.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/></svg></div><h3>Аппарат на связи</h3><p>Мы видим запасы и неисправности онлайн и приезжаем раньше, чем что-то закончится.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></div><h3>Чисто и аккуратно</h3><p>Чистим каждый день, фильтры меняем раз в две недели. Стаканы и размешиватели — эко.</p></div>
+    <div class="menu-head">
+      <div>
+        <p class="eyebrow">Напитки</p>
+        <h2>Любой напиток по одной цене</h2>
+      </div>
+      <div class="price">600 ₸ <small>за чашку</small></div>
     </div>
+    <!-- Список напитков: поменяйте под свои аппараты -->
+    <div class="drinks">
+      <div class="drink" style="--i:0"><svg viewBox="0 0 80 96" aria-hidden="true"><clipPath id="g0"><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z"/></clipPath><g clip-path="url(#g0)"><g class="fill"><rect x="10" y="66.8" width="60" height="25.7" fill="#5b3419"/><rect x="10" y="61.8" width="60" height="5.5" fill="#c98d4f"/></g></g><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z" fill="none" stroke="#f4ecdf" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Эспрессо</b><span>600 ₸</span></div>
+      <div class="drink" style="--i:1"><svg viewBox="0 0 80 96" aria-hidden="true"><clipPath id="g1"><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z"/></clipPath><g clip-path="url(#g1)"><g class="fill"><rect x="10" y="26.5" width="60" height="66.0" fill="#74451f"/><rect x="10" y="23.1" width="60" height="3.9" fill="#c98d4f"/></g></g><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z" fill="none" stroke="#f4ecdf" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Американо</b><span>600 ₸</span></div>
+      <div class="drink" style="--i:2"><svg viewBox="0 0 80 96" aria-hidden="true"><clipPath id="g2"><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z"/></clipPath><g clip-path="url(#g2)"><g class="fill"><rect x="10" y="66.8" width="60" height="25.7" fill="#5b3419"/><rect x="10" y="39.9" width="60" height="27.4" fill="#e6cfae"/><rect x="10" y="19.8" width="60" height="20.7" fill="#fbf3e4"/></g></g><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z" fill="none" stroke="#f4ecdf" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Капучино</b><span>600 ₸</span></div>
+      <div class="drink" style="--i:3"><svg viewBox="0 0 80 96" aria-hidden="true"><clipPath id="g3"><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z"/></clipPath><g clip-path="url(#g3)"><g class="fill"><rect x="10" y="76.9" width="60" height="15.6" fill="#5b3419"/><rect x="10" y="29.8" width="60" height="47.5" fill="#e6cfae"/><rect x="10" y="19.8" width="60" height="10.6" fill="#fbf3e4"/></g></g><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z" fill="none" stroke="#f4ecdf" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Латте</b><span>600 ₸</span></div>
+      <div class="drink" style="--i:4"><svg viewBox="0 0 80 96" aria-hidden="true"><clipPath id="g4"><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z"/></clipPath><g clip-path="url(#g4)"><g class="fill"><rect x="10" y="76.9" width="60" height="15.6" fill="#3a1f12"/><rect x="10" y="56.7" width="60" height="20.7" fill="#5b3419"/><rect x="10" y="29.8" width="60" height="27.4" fill="#e6cfae"/><rect x="10" y="19.8" width="60" height="10.6" fill="#fbf3e4"/></g></g><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z" fill="none" stroke="#f4ecdf" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Мокко</b><span>600 ₸</span></div>
+      <div class="drink" style="--i:5"><svg viewBox="0 0 80 96" aria-hidden="true"><clipPath id="g5"><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z"/></clipPath><g clip-path="url(#g5)"><g class="fill"><rect x="10" y="29.8" width="60" height="62.7" fill="#3a1f12"/><rect x="10" y="21.4" width="60" height="8.9" fill="#fbf3e4"/></g></g><path d="M14 8H66L59 88Q58.5 92 54 92H26Q21.5 92 21 88Z" fill="none" stroke="#f4ecdf" stroke-opacity=".55" stroke-width="1.5" stroke-linejoin="round"/></svg><b>Горячий шоколад</b><span>600 ₸</span></div>
+    </div>
+    <p class="menu-note">Аппарат мелет зерно под каждую чашку. Сахар и сироп — по вкусу. Оплата Kaspi QR, картой или телефоном (NFC). Если аппарат не выдал напиток, деньги возвращаются.</p>
   </div>
 </section>
 
 <section id="how">
   <div class="wrap">
-    <div class="eyebrow">Как купить</div>
+    <p class="eyebrow">Как купить</p>
     <h2>Три шага до чашки</h2>
-    <div class="grid3">
-      <div class="step"><div class="big">1</div><h3>Выберите напиток</h3><p>Эспрессо, капучино, латте и другие. Сахар и сироп — по вкусу.</p></div>
-      <div class="step"><div class="big">2</div><h3>Оплатите одним сканом</h3><p>Наведите камеру на Kaspi QR или приложите карту либо телефон (NFC). Наличные не нужны.</p></div>
-      <div class="step"><div class="big">3</div><h3>Заберите стакан</h3><p>Через 45 секунд кофе готов. Сканируйте штрихкод из бота, и чашка пойдёт в зачёт.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="menu">
-  <div class="wrap split">
-    <div>
-      <div class="eyebrow">Напитки и цена</div>
-      <h2>Любой напиток — <em>одна цена</em></h2>
-      <div class="price">600 ₸ <small>за чашку</small></div>
-      <p class="lead">Оплата Kaspi QR или банковской картой. Если аппарат не выдал напиток — деньги возвращаются.</p>
-    </div>
-    <!-- Список напитков: поменяйте под свои аппараты -->
-    <div class="drinks">
-      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Эспрессо<i></i><span>600</span></div>
-      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Американо<i></i><span>600</span></div>
-      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Капучино<i></i><span>600</span></div>
-      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Латте<i></i><span>600</span></div>
-      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Мокко<i></i><span>600</span></div>
-      <div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9h1a3 3 0 0 1 0 6h-1M5 9h12v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/></svg>Горячий шоколад<i></i><span>600</span></div>
-    </div>
-  </div>
-</section>
-
-<section id="where">
-  <div class="wrap">
-    <div class="eyebrow">Где найти</div>
-    <h2>Аппараты там, где вы бываете каждый день</h2>
-    <div class="places">
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c3 3 9 3 12 0v-5"/></svg></div><h3>Университеты</h3><p>Между парами и перед экзаменом.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-4h6v4M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/></svg></div><h3>Бизнес-центры</h3><p>Не выходя из здания.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></div><h3>Клиники</h3><p>Пока ждёте приёма.</p></div>
-      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6"/><circle cx="15.5" cy="14" r=".6"/></svg></div><h3>Транспортные узлы</h3><p>По пути, в любое время.</p></div>
-    </div>
-    <div class="map-box">
-      <iframe title="Карта Астаны" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=71.20%2C50.95%2C71.70%2C51.30&amp;layer=mapnik"></iframe>
-      <div class="map-note">Астана, Казахстан. Точные адреса аппаратов и новые точки присылает <a data-bot href="#bot">Telegram-бот</a>.</div>
-    </div>
+    <ol class="steps">
+      <li><h3>Выберите напиток</h3><p>Эспрессо, капучино, латте и другие. Сахар и сироп — по вкусу.</p></li>
+      <li><h3>Оплатите одним сканом</h3><p>Наведите камеру на Kaspi QR или приложите карту либо телефон (NFC). Наличные не нужны.</p></li>
+      <li><h3>Заберите стакан</h3><p>Через 45 секунд кофе готов. Сканируйте штрихкод из бота, и чашка пойдёт в зачёт.</p></li>
+    </ol>
   </div>
 </section>
 
 <section id="bot">
   <div class="wrap split">
     <div>
-      <div class="eyebrow">Telegram-бот</div>
-      <h2>Шестая чашка <em>за наш счёт</em></h2>
-      <p class="lead">Зарегистрируйтесь в боте, получите личный штрихкод и сканируйте его при каждой покупке. Бот считает чашки сам.</p>
-      <div class="feature"><div class="num">i</div><div><h3>Личный штрихкод</h3><p>Регистрация по логину и паролю занимает полминуты.</p></div></div>
-      <div class="feature"><div class="num">ii</div><div><h3>Ваша статистика</h3><p>Сколько чашек выпито и какой напиток вы берёте чаще всего.</p></div></div>
-      <div class="feature"><div class="num">iii</div><div><h3>Акции первыми</h3><p>Новые точки и предложения приходят сообщением в Telegram.</p></div></div>
-      <a class="btn light" data-bot href="#" style="margin-top:28px">Открыть бота в Telegram</a>
+      <p class="eyebrow">Карта гостя и Telegram-бот</p>
+      <h2>Каждая шестая чашка за наш счёт</h2>
+      <p class="lead" style="margin-top:18px">Заведите карту здесь или в боте, получите личный штрихкод и сканируйте его при каждой покупке. Чашки считаются сами.</p>
+      <ul class="perks">
+        <li><h3>Личный штрихкод</h3><p>Регистрация по логину и паролю занимает полминуты.</p></li>
+        <li><h3>Ваша статистика</h3><p>Сколько чашек выпито и какой напиток вы берёте чаще всего.</p></li>
+        <li><h3>Акции первыми</h3><p>Новые точки и предложения приходят сообщением в Telegram.</p></li>
+      </ul>
+      <a class="btn" data-bot href="#">Открыть бота в Telegram</a>
     </div>
     <div class="card-box" id="card-widget">
       <!-- до входа: пример карты; если задан SITE.api — ещё и форма -->
       <div id="card-demo">
+        <p class="card-cap">Так будет выглядеть ваша карта</p>
         <div class="card-photo"><img data-card-photo src="cards/card-1.jpg" width="1200" height="675" alt=""><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div></div>
-        <div class="live-name">aida</div>
-        <div class="stamps" aria-hidden="true">
-          <span class="on">ACE</span><span class="on">ACE</span><span class="on">ACE</span><span>4</span><span>5</span><span class="free">0 ₸</span>
-        </div>
-        <p class="live-progress">До бесплатной чашки осталось: <b>2</b></p>
-        <div class="live-code demo">
-          <div class="bars" aria-hidden="true"></div>
-          <span>ACE000128</span>
-        </div>
+        <div class="live-name" id="demo-name">aida</div>
+        <div class="stamps" aria-hidden="true"><i class="on">ACE</i><i class="on">ACE</i><i class="on">ACE</i><i>4</i><i>5</i><i class="free">0 ₸</i></div>
+        <p class="live-progress">До бесплатной чашки осталось: 2</p>
+        <div class="live-code"><div class="bars" aria-hidden="true"></div><span>ACE000128</span></div>
       </div>
-
-      <form id="card-form" hidden>
-        <div class="tabs" role="tablist">
-          <button type="button" class="on" data-mode="register">Создать карту</button>
-          <button type="button" data-mode="login">У меня есть карта</button>
-        </div>
-        <label>Логин<input name="login" autocomplete="username" required minlength="3" maxlength="20" placeholder="например, aida"></label>
-        <label>Пароль<input name="password" type="password" autocomplete="new-password" required minlength="4" placeholder="минимум 4 символа"></label>
-        <button class="btn" type="submit">Создать карту</button>
-        <p class="form-note" id="card-note">Тот же логин и пароль подойдут в Telegram-боте.</p>
-      </form>
 
       <div id="card-live" hidden>
         <div class="card-photo"><img data-card-photo src="cards/card-1.jpg" width="1200" height="675" alt=""><div class="live-head"><img src="icon.svg" width="34" height="34" alt=""><div><b>Astana Coffee Express</b><span>Карта гостя</span></div></div></div>
@@ -408,6 +385,44 @@
           <button type="button" id="live-logout">Выйти</button>
         </div>
       </div>
+
+      <p class="designs-cap">Дизайн карты</p>
+      <div class="designs" id="card-designs" role="group" aria-label="Дизайн карты">
+        <button type="button" data-card="1" aria-label="Дизайн 1" class="on"><img src="cards/card-1.jpg" alt="" loading="lazy"></button>
+        <button type="button" data-card="2" aria-label="Дизайн 2"><img src="cards/card-2.jpg" alt="" loading="lazy"></button>
+        <button type="button" data-card="3" aria-label="Дизайн 3"><img src="cards/card-3.jpg" alt="" loading="lazy"></button>
+        <button type="button" data-card="4" aria-label="Дизайн 4"><img src="cards/card-4.jpg" alt="" loading="lazy"></button>
+        <button type="button" data-card="5" aria-label="Дизайн 5"><img src="cards/card-5.jpg" alt="" loading="lazy"></button>
+        <button type="button" data-card="6" aria-label="Дизайн 6"><img src="cards/card-6.jpg" alt="" loading="lazy"></button>
+      </div>
+
+      <form id="card-form" hidden>
+        <div class="tabs" role="tablist">
+          <button type="button" class="on" data-mode="register">Создать карту</button>
+          <button type="button" data-mode="login">У меня есть карта</button>
+        </div>
+        <label>Логин<input name="login" autocomplete="username" required minlength="3" maxlength="20" placeholder="например, aida"></label>
+        <label>Пароль<input name="password" type="password" autocomplete="new-password" required minlength="4" placeholder="минимум 4 символа"></label>
+        <button class="btn light" type="submit">Создать карту</button>
+        <p class="form-note" id="card-note">Тот же логин и пароль подойдут в Telegram-боте.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="where">
+  <div class="wrap">
+    <div class="eyebrow">Где найти</div>
+    <h2>Аппараты там, где вы бываете каждый день</h2>
+    <div class="places">
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c3 3 9 3 12 0v-5"/></svg></div><h3>Университеты</h3><p>Между парами и перед экзаменом.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-4h6v4M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/></svg></div><h3>Бизнес-центры</h3><p>Не выходя из здания.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg></div><h3>Клиники</h3><p>Пока ждёте приёма.</p></div>
+      <div class="card-plain"><div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d9a06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6"/><circle cx="15.5" cy="14" r=".6"/></svg></div><h3>Транспортные узлы</h3><p>По пути, в любое время.</p></div>
+    </div>
+    <div class="map-box">
+      <iframe title="Карта Астаны" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=71.20%2C50.95%2C71.70%2C51.30&amp;layer=mapnik"></iframe>
+      <div class="map-note">Астана, Казахстан. Точные адреса аппаратов и новые точки присылает <a data-bot href="#bot">Telegram-бот</a>.</div>
     </div>
   </div>
 </section>
@@ -460,8 +475,22 @@
   (function () {
     const $ = id => document.getElementById(id);
     const demo = $("card-demo"), form = $("card-form"), live = $("card-live"), note = $("card-note");
+
+    // дизайн карты: выбор запоминается в браузере
+    function applyDesign(n) {
+      if (n) { try { localStorage.setItem("ace-card-design", n); } catch (e) {} }
+      else { try { n = localStorage.getItem("ace-card-design"); } catch (e) {} }
+      if (!/^[1-6]$/.test(n)) n = "1";
+      document.querySelectorAll("[data-card-photo]").forEach(img => { img.src = "cards/card-" + n + ".jpg"; });
+      document.querySelectorAll("#card-designs button").forEach(b => b.classList.toggle("on", b.dataset.card === n));
+    }
+    document.querySelectorAll("#card-designs button").forEach(b => b.addEventListener("click", () => applyDesign(b.dataset.card)));
+    applyDesign();
+
     if (!SITE.api) return; // без адреса API остаётся пример карты
-    demo.hidden = true; form.hidden = false;
+    form.hidden = false;
+    // предпросмотр: имя на карте повторяет логин из формы
+    form.login.addEventListener("input", () => { $("demo-name").textContent = form.login.value.trim() || "aida"; });
     const KEY = "ace-site-token";
     const FREE = 6; // должно совпадать с FREE_EVERY в настройках бота
     let mode = "register", token = null;
@@ -487,12 +516,12 @@
       } else {
         $("live-progress").textContent = "";
       }
-      form.hidden = true; live.hidden = false;
+      form.hidden = true; demo.hidden = true; live.hidden = false;
       $("card-widget").classList.add("active");
     }
 
     function showForm(text) {
-      live.hidden = true; form.hidden = false;
+      live.hidden = true; demo.hidden = false; form.hidden = false;
       $("card-widget").classList.remove("active");
       setNote(text || "Тот же логин и пароль подойдут в Telegram-боте.");
     }
@@ -573,9 +602,7 @@
     const io = new IntersectionObserver(entries => entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
     }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-    const sel = "section h2, section .lead, .stats .wrap > div, .card-plain, .step, .feature, .drinks, .loyalty, .map-box, .cta, .hero-art";
-    document.querySelectorAll(sel).forEach((el, i) => {
-      if (el.closest(".hero")) return;
+    document.querySelectorAll(".drinks, .steps, .card-box, .map-box").forEach(el => {
       el.classList.add("reveal");
       io.observe(el);
     });
