@@ -23,11 +23,11 @@
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
   /* фон: размытая выбранная картинка, плавно сменяется */
-  .ambient { position: fixed; left: 50%; top: 50%; width: 26vw; height: 26vh; z-index: 0; background: center / cover no-repeat; filter: blur(16px) saturate(1.25); transform: translate(-50%, -50%) scale(5); opacity: 0; transition: opacity 1s ease; will-change: opacity; }
-  .ambient.on { opacity: .5; }
-  .veil { position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse at 50% 45%, rgba(18,16,14,.15), rgba(18,16,14,.86) 72%); }
+  .ambient { position: fixed; inset: 0; z-index: 0; background: center / cover no-repeat; opacity: 0; transition: opacity .8s ease; will-change: opacity; }  /* картинки фона размыты заранее */
+  .ambient.on { opacity: 1; }
 
-  #fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+  #fx { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; transition: opacity .25s; }
+  #fx.off { opacity: 0; }
   header, main, footer { position: relative; z-index: 1; }
   header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 22px; }
   .back { display: inline-flex; align-items: center; gap: 8px; color: var(--cream); text-decoration: none; font-weight: 600; font-size: .92rem; padding: 9px 14px; border: 1px solid rgba(244,236,223,.25); border-radius: 10px; transition: background .2s; }
@@ -47,10 +47,10 @@
   .stage { position: relative; height: calc(var(--cw) / 1.586 + 90px); margin-top: 12px; perspective: 1500px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
   .stage.drag { cursor: grabbing; }
   .card { position: absolute; left: 50%; top: 50%; width: var(--cw); aspect-ratio: 1.586; margin: calc(var(--cw) / -3.172) 0 0 calc(var(--cw) / -2); border: 0; padding: 0; border-radius: calc(var(--cw) * .045); overflow: hidden; background: #000; color: #fff; font: inherit; text-align: left; cursor: pointer;
-    box-shadow: 0 40px 70px -30px rgba(0,0,0,.9); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s; will-change: transform; }
+    box-shadow: 0 24px 40px -22px rgba(0,0,0,.9); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s; will-change: transform; }
   .card::after { content: ""; position: absolute; inset: 0; background: #0c0907; opacity: var(--dim, 0); transition: opacity .5s; pointer-events: none; }
   .stage.drag .card, .card.tilting { transition: opacity .3s; }
-  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 40px 70px -30px rgba(0,0,0,.9); }
+  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 24px 40px -22px rgba(0,0,0,.9); }
   .card img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   .card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 35%, rgba(18,16,14,.86)); }
   .card .brand { position: absolute; left: 6%; right: 6%; bottom: 8%; display: flex; align-items: center; gap: 4%; }
@@ -93,8 +93,7 @@
 </style>
 </head>
 <body>
-<div class="ambient" id="amb-a"></div><div class="ambient" id="amb-b"></div><div class="veil"></div>
-<canvas id="fx" aria-hidden="true"></canvas>
+<div class="ambient" id="amb-a"></div><div class="ambient" id="amb-b"></div><canvas id="fx" aria-hidden="true"></canvas>
 
 <header>
   <a class="back" href="index.html#bot"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg><span data-t="back">Назад на сайт</span></a>
@@ -184,10 +183,10 @@
     });
   }
   const ambA = document.getElementById("amb-a"), ambB = document.getElementById("amb-b");
-  let ambFlip = false;
+  let ambFlip = false, ambTimer = 0;
   function ambient() {
     const on = ambFlip ? ambA : ambB, off = ambFlip ? ambB : ambA; ambFlip = !ambFlip;
-    on.style.backgroundImage = "url(cards/card-" + (current + 1) + "-s.webp)";
+    on.style.backgroundImage = "radial-gradient(ellipse at 50% 45%, rgba(18,16,14,.55), rgba(18,16,14,.93) 72%), url(cards/card-" + (current + 1) + "-b.webp)";
     on.classList.add("on"); off.classList.remove("on");
   }
   function go(i, quiet) {
@@ -198,7 +197,9 @@
     document.getElementById("cur").textContent = i + 1;
     dots.querySelectorAll("button").forEach((d, k) => d.classList.toggle("on", k === i));
     prev.disabled = i === 0; next.disabled = i === N - 1;
-    if (changed || quiet) { ambient(); setFx(KINDS[i]); }
+    // фон меняем, когда карта уже доехала: два тяжёлых движения не идут одновременно
+    if (quiet) { ambient(); setFx(KINDS[i]); }
+    else if (changed) { setFx(KINDS[i]); clearTimeout(ambTimer); ambTimer = setTimeout(ambient, 680); }
     if (changed && !calm) {
       const c = cards[i]; c.classList.remove("shine"); void c.offsetWidth; c.classList.add("shine");
     }
@@ -289,7 +290,7 @@
   // ---------- эффекты под каждую карту: лепестки, пар, солнечная пыль, снег, искры, сердечки ----------
   const KINDS = ["petal", "steam", "mote", "snow", "star", "heart"];
   const fx = document.getElementById("fx"), g = fx.getContext("2d");
-  let W = 0, H = 0, parts = [], kind = null, raf = 0, last = 0;
+  let W = 0, H = 0, parts = [], kind = null, raf = 0, last = 0, paused = false, swapTimer = 0, backTimer = 0;
   const R = (a, b) => a + Math.random() * (b - a);
   function fit() {
     const dpr = 1;
@@ -323,7 +324,8 @@
   }
   function frame(now) {
     raf = requestAnimationFrame(frame);
-    const dt = Math.min(.05, (now - last) / 1000 || 0); last = now;
+    if (paused || now - last < 30) return;
+    const dt = Math.min(.07, (now - last) / 1000 || 0); last = now;
     g.clearRect(0, 0, W, H);
     const cap = (kind === "steam" ? .42 : kind === "star" ? .6 : 1) * (W < 640 ? 26 : 48);
     let alive = 0;
@@ -342,12 +344,19 @@
       if (alpha > .01) paint(p, alpha);
     }
     g.globalAlpha = 1;
-    for (let n = 0; n < 2 && alive + n < cap; n++) parts.push(born(kind, true));
+    for (let n = 0; n < 3 && alive + n < cap; n++) parts.push(born(kind, true));
   }
   function setFx(k) {
     if (calm || k === kind) return;
-    kind = k; parts.forEach(p => { p.dying = true; });
+    const first = kind === null;
+    kind = k;
     if (!raf) { fit(); last = performance.now(); raf = requestAnimationFrame(frame); }
+    if (first) return;
+    // пока карта едет на место, частицы спрятаны и не рисуются — кадры уходят на само движение
+    fx.classList.add("off"); clearTimeout(swapTimer);
+    swapTimer = setTimeout(() => { paused = true; fx.style.display = "none"; }, 250);
+    clearTimeout(backTimer);
+    backTimer = setTimeout(() => { parts = []; g.clearRect(0, 0, W, H); paused = false; fx.style.display = ""; void fx.offsetWidth; fx.classList.remove("off"); }, 720);
   }
   addEventListener("resize", fit);
   document.addEventListener("visibilitychange", () => {
@@ -355,6 +364,7 @@
     else if (kind && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
   });
 
+  for (let i = 1; i <= N; i++) new Image().src = "cards/card-" + i + "-b.webp";
   go(current, true);
   // появление: карты «сдаются» снизу веером
   if (!calm && cards[0].animate) cards.forEach((c, i) => {
