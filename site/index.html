@@ -51,7 +51,7 @@
   nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 64px; }
   .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; letter-spacing: -.02em; font: 800 1.05rem var(--serif); white-space: nowrap; }
   .logo img { border-radius: 9px; flex: none; }
-  nav ul { display: flex; gap: 20px; list-style: none; padding: 0; font-size: .92rem; font-weight: 500; color: #4a3b32; }
+  nav ul { display: flex; gap: 18px; list-style: none; padding: 0; white-space: nowrap; font-size: .9rem; font-weight: 500; color: #4a3b32; }
   nav ul a { text-decoration: none; padding: 6px 0; border-bottom: 1px solid transparent; transition: border-color .18s; }
   nav ul a:hover { border-color: var(--copper); }
   nav .btn { padding: 9px 16px; font-size: .88rem; }
@@ -254,12 +254,15 @@
     .steam path { opacity: 0; } .brew { transform: none; }
   }
 
-  @media (max-width: 880px) {
-    section { padding: 62px 0; }
+  @media (max-width: 1100px) {
     html { scroll-padding-top: 112px; }
     nav .wrap { flex-wrap: wrap; height: auto; padding-top: 10px; gap: 8px 12px; }
     nav ul { order: 3; width: calc(100% + 44px); margin: 0 -22px; padding: 0 22px 8px; gap: 20px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
     nav ul::-webkit-scrollbar { display: none; }
+  }
+
+  @media (max-width: 880px) {
+    section { padding: 62px 0; }
     .logo { font-size: .98rem; gap: 8px; }
     .hero { padding: 44px 0 72px; }
     .hero .wrap, .split { grid-template-columns: minmax(0, 1fr); gap: 36px; }
@@ -531,9 +534,9 @@
   // Ключ — русский текст со страницы, значение — [қазақша, English]. Новый текст на странице = новая строка здесь.
   const I18N = {
     "Напитки": ["Сусындар", "Drinks"],
-    "Как купить": ["Қалай сатып алу", "How to buy"],
+    "Как купить": ["Сатып алу", "How to buy"],
     "Карта гостя": ["Қонақ картасы", "Guest card"],
-    "Где найти": ["Қайдан табуға болады", "Where to find us"],
+    "Где найти": ["Орналасуы", "Locations"],
     "Партнёрам": ["Серіктестерге", "For partners"],
     "Контакты": ["Байланыс", "Contacts"],
     "Бот в Telegram": ["Telegram-бот", "Telegram bot"],
