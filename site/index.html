@@ -250,6 +250,20 @@
   .people .role { font-size: .9rem; color: var(--muted); margin: 2px 0 14px; }
   .people a { font: 800 clamp(1.05rem, 2.2vw, 1.45rem) var(--serif); overflow-wrap: anywhere; }
 
+  .req-form { margin-top: 48px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 30px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; scroll-margin-top: 90px; }
+  .req-form h3 { grid-column: 1 / -1; font-size: 1.3rem; }
+  .req-form .wide { grid-column: 1 / -1; }
+  .req-form label { display: block; font-size: .88rem; color: var(--muted); }
+  .req-form input, .req-form select, .req-form textarea { display: block; width: 100%; margin-top: 6px; padding: 12px 13px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); font: 400 1rem var(--sans); }
+  .req-form textarea { resize: vertical; }
+  .req-end { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .req-note { font-size: .92rem; color: var(--muted); flex: 1; min-width: 200px; }
+  .req-note.ok { color: #2f7a4d; font-weight: 600; } .req-note.err { color: #a3301f; }
+  .btn[disabled] { opacity: .6; cursor: wait; }
+  #promo-bar { background: var(--gold); color: var(--ink); text-align: center; font-weight: 700; font-size: .92rem; padding: 9px 16px; }
+  #machine-box { margin-top: 34px; }
+  #machine-box .rows { margin-top: 12px; }
+
   footer { background: var(--machine); color: #a39283; padding: 28px 0; font-size: .86rem; }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
@@ -321,6 +335,7 @@
     .drink svg { width: 60px; }
     .steps { grid-template-columns: minmax(0, 1fr); gap: 30px; margin-top: 36px; }
     .where, #partners .wrap, .cols, .people { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .req-form { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; }
     .map-box iframe { height: 340px; }
     #partners::before { display: none; }
     #partners .calc { margin: 44px 22px 0; gap: 0; }
@@ -332,6 +347,7 @@
 </head>
 <body>
 
+<div id="promo-bar" hidden></div>
 <nav>
   <div class="wrap">
     <a class="logo" href="#"><img src="icon.svg" width="34" height="34" alt=""><span>Astana Coffee Express</span></a>
@@ -508,6 +524,7 @@
         <li><b>Клиники</b><span>пока ждёте приёма</span></li>
         <li><b>Транспортные узлы</b><span>по пути, в любое время</span></li>
       </ul>
+      <div id="machine-box" hidden><h3>Адреса аппаратов</h3><ul class="rows" id="machine-list"></ul></div>
       <p class="where-note">Точные адреса аппаратов и новые точки присылает <a data-bot href="#bot">Telegram-бот</a>.</p>
     </div>
     <div class="map-box">
@@ -522,7 +539,7 @@
       <p class="eyebrow">Владельцам зданий</p>
       <h2>Хотите аппарат в своём здании?</h2>
       <p class="lead">Ставим аппараты в университетах, бизнес-центрах, клиниках и на транспортных узлах. Напишите нам — расскажем об условиях размещения.</p>
-      <a class="btn light" href="mailto:wamaff@gmail.com?subject=%D0%A0%D0%B0%D0%B7%D0%BC%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%B0%D0%BF%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D0%B0">Написать о размещении</a>
+      <a class="btn light" href="#request" data-kind="placement">Оставить заявку на размещение</a>
     </div>
     <ul class="rows">
       <li><b>Аппарат на связи</b><p>Запасы и неисправности видим онлайн и приезжаем раньше, чем что-то закончится.</p></li>
@@ -588,6 +605,15 @@
       <div><h3>Санжар Мурат</h3><p class="role">Генеральный директор</p><a href="mailto:wamaff@gmail.com">wamaff@gmail.com</a></div>
       <div><h3>Рахман Даниал</h3><p class="role">Финансовый директор</p><a href="mailto:rahmanzavisnik@gmail.com">rahmanzavisnik@gmail.com</a></div>
     </div>
+    <form class="req-form" id="request">
+      <h3>Оставить обращение</h3>
+      <label>Тема<select name="kind"><option value="placement">Установка аппарата</option><option value="complaint">Жалоба</option><option value="refund">Возврат денег</option></select></label>
+      <label id="req-machine" hidden>Аппарат<select name="machine_id"><option value="">Не знаю или не важно</option></select></label>
+      <label>Как к вам обращаться<input name="name" maxlength="80" required autocomplete="name"></label>
+      <label>Телефон, почта или Telegram<input name="contact" maxlength="120" required></label>
+      <label class="wide">Сообщение<textarea name="text" maxlength="2000" rows="4"></textarea></label>
+      <div class="wide req-end"><button class="btn" type="submit">Отправить</button><p class="req-note" id="req-note" role="status"></p></div>
+    </form>
   </div>
 </section>
 
@@ -688,7 +714,24 @@
     "Владельцам зданий": ["Ғимарат иелеріне", "For building owners"],
     "Хотите аппарат в своём здании?": ["Ғимаратыңызға аппарат қойғыңыз келе ме?", "Want a machine in your building?"],
     "Ставим аппараты в университетах, бизнес-центрах, клиниках и на транспортных узлах. Напишите нам — расскажем об условиях размещения.": ["Аппараттарды университеттерге, бизнес-орталықтарға, емханаларға және көлік торабтарына орнатамыз. Бізге жазыңыз — орналастыру шарттарын айтып береміз.", "We place machines in universities, business centres, clinics and transport hubs. Write to us and we'll tell you about placement terms."],
-    "Написать о размещении": ["Орналастыру туралы жазу", "Write about placement"],
+    "Оставить заявку на размещение": ["Орналастыруға өтінім қалдыру", "Request a machine"],
+    "Адреса аппаратов": ["Аппараттардың мекенжайлары", "Machine addresses"],
+    "Оставить обращение": ["Өтініш қалдыру", "Send us a request"],
+    "Тема": ["Тақырып", "Topic"],
+    "Установка аппарата": ["Аппарат орнату", "Machine placement"],
+    "Жалоба": ["Шағым", "Complaint"],
+    "Возврат денег": ["Ақшаны қайтару", "Refund"],
+    "Аппарат": ["Аппарат", "Machine"],
+    "Не знаю или не важно": ["Білмеймін немесе маңызды емес", "Not sure or not relevant"],
+    "Как к вам обращаться": ["Сізге қалай хабарласайық", "Your name"],
+    "Телефон, почта или Telegram": ["Телефон, пошта немесе Telegram", "Phone, email or Telegram"],
+    "Сообщение": ["Хабарлама", "Message"],
+    "Отправить": ["Жіберу", "Send"],
+    "Отправляем… Если сервис спал, это займёт до минуты.": ["Жіберілуде… Сервис ұйықтап тұрса, бір минутқа дейін созылады.", "Sending… If the service was asleep, this can take up to a minute."],
+    "Спасибо! Мы получили обращение и свяжемся с вами.": ["Рақмет! Өтінішіңізді алдық, сізбен хабарласамыз.", "Thank you! We've received your request and will get back to you."],
+    "Заполните обязательные поля.": ["Міндетті өрістерді толтырыңыз.", "Please fill in the required fields."],
+    "Опишите, что случилось.": ["Не болғанын сипаттаңыз.", "Please describe what happened."],
+    "Слишком много обращений. Попробуйте позже.": ["Өтініштер тым көп. Кейінірек көріңіз.", "Too many requests. Please try again later."],
     "Аппарат на связи": ["Аппарат байланыста", "Always connected"],
     "Запасы и неисправности видим онлайн и приезжаем раньше, чем что-то закончится.": ["Қорлар мен ақауларды онлайн көреміз және бірдеңе таусылғанша келеміз.", "We see stock and faults online and arrive before anything runs out."],
     "Чисто каждый день": ["Күн сайын таза", "Clean every day"],
@@ -733,6 +776,8 @@
     "кофе за 45 секунд": ["45 секундта кофе", "coffee in 45 seconds"],
     "Astana Coffee Express — кофе за 45 секунд, 24/7": ["Astana Coffee Express — 45 секундта кофе, 24/7", "Astana Coffee Express — coffee in 45 seconds, 24/7"],
   };
+  let PRICE = 600; // цена за чашку; если в админ-панели задана другая, сайт подставит её
+  const withPrice = s => PRICE === 600 ? s : s.replace(/600(?=[\s\u00a0]?₸)/g, PRICE);
   let LANG = "ru";
   try { LANG = localStorage.getItem("ace-lang") || "ru"; } catch (e) {}
   if (!["ru", "kk", "en"].includes(LANG)) LANG = "ru";
@@ -760,8 +805,8 @@
     while (w.nextNode()) nodes.push(w.currentNode);
     nodes.forEach(n => {
       if (n.parentElement.closest("script, style, .lang")) return;
-      if (n.__ru === undefined) { if (!/[А-Яа-яЁё]/.test(n.nodeValue)) return; n.__ru = n.nodeValue; }
-      n.nodeValue = t(n.__ru);
+      if (n.__ru === undefined) { if (!/[А-Яа-яЁё]|600[\s\u00a0]?₸/.test(n.nodeValue)) return; n.__ru = n.nodeValue; }
+      n.nodeValue = withPrice(t(n.__ru));
     });
     document.querySelectorAll("[placeholder], [aria-label], [title], [alt]").forEach(el => {
       el.__ru = el.__ru || {};
@@ -974,10 +1019,59 @@
     });
   })();
 
+  // ---------- Данные из админ-панели: цена, акция, адреса аппаратов; форма обращений ----------
+  (function () {
+    const form = document.getElementById("request"), note = document.getElementById("req-note");
+    const machineLabel = document.getElementById("req-machine");
+    function usePublic(d) {
+      if (!d) return;
+      if (d.price > 0 && d.price !== PRICE) { PRICE = d.price; applyLang(); document.dispatchEvent(new Event("ace-price")); }
+      const bar = document.getElementById("promo-bar");
+      bar.textContent = d.promo || ""; bar.hidden = !d.promo;
+      const list = document.getElementById("machine-list"), sel = form.machine_id, ms = d.machines || [];
+      list.textContent = ""; while (sel.options.length > 1) sel.remove(1);
+      ms.forEach(m => {
+        const li = document.createElement("li"), b = document.createElement("b"), sp = document.createElement("span");
+        b.textContent = m.name; sp.textContent = m.address; li.append(b, sp); list.appendChild(li);
+        sel.add(new Option(m.name, m.id));
+      });
+      document.getElementById("machine-box").hidden = !ms.length;
+      syncKind();
+    }
+    function syncKind() { machineLabel.hidden = form.kind.value === "placement" || form.machine_id.options.length < 2; }
+    form.kind.addEventListener("change", syncKind);
+    document.querySelectorAll('a[data-kind]').forEach(a => a.addEventListener("click", () => { form.kind.value = a.dataset.kind; syncKind(); }));
+    if (SITE.api) {
+      try { usePublic(JSON.parse(localStorage.getItem("ace-public"))); } catch (e) {}
+      fetch(SITE.api + "/api/public").then(r => r.ok ? r.json() : null).then(d => {
+        if (!d) return;
+        try { localStorage.setItem("ace-public", JSON.stringify(d)); } catch (e) {}
+        usePublic(d);
+      }).catch(() => {});
+    }
+    function say(text, cls) { put(note, text); note.className = "req-note " + (cls || ""); }
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const btn = form.querySelector(".btn");
+      btn.disabled = true; say("Отправляем… Если сервис спал, это займёт до минуты.");
+      try {
+        const res = await fetch(SITE.api + "/api/request", { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kind: form.kind.value, name: form.name.value, contact: form.contact.value, text: form.text.value,
+            machine_id: machineLabel.hidden ? "" : form.machine_id.value }) });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Что-то пошло не так. Попробуйте ещё раз.");
+        const kind = form.kind.value; form.reset(); form.kind.value = kind; syncKind();
+        say("Спасибо! Мы получили обращение и свяжемся с вами.", "ok");
+      } catch (err) {
+        say(err instanceof TypeError ? "Не получилось связаться с сервисом. Попробуйте ещё раз через минуту." : err.message, "err");
+      } finally { btn.disabled = false; }
+    });
+  })();
+
   // ---------- Калькулятор дохода для владельца помещения ----------
   (function () {
     const cups = document.getElementById("calc-cups"), share = document.getElementById("calc-share");
-    const PRICE = 600, DAYS = 30;
+    const DAYS = 30;
     const money = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0") + " ₸";
     function calc() {
       const rev = cups.value * PRICE * DAYS, mine = rev * share.value / 100;
@@ -989,6 +1083,7 @@
       [cups, share].forEach(r => r.style.setProperty("--p", ((r.value - r.min) / (r.max - r.min) * 100) + "%"));
     }
     cups.addEventListener("input", calc); share.addEventListener("input", calc);
+    document.addEventListener("ace-price", calc);
     calc();
   })();
 
