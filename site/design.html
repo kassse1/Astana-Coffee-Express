@@ -23,7 +23,7 @@
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
   /* фон: размытая выбранная картинка, плавно сменяется */
-  .ambient { position: fixed; inset: -12%; z-index: 0; background: center / cover no-repeat; filter: blur(70px) saturate(1.25); opacity: 0; transition: opacity 1s ease; }
+  .ambient { position: fixed; left: 50%; top: 50%; width: 26vw; height: 26vh; z-index: 0; background: center / cover no-repeat; filter: blur(16px) saturate(1.25); transform: translate(-50%, -50%) scale(5); opacity: 0; transition: opacity 1s ease; will-change: opacity; }
   .ambient.on { opacity: .5; }
   .veil { position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse at 50% 45%, rgba(18,16,14,.15), rgba(18,16,14,.86) 72%); }
 
@@ -47,9 +47,10 @@
   .stage { position: relative; height: calc(var(--cw) / 1.586 + 90px); margin-top: 12px; perspective: 1500px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
   .stage.drag { cursor: grabbing; }
   .card { position: absolute; left: 50%; top: 50%; width: var(--cw); aspect-ratio: 1.586; margin: calc(var(--cw) / -3.172) 0 0 calc(var(--cw) / -2); border: 0; padding: 0; border-radius: calc(var(--cw) * .045); overflow: hidden; background: #000; color: #fff; font: inherit; text-align: left; cursor: pointer;
-    box-shadow: 0 40px 70px -30px rgba(0,0,0,.9); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s, filter .5s, box-shadow .5s; will-change: transform; transform-style: preserve-3d; }
-  .stage.drag .card, .card.tilting { transition: opacity .3s, filter .3s, box-shadow .5s; }
-  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 50px 90px -30px rgba(0,0,0,.95), 0 0 80px -10px rgba(224,181,106,.35); }
+    box-shadow: 0 40px 70px -30px rgba(0,0,0,.9); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s; will-change: transform; }
+  .card::after { content: ""; position: absolute; inset: 0; background: #0c0907; opacity: var(--dim, 0); transition: opacity .5s; pointer-events: none; }
+  .stage.drag .card, .card.tilting { transition: opacity .3s; }
+  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 40px 70px -30px rgba(0,0,0,.9); }
   .card img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   .card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 35%, rgba(18,16,14,.86)); }
   .card .brand { position: absolute; left: 6%; right: 6%; bottom: 8%; display: flex; align-items: center; gap: 4%; }
@@ -63,7 +64,7 @@
   .card.shine .sweep { animation: sweep .9s ease-out; }
   @keyframes sweep { to { transform: translateX(460%) skewX(-12deg); } }
 
-  .arrow { position: absolute; bottom: -31px; z-index: 200; width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(244,236,223,.3); background: rgba(18,16,14,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--cream); cursor: pointer; display: grid; place-items: center; transition: background .2s, transform .2s, opacity .2s; }
+  .arrow { position: absolute; bottom: -31px; z-index: 200; width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(244,236,223,.3); background: rgba(18,16,14,.8); color: var(--cream); cursor: pointer; display: grid; place-items: center; transition: background .2s, transform .2s, opacity .2s; }
   .arrow:hover { background: rgba(244,236,223,.16); transform: scale(1.08); }
   .arrow[disabled] { opacity: .25; pointer-events: none; }
   .arrow.prev { left: calc(50% - 150px); }
@@ -176,7 +177,7 @@
       const a = Math.abs(i - pos);
       c.style.transform = transformOf(i);
       c.style.opacity = a > 2.6 ? 0 : 1;
-      c.style.filter = "brightness(" + (1 - Math.min(a, 2) * .32).toFixed(2) + ")";
+      c.style.setProperty("--dim", (Math.min(a, 2) * .34).toFixed(2));
       c.style.zIndex = 100 - Math.round(a * 10);
       c.classList.toggle("current", i === current);
       c.tabIndex = i === current ? 0 : -1;
@@ -291,7 +292,7 @@
   let W = 0, H = 0, parts = [], kind = null, raf = 0, last = 0;
   const R = (a, b) => a + Math.random() * (b - a);
   function fit() {
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    const dpr = 1;
     W = innerWidth; H = innerHeight; fx.width = W * dpr; fx.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   function born(k, anywhere) {
@@ -304,11 +305,14 @@
     else { p.r = R(6, 13); p.x = R(0, W); p.y = anywhere ? R(0, H) : H + 16; p.vy = -R(26, 58); p.vx = 0; p.a = R(.55, .9); p.c = Math.random() < .5 ? "#ff9db6" : "#ffd3de"; }
     return p;
   }
+  const puff = document.createElement("canvas"); puff.width = puff.height = 64;   // клуб пара рисуем один раз
+  (function () { const c = puff.getContext("2d"), gr = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, "rgba(255,248,236,1)"); gr.addColorStop(1, "rgba(255,248,236,0)"); c.fillStyle = gr; c.fillRect(0, 0, 64, 64); })();
   function paint(p, alpha) {
     g.globalAlpha = alpha;
     if (p.k === "snow") { g.fillStyle = "#fff"; g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.29); g.fill(); }
-    else if (p.k === "mote") { g.fillStyle = "#ffe2a0"; g.shadowColor = "#ffd27a"; g.shadowBlur = p.r * 5; g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.29); g.fill(); g.shadowBlur = 0; }
-    else if (p.k === "steam") { const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r); gr.addColorStop(0, "rgba(255,248,236,1)"); gr.addColorStop(1, "rgba(255,248,236,0)"); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.29); g.fill(); }
+    else if (p.k === "mote") { g.fillStyle = "#ffe2a0"; g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.29); g.fill(); g.globalAlpha = alpha * .22; g.beginPath(); g.arc(p.x, p.y, p.r * 3.2, 0, 6.29); g.fill(); }
+    else if (p.k === "steam") { g.drawImage(puff, p.x - p.r, p.y - p.r, p.r * 2, p.r * 2); }
     else {
       g.save(); g.translate(p.x, p.y); g.fillStyle = p.c;
       if (p.k === "petal") { g.rotate(p.rot); g.beginPath(); g.ellipse(0, 0, p.r, p.r * .5, 0, 0, 6.29); g.fill(); }
@@ -321,7 +325,7 @@
     raf = requestAnimationFrame(frame);
     const dt = Math.min(.05, (now - last) / 1000 || 0); last = now;
     g.clearRect(0, 0, W, H);
-    const cap = (kind === "steam" ? .42 : kind === "star" ? .6 : 1) * (W < 640 ? 34 : 66);
+    const cap = (kind === "steam" ? .42 : kind === "star" ? .6 : 1) * (W < 640 ? 26 : 48);
     let alive = 0;
     for (let i = parts.length - 1; i >= 0; i--) {
       const p = parts[i];
