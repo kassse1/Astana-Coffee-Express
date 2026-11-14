@@ -208,6 +208,26 @@
   #partners .rows li { border-color: rgba(244,236,223,.18); display: block; }
   #partners .rows p { color: #cdbdae; font-size: .94rem; margin-top: 2px; }
 
+  #partners .calc { margin-top: 64px; align-items: stretch; gap: 0; border: 1px solid rgba(244,236,223,.18); border-radius: 18px; overflow: hidden; padding: 0; max-width: 1076px; }
+  .calc-in { padding: 34px; }
+  .calc-in h3 { font-size: 1.3rem; margin-bottom: 26px; }
+  .calc-in label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; color: #cdbdae; font-size: .95rem; margin-top: 22px; }
+  .calc-in output { font: 800 1.35rem var(--sans); color: var(--cream); font-variant-numeric: tabular-nums; }
+  .calc-in input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; margin-top: 6px; background: transparent; cursor: pointer; --p: 21%; }
+  .calc-in input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 6px; background: linear-gradient(90deg, var(--gold) var(--p), rgba(244,236,223,.18) var(--p)); }
+  .calc-in input[type=range]::-moz-range-track { height: 6px; border-radius: 6px; background: rgba(244,236,223,.18); }
+  .calc-in input[type=range]::-moz-range-progress { height: 6px; border-radius: 6px; background: var(--gold); }
+  .calc-in input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -9px; border-radius: 50%; background: var(--cream); border: 5px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,.5); transition: transform .15s; }
+  .calc-in input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--cream); border: 5px solid var(--gold); }
+  .calc-in input[type=range]:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .calc-out { padding: 34px; background: rgba(244,236,223,.06); border-left: 1px solid rgba(244,236,223,.18); }
+  .calc-cap { color: #cdbdae; font-size: .95rem; }
+  .calc-big { font: 800 clamp(2.4rem, 5.4vw, 3.8rem)/1.1 var(--sans); letter-spacing: -.04em; color: var(--gold); margin: 4px 0 22px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .calc-out dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; border-top: 1px solid rgba(244,236,223,.18); padding-top: 18px; }
+  .calc-out dt { color: #cdbdae; font-size: .86rem; }
+  .calc-out dd { font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .calc-note { color: #a39283; font-size: .82rem; margin-top: 20px; }
+
   /* о нас */
   .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px; margin-top: 44px; }
   .cols > div { border-top: 1px solid var(--espresso); padding-top: 20px; }
@@ -303,6 +323,9 @@
     .where, #partners .wrap, .cols, .people { grid-template-columns: minmax(0, 1fr); gap: 32px; }
     .map-box iframe { height: 340px; }
     #partners::before { display: none; }
+    #partners .calc { margin: 44px 22px 0; gap: 0; }
+    .calc-in, .calc-out { padding: 24px 20px; }
+    .calc-out { border-left: 0; border-top: 1px solid rgba(244,236,223,.18); }
     footer .wrap { justify-content: center; text-align: center; }
   }
 </style>
@@ -507,6 +530,24 @@
       <li><b>Работает сам</b><p>Круглосуточно, без персонала и наличных: Kaspi QR, карта или NFC.</p></li>
     </ul>
   </div>
+  <div class="wrap calc" id="calc">
+    <div class="calc-in">
+      <h3>Калькулятор дохода</h3>
+      <label for="calc-cups"><span>Чашек в день</span><output id="calc-cups-out">50</output></label>
+      <input id="calc-cups" type="range" min="10" max="200" step="5" value="50">
+      <label for="calc-share"><span>Ваша доля от выручки</span><output id="calc-share-out">10%</output></label>
+      <input id="calc-share" type="range" min="5" max="30" step="1" value="10">
+    </div>
+    <div class="calc-out">
+      <p class="calc-cap">Ваш доход в месяц</p>
+      <p class="calc-big" id="calc-month">90 000 ₸</p>
+      <dl>
+        <div><dt>Выручка аппарата в месяц</dt><dd id="calc-rev">900 000 ₸</dd></div>
+        <div><dt>Ваш доход в год</dt><dd id="calc-year">1 080 000 ₸</dd></div>
+      </dl>
+      <p class="calc-note">Расчёт примерный: 600 ₸ за чашку, 30 дней в месяце. Доля в калькуляторе — пример, условия размещения обсуждаются отдельно.</p>
+    </div>
+  </div>
 </section>
 
 <section id="about">
@@ -654,6 +695,13 @@
     "Чистим ежедневно, фильтры меняем раз в две недели.": ["Күн сайын тазалаймыз, сүзгілерді екі аптада бір ауыстырамыз.", "We clean daily and change filters every two weeks."],
     "Работает сам": ["Өзі жұмыс істейді", "Runs by itself"],
     "Круглосуточно, без персонала и наличных: Kaspi QR, карта или NFC.": ["Тәулік бойы, қызметкерсіз және қолма-қол ақшасыз: Kaspi QR, карта немесе NFC.", "Around the clock, no staff and no cash: Kaspi QR, card or NFC."],
+    "Калькулятор дохода": ["Табыс калькуляторы", "Income calculator"],
+    "Чашек в день": ["Күніне шыныаяқ", "Cups per day"],
+    "Ваша доля от выручки": ["Түсімнен сіздің үлесіңіз", "Your share of revenue"],
+    "Ваш доход в месяц": ["Сіздің айлық табысыңыз", "Your income per month"],
+    "Выручка аппарата в месяц": ["Аппараттың айлық түсімі", "Machine revenue per month"],
+    "Ваш доход в год": ["Сіздің жылдық табысыңыз", "Your income per year"],
+    "Расчёт примерный: 600 ₸ за чашку, 30 дней в месяце. Доля в калькуляторе — пример, условия размещения обсуждаются отдельно.": ["Есеп шамамен алынған: бір шыныаяқ 600 ₸, айына 30 күн. Калькулятордағы үлес — мысал, орналастыру шарттары бөлек талқыланады.", "This is an estimate: 600 ₸ per cup, 30 days a month. The share in the calculator is an example; placement terms are discussed separately."],
     "О нас": ["Біз туралы", "About us"],
     "Кофейня размером с один аппарат": ["Бір аппараттай ғана кофехана", "A coffee shop the size of one machine"],
     "Astana Coffee Express — сеть кофе-аппаратов самообслуживания в Астане. Мы ставим их там, где кофе нужен здесь и сейчас.": ["Astana Coffee Express — Астанадағы өзіне-өзі қызмет көрсететін кофе аппараттарының желісі. Біз оларды кофе дәл қазір керек жерлерге қоямыз.", "Astana Coffee Express is a network of self-service coffee machines in Astana. We put them where coffee is needed right here, right now."],
@@ -924,6 +972,24 @@
       el.classList.add("reveal");
       io.observe(el);
     });
+  })();
+
+  // ---------- Калькулятор дохода для владельца помещения ----------
+  (function () {
+    const cups = document.getElementById("calc-cups"), share = document.getElementById("calc-share");
+    const PRICE = 600, DAYS = 30;
+    const money = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0") + " ₸";
+    function calc() {
+      const rev = cups.value * PRICE * DAYS, mine = rev * share.value / 100;
+      document.getElementById("calc-cups-out").textContent = cups.value;
+      document.getElementById("calc-share-out").textContent = share.value + "%";
+      document.getElementById("calc-rev").textContent = money(rev);
+      document.getElementById("calc-month").textContent = money(mine);
+      document.getElementById("calc-year").textContent = money(mine * 12);
+      [cups, share].forEach(r => r.style.setProperty("--p", ((r.value - r.min) / (r.max - r.min) * 100) + "%"));
+    }
+    cups.addEventListener("input", calc); share.addEventListener("input", calc);
+    calc();
   })();
 
   // ---------- Заставка: зёрна сыплются и собираются в чашку кофе ----------
