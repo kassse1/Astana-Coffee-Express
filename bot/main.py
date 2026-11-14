@@ -20,6 +20,7 @@ from .barcodes import make_card_png, normalize_code, read_barcode
 from .config import Config, load_config
 from .db import ASTANA_TZ, DBError, User, open_db
 from .demo import PREFIX as DEMO_PREFIX, build_demo
+from .admin import AdminStore, make_admin_token, setup_admin_api
 from .webapi import setup_api
 
 log = logging.getLogger("coffee-bot")
@@ -46,7 +47,7 @@ class Admin(StatesGroup):
     promo_confirm = State()
 
 
-def build_router(db, cfg: Config) -> Router:
+def build_router(db, cfg: Config, store: AdminStore | None = None) -> Router:
     r = Router()
 
     typed = F.text & ~F.text.in_(ALL_BUTTONS)  # обычный текст, а не кнопка меню
@@ -63,8 +64,8 @@ def build_router(db, cfg: Config) -> Router:
 
     cancel_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text=B_CANCEL)]], resize_keyboard=True)
 
-    def drinks_kb(user_id: int) -> InlineKeyboardMarkup:
-        btns = [InlineKeyboardButton(text=d, callback_data=f"mark:{user_id}:{i}")
+    def drinks_kb(user_id: int, machine_id: int = 0) -> InlineKeyboardMarkup:
+        btns = [InlineKeyboardButton(text=d, callback_data=f"mark:{user_id}:{i}:{machine_id}")
                 for i, d in enumerate(cfg.drinks)]
         return InlineKeyboardMarkup(inline_keyboard=[btns[i:i + 2] for i in range(0, len(btns), 2)])
 
@@ -188,6 +189,16 @@ def build_router(db, cfg: Config) -> Router:
                              reply_markup=menu(message.from_user.id))
         await send_card(message, user)
 
+    @r.message(Command("admin"), F.from_user.id.in_(cfg.admin_ids))
+    async def admin_link(message: Message):
+        if not cfg.site_origin.startswith("https://"):
+            return await message.answer("Чтобы открыть панель, укажите адрес сайта в переменной SITE_ORIGIN "
+                                        "в настройках бота (например https://ваш-сайт.onrender.com).")
+        url = f"{cfg.site_origin}/admin.html#{make_admin_token(cfg, message.from_user.id)}"
+        await message.answer("Админ-панель. Ссылка личная и действует 12 часов — не пересылайте её.",
+                             reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+                                 InlineKeyboardButton(text="Открыть панель", url=url)]]))
+
     @r.message(F.text == B_LOGOUT)
     async def logout(message: Message, state: FSMContext):
         await state.clear()
@@ -224,6 +235,20 @@ def build_router(db, cfg: Config) -> Router:
                              "(например <code>ACE000012</code> или просто <code>12</code>).\n"
                              "Гостей можно сканировать подряд, в конце нажмите «Отмена».",
                              reply_markup=cancel_kb)
+        places = store.machines(only_active=True) if store else []
+        if places:  # чтобы в панели было видно, какой аппарат сколько продаёт
+            await message.answer("У какого аппарата отмечаете?", reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text=m["name"], callback_data=f"mach:{m['id']}")] for m in places]))
+
+    @r.callback_query(F.data.startswith("mach:"), F.from_user.id.in_(cfg.admin_ids))
+    async def machine_picked(call: CallbackQuery, state: FSMContext):
+        machine_id = int(call.data.split(":")[1])
+        name = next((m["name"] for m in store.machines() if m["id"] == machine_id), None) if store else None
+        if not name:
+            return await call.answer("Аппарат не найден", show_alert=True)
+        await state.update_data(machine=machine_id)
+        await call.message.edit_text(f"Аппарат: <b>{html.escape(name)}</b> ✅")
+        await call.answer()
 
     @r.message(Admin.scan, F.photo | typed)
     async def scanned(message: Message, state: FSMContext, bot: Bot):
@@ -246,17 +271,19 @@ def build_router(db, cfg: Config) -> Router:
             f"Чашек: {user.total}, любит: {html.escape(user.favorite or '—')}\n"
             + ("🎁 <b>Эта чашка — бесплатная</b>\n" if next_is_free(user.total) else "")
             + "\nЧто берёт?",
-            reply_markup=drinks_kb(user.id))
+            reply_markup=drinks_kb(user.id, (await state.get_data()).get("machine", 0)))
 
     @r.callback_query(F.data.startswith("mark:"), F.from_user.id.in_(cfg.admin_ids))
     async def marked(call: CallbackQuery, bot: Bot):
-        _, user_id, idx = call.data.split(":")
+        _, user_id, idx, *rest = call.data.split(":")
         try:
             drink = cfg.drinks[int(idx)]
             user = db.add_coffee(int(user_id), drink)
         except (DBError, IndexError) as e:
             return await call.answer(str(e) or "Ошибка", show_alert=True)
         was_free = cfg.free_every >= 2 and user.total % cfg.free_every == 0
+        if store:  # журнал продаж для админ-панели
+            store.add_sale(user.id, drink, int(rest[0]) if rest and rest[0] != "0" else None, was_free)
         await call.message.edit_text(
             f"✅ {html.escape(user.login)}: {html.escape(drink)} отмечен"
             f"{' 🎁 (бесплатная)' if was_free else ''}. Всего чашек: {user.total}")
@@ -385,19 +412,23 @@ async def main() -> None:
     db = open_db(cfg)
     bot = Bot(cfg.token, default=DefaultBotProperties(parse_mode="HTML"))
     dp = Dispatcher()
-    dp.include_router(build_router(db, cfg))
+    store = AdminStore(cfg)
+    moved = store.backfill(db.purchases(), cfg.free_every)
+    if moved:
+        log.info("В журнал продаж перенесено чашек: %s", moved)
+    dp.include_router(build_router(db, cfg, store))
     await bot.set_my_commands([BotCommand(command="start", description="Главное меню"),
                                BotCommand(command="help", description="Как это работает"),
                                BotCommand(command="cancel", description="Отменить действие")])
     log.info("Бот запущен, база: %s", "облачная (DATABASE_URL)" if cfg.database_url else cfg.db_path)
     if cfg.webhook_url:
-        await run_webhook(bot, dp, cfg, db)
+        await run_webhook(bot, dp, cfg, db, store)
     else:
         await bot.delete_webhook()
         await dp.start_polling(bot)
 
 
-async def run_webhook(bot: Bot, dp: Dispatcher, cfg: Config, db) -> None:
+async def run_webhook(bot: Bot, dp: Dispatcher, cfg: Config, db, store: AdminStore) -> None:
     """Режим для бесплатного Web Service: Telegram сам стучится к нам и будит службу."""
     from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
     from aiohttp import web
@@ -407,6 +438,7 @@ async def run_webhook(bot: Bot, dp: Dispatcher, cfg: Config, db) -> None:
     app.router.add_get("/", lambda _: web.Response(text="Astana Coffee Express bot is running"))
     SimpleRequestHandler(dp, bot, secret_token=secret).register(app, path="/webhook")
     setup_api(app, db, cfg)
+    setup_admin_api(app, db, store, cfg, bot)
     setup_application(app, dp, bot=bot)
     runner = web.AppRunner(app)
     await runner.setup()
