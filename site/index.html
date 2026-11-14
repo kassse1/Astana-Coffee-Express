@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Prata&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add("js");</script>
 <style>
   :root {
@@ -21,15 +21,15 @@
     --espresso: #26170f; --ink: #1d1410; --machine: #12100e;
     --copper: #a8672f; --copper-light: #d6a06c; --gold: #e0b56a;
     --wood: #a9774c; --muted: #6f5e53; --line: #e2d5c1; --r: 14px;
-    --serif: "Prata", Georgia, "Times New Roman", serif;
-    --sans: "Golos Text", "Segoe UI", Roboto, Arial, sans-serif;
+    --serif: "Manrope", "Segoe UI", Roboto, Arial, sans-serif;
+    --sans: "Manrope", "Segoe UI", Roboto, Arial, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; }
   html { scroll-behavior: smooth; scroll-padding-top: 76px; }
   body { font: 17px/1.6 var(--sans); color: var(--ink); background: var(--cream); -webkit-font-smoothing: antialiased; font-synthesis: none; }
   a { color: inherit; }
   .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
-  h1, h2 { font-family: var(--serif); font-weight: 400; line-height: 1.12; letter-spacing: -.01em; text-wrap: balance; }
+  h1, h2 { font-family: var(--serif); font-weight: 800; line-height: 1.12; letter-spacing: -.035em; text-wrap: balance; }
   h1 { font-size: clamp(2.3rem, 5.6vw, 4.5rem); line-height: 1.08; }
   h1 em, h2 em { font-style: normal; color: inherit; }
   h2 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); }
@@ -49,7 +49,7 @@
   /* навигация */
   nav { position: sticky; top: 0; z-index: 30; background: rgba(244,236,223,.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
   nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 64px; }
-  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 400 1.08rem var(--serif); white-space: nowrap; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; letter-spacing: -.02em; font: 800 1.05rem var(--serif); white-space: nowrap; }
   .logo img { border-radius: 9px; flex: none; }
   nav ul { display: flex; gap: 24px; list-style: none; padding: 0; font-size: .92rem; font-weight: 500; color: #4a3b32; }
   nav ul a { text-decoration: none; padding: 6px 0; border-bottom: 1px solid transparent; transition: border-color .18s; }
@@ -65,7 +65,7 @@
   .hero p.lead { font-size: 1.14rem; margin: 24px 0 32px; }
   .cta { display: flex; gap: 12px; flex-wrap: wrap; }
   .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 52px; padding-top: 22px; border-top: 1px solid var(--line); }
-  .facts dt { font: 400 1.9rem/1.1 var(--serif); }
+  .facts dt { font: 800 1.9rem/1.1 var(--serif); }
   .facts dd { font-size: .86rem; color: var(--muted); margin-top: 6px; }
   /* сцена: чёрный аппарат у стены из деревянных реек */
   .scene { position: relative; aspect-ratio: 4 / 5; border-radius: 22px; overflow: hidden;
@@ -89,7 +89,7 @@
   #menu { background: var(--espresso); color: var(--cream); }
   #menu .eyebrow { color: var(--gold); }
   .menu-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: 52px; }
-  .price { font: 400 clamp(3.6rem, 8.5vw, 6.2rem)/1 var(--serif); color: var(--gold); white-space: nowrap; }
+  .price { letter-spacing: -.04em; font: 800 clamp(3.6rem, 8.5vw, 6.2rem)/1 var(--serif); color: var(--gold); white-space: nowrap; }
   .price small { font: 500 1rem var(--sans); color: #cdbdae; margin-left: 12px; }
   .drinks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid rgba(244,236,223,.18); }
   .drink { padding: 34px 10px 6px; text-align: center; border-left: 1px solid rgba(244,236,223,.18); }
@@ -105,7 +105,7 @@
   #how { background: var(--paper); }
   .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px; margin-top: 48px; padding: 0; list-style: none; counter-reset: s; }
   .steps li { border-top: 1px solid var(--espresso); padding-top: 22px; counter-increment: s; }
-  .steps li::before { content: counter(s); display: block; font: 400 3.2rem/1 var(--serif); color: var(--copper); margin-bottom: 20px; }
+  .steps li::before { content: counter(s); display: block; font: 800 3.2rem/1 var(--serif); color: var(--copper); margin-bottom: 20px; }
   .steps p { color: var(--muted); font-size: .96rem; margin-top: 8px; }
 
   /* карта гостя */
@@ -118,9 +118,9 @@
   .card-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .card-photo .live-head { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 10px; padding: 30px 14px 10px; background: linear-gradient(transparent, rgba(18,16,14,.82)); }
   .card-photo .live-head img { border-radius: 8px; flex: none; }
-  .card-photo .live-head b { display: block; font: 400 .98rem var(--serif); color: #fff; }
+  .card-photo .live-head b { display: block; font: 800 .98rem var(--serif); color: #fff; }
   .card-photo .live-head span { display: block; font-size: .74rem; color: var(--gold); }
-  .live-name { font: 400 1.5rem/1.2 var(--serif); overflow-wrap: anywhere; }
+  .live-name { font: 800 1.5rem/1.2 var(--serif); overflow-wrap: anywhere; }
   .stamps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 14px 0 8px; }
   .stamps > * { aspect-ratio: 1; border: 1.5px dashed rgba(244,236,223,.35); border-radius: 50%; display: grid; place-items: center; font: 600 .74rem var(--sans); font-style: normal; color: #cdbdae; }
   .stamps > .on { border: 1.5px solid var(--copper-light); background: var(--copper-light); color: var(--espresso); }
@@ -199,7 +199,7 @@
   .people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px; margin-top: 40px; }
   .people > div { border-top: 1px solid var(--espresso); padding-top: 20px; }
   .people .role { font-size: .9rem; color: var(--muted); margin: 2px 0 14px; }
-  .people a { font: 400 clamp(1.05rem, 2.2vw, 1.45rem) var(--serif); overflow-wrap: anywhere; }
+  .people a { font: 800 clamp(1.05rem, 2.2vw, 1.45rem) var(--serif); overflow-wrap: anywhere; }
 
   footer { background: var(--machine); color: #a39283; padding: 28px 0; font-size: .86rem; }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
@@ -310,9 +310,9 @@
     <div class="scene" aria-hidden="true">
       <svg class="machine" viewBox="72 16 216 444">
         <rect x="76" y="20" width="208" height="436" rx="10" fill="#161210"/>
-        <text x="180" y="44" text-anchor="middle" font-family="Golos Text" font-size="9" font-weight="700" letter-spacing="1.6" fill="#d9a06b">ASTANA COFFEE EXPRESS</text>
+        <text x="180" y="44" text-anchor="middle" font-family="Manrope" font-size="9" font-weight="700" letter-spacing="1.6" fill="#d9a06b">ASTANA COFFEE EXPRESS</text>
         <rect x="94" y="56" width="172" height="118" rx="6" fill="#0c1512" stroke="#3a2c22"/>
-        <text x="104" y="74" font-family="Golos Text" font-size="8" font-weight="600" fill="#f6efe4">Выберите напиток</text>
+        <text x="104" y="74" font-family="Manrope" font-size="8" font-weight="600" fill="#f6efe4">Выберите напиток</text>
         <g class="s1"><circle cx="118" cy="96" r="14" fill="none" stroke="#d9a06b" stroke-width="1.5"/><path d="M111 92h12v6a5 5 0 0 1-10 0z M123 93h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#d9a06b" stroke-width="1.4" stroke-linejoin="round"/></g>
         <g class="s1"><circle cx="152" cy="96" r="14" fill="none" stroke="#d9a06b" stroke-width="1.5"/><path d="M145 92h12v6a5 5 0 0 1-10 0z M157 93h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#d9a06b" stroke-width="1.4" stroke-linejoin="round"/></g>
         <g class="s1 sel"><circle cx="186" cy="96" r="14" fill="#d9a06b"/><path d="M179 92h12v6a5 5 0 0 1-10 0z M191 93h3a2.5 2.5 0 0 1 0 5h-3" fill="none" stroke="#161210" stroke-width="1.4" stroke-linejoin="round"/></g>
@@ -323,8 +323,8 @@
         <rect class="brew" x="104" y="160" width="152" height="4" rx="2" fill="#d9a06b"/>
         <rect x="94" y="188" width="66" height="56" rx="6" fill="#221b17"/>
         <g class="qr"><rect x="100" y="194" width="36" height="36" rx="3" fill="#f6efe4"/><rect x="104" y="198" width="8" height="8" fill="#161210"/><rect x="124" y="198" width="8" height="8" fill="#161210"/><rect x="104" y="218" width="8" height="8" fill="#161210"/><rect x="116" y="198" width="4" height="4" fill="#161210"/><rect x="114" y="208" width="6" height="4" fill="#161210"/><rect x="122" y="212" width="4" height="6" fill="#161210"/><rect x="116" y="220" width="6" height="4" fill="#161210"/><rect x="126" y="222" width="6" height="4" fill="#161210"/></g>
-        <text x="170" y="212" font-family="Golos Text" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">KASPI QR</text>
-        <text x="170" y="222" font-family="Golos Text" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">КАРТА / NFC</text>
+        <text x="170" y="212" font-family="Manrope" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">KASPI QR</text>
+        <text x="170" y="222" font-family="Manrope" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">КАРТА / NFC</text>
         <rect x="110" y="262" width="140" height="110" rx="8" fill="#0a0807"/>
         <g class="cup"><path d="M162 322h36l-4 38h-28z" fill="#f6efe4"/><rect x="160" y="316" width="40" height="7" rx="2" fill="#fff"/><rect x="164" y="334" width="32" height="10" fill="#b5703a"/></g>
         <g class="steam" fill="none" stroke="#f6efe4" stroke-width="1.6" stroke-linecap="round" opacity=".7"><path d="M172 308c-4-6 4-8 0-14"/><path d="M180 306c-4-6 4-8 0-14"/><path d="M188 308c-4-6 4-8 0-14"/></g>
