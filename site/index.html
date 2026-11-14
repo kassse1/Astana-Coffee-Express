@@ -142,7 +142,8 @@
   .live-actions { display: flex; gap: 8px; margin-top: 12px; }
   .live-actions button { flex: 1; background: transparent; border: 1px solid rgba(244,236,223,.3); color: var(--cream); font: 500 .88rem var(--sans); padding: 9px; border-radius: 9px; cursor: pointer; }
   .live-actions button:hover { background: rgba(244,236,223,.08); }
-  .designs-cap { font-size: .84rem; color: #cdbdae; margin: 18px 0 8px; }
+  .designs-cap { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: .84rem; color: #cdbdae; margin: 18px 0 8px; }
+  .designs-cap a { color: var(--gold); font-weight: 700; text-underline-offset: 3px; }
   .designs { display: flex; gap: 7px; height: 58px; }
   .designs button { position: relative; flex: 1 1 0; min-width: 0; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #000; cursor: pointer; transition: flex-grow .5s cubic-bezier(.3,1.3,.4,1), transform .25s, box-shadow .3s; }
   .designs button img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .5; filter: saturate(.6); transform: scale(1.15); transition: opacity .35s, filter .35s, transform .6s cubic-bezier(.2,.7,.2,1); }
@@ -443,7 +444,7 @@
         </div>
       </div>
 
-      <p class="designs-cap">Дизайн карты</p>
+      <p class="designs-cap"><span>Дизайн карты</span><a href="design.html">Смотреть все дизайны</a></p>
       <div class="designs" id="card-designs" role="group" aria-label="Дизайн карты">
         <button type="button" data-card="1" aria-label="Дизайн 1" class="on"><img src="cards/card-1.jpg" alt="" loading="lazy"></button>
         <button type="button" data-card="2" aria-label="Дизайн 2"><img src="cards/card-2.jpg" alt="" loading="lazy"></button>
@@ -605,6 +606,7 @@
     "Выйти": ["Шығу", "Log out"],
     "Войти": ["Кіру", "Log in"],
     "Дизайн карты": ["Карта дизайны", "Card design"],
+    "Смотреть все дизайны": ["Барлық дизайнды көру", "See all designs"],
     "Создать карту": ["Карта ашу", "Create a card"],
     "У меня есть карта": ["Менде карта бар", "I have a card"],
     "Логин": ["Логин", "Login"],

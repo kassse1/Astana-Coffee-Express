@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Дизайн карты гостя — Astana Coffee Express</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#12100e">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f4ecdf; --espresso: #26170f; --machine: #12100e;
+    --gold: #e0b56a; --copper-light: #d6a06c; --soft: #cdbdae;
+    --sans: "Manrope", "Segoe UI", Roboto, Arial, sans-serif;
+    --cw: min(76vw, 470px, 62vh);            /* ширина карты */
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font: 16px/1.5 var(--sans); color: var(--cream); background: var(--machine); overflow: hidden; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100dvh; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+  /* фон: размытая выбранная картинка, плавно сменяется */
+  .ambient { position: fixed; inset: -12%; z-index: 0; background: center / cover no-repeat; filter: blur(70px) saturate(1.25); opacity: 0; transition: opacity 1s ease; }
+  .ambient.on { opacity: .5; }
+  .veil { position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse at 50% 45%, rgba(18,16,14,.15), rgba(18,16,14,.86) 72%); }
+
+  header, main, footer { position: relative; z-index: 1; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 22px; }
+  .back { display: inline-flex; align-items: center; gap: 8px; color: var(--cream); text-decoration: none; font-weight: 600; font-size: .92rem; padding: 9px 14px; border: 1px solid rgba(244,236,223,.25); border-radius: 10px; transition: background .2s; }
+  .back:hover { background: rgba(244,236,223,.1); }
+  .count { font-weight: 700; font-size: .92rem; color: var(--soft); font-variant-numeric: tabular-nums; }
+  .count b { color: var(--gold); font-size: 1.3rem; }
+
+  main { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+  .head { text-align: center; padding: 0 22px; }
+  h1 { font-size: clamp(1.6rem, 4.6vw, 2.8rem); font-weight: 800; letter-spacing: -.035em; line-height: 1.1; }
+  .head p { color: var(--soft); margin-top: 8px; font-size: .95rem; }
+  .head > * { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+  .head p { animation-delay: .1s; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+
+  /* сцена с картами */
+  .stage { position: relative; height: calc(var(--cw) / 1.586 + 90px); margin-top: 12px; perspective: 1500px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+  .stage.drag { cursor: grabbing; }
+  .card { position: absolute; left: 50%; top: 50%; width: var(--cw); aspect-ratio: 1.586; margin: calc(var(--cw) / -3.172) 0 0 calc(var(--cw) / -2); border: 0; padding: 0; border-radius: calc(var(--cw) * .045); overflow: hidden; background: #000; color: #fff; font: inherit; text-align: left; cursor: pointer;
+    box-shadow: 0 40px 70px -30px rgba(0,0,0,.9); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s, filter .5s, box-shadow .5s; will-change: transform; transform-style: preserve-3d; }
+  .stage.drag .card, .card.tilting { transition: opacity .3s, filter .3s, box-shadow .5s; }
+  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 50px 90px -30px rgba(0,0,0,.95), 0 0 80px -10px rgba(224,181,106,.35); }
+  .card img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 35%, rgba(18,16,14,.86)); }
+  .card .brand { position: absolute; left: 6%; right: 6%; bottom: 8%; display: flex; align-items: center; gap: 4%; }
+  .card .brand img { width: 13%; border-radius: 22%; flex: none; }
+  .card .brand b { display: block; font-weight: 800; font-size: calc(var(--cw) * .05); letter-spacing: -.02em; line-height: 1.2; }
+  .card .brand span { display: block; font-size: calc(var(--cw) * .034); color: var(--gold); font-weight: 600; }
+  .card .num { position: absolute; left: 6%; top: 7%; font-weight: 800; font-size: calc(var(--cw) * .04); letter-spacing: .08em; opacity: .9; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+  .card .glare { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,242,214,.4), transparent 52%); }
+  .card.tilting .glare { opacity: 1; }
+  .card .sweep { position: absolute; top: -20%; bottom: -20%; left: 0; width: 34%; pointer-events: none; background: linear-gradient(100deg, transparent, rgba(255,246,224,.7), transparent); transform: translateX(-150%) skewX(-12deg); }
+  .card.shine .sweep { animation: sweep .9s ease-out; }
+  @keyframes sweep { to { transform: translateX(460%) skewX(-12deg); } }
+
+  .arrow { position: absolute; bottom: -31px; z-index: 200; width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(244,236,223,.3); background: rgba(18,16,14,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: var(--cream); cursor: pointer; display: grid; place-items: center; transition: background .2s, transform .2s, opacity .2s; }
+  .arrow:hover { background: rgba(244,236,223,.16); transform: scale(1.08); }
+  .arrow[disabled] { opacity: .25; pointer-events: none; }
+  .arrow.prev { left: calc(50% - 150px); }
+  .arrow.next { right: calc(50% - 150px); }
+
+  .dots { display: flex; justify-content: center; gap: 8px; margin-top: 4px; }
+  .dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 8px; background: rgba(244,236,223,.3); cursor: pointer; transition: width .4s cubic-bezier(.3,1.4,.4,1), background .3s; }
+  .dots button.on { width: 30px; background: var(--gold); }
+
+  footer { padding: 18px 22px 26px; display: flex; justify-content: center; }
+  .choose { position: relative; font: 700 1rem var(--sans); color: var(--machine); background: var(--gold); border: 0; border-radius: 12px; padding: 16px 30px; min-width: min(100%, 300px); cursor: pointer; transition: transform .18s, background .2s, box-shadow .3s; box-shadow: 0 16px 34px -14px rgba(224,181,106,.7); animation: rise .8s cubic-bezier(.2,.7,.2,1) .25s both; }
+  .choose:hover { transform: translateY(-2px); background: #ebc682; }
+  .choose:active { transform: scale(.97); }
+  .choose.done { background: var(--cream); pointer-events: none; }
+  .spark { position: fixed; z-index: 300; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); pointer-events: none; }
+
+  @media (max-width: 640px) {
+    .arrow { display: none; }
+    header { padding: 14px 16px; }
+    .head p { font-size: .88rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card, .ambient, .dots button { transition-duration: .01s; }
+    .head > *, .choose, .card.shine .sweep { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="ambient" id="amb-a"></div><div class="ambient" id="amb-b"></div><div class="veil"></div>
+
+<header>
+  <a class="back" href="index.html#bot"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg><span data-t="back">Назад на сайт</span></a>
+  <div class="count" aria-live="polite"><b id="cur">1</b> / 6</div>
+</header>
+
+<main>
+  <div class="head">
+    <h1 data-t="title">Выберите дизайн карты</h1>
+    <p data-t="hint">Листайте, нажимайте на карту или пользуйтесь стрелками.</p>
+  </div>
+  <div class="stage" id="stage">
+    <button class="arrow prev" id="prev" type="button" aria-label="Предыдущий"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg></button>
+    <button class="arrow next" id="next" type="button" aria-label="Следующий"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
+  </div>
+  <div class="dots" id="dots"></div>
+</main>
+
+<footer>
+  <button class="choose" id="choose" type="button" data-t="choose">Выбрать этот дизайн</button>
+</footer>
+
+<script>
+(function () {
+  const T = {
+    back: ["Назад на сайт", "Сайтқа оралу", "Back to the site"],
+    title: ["Выберите дизайн карты", "Карта дизайнын таңдаңыз", "Choose your card design"],
+    hint: ["Листайте, нажимайте на карту или пользуйтесь стрелками.", "Парақтаңыз, картаны басыңыз немесе көрсеткілерді қолданыңыз.", "Swipe, tap a card or use the arrow keys."],
+    choose: ["Выбрать этот дизайн", "Осы дизайнды таңдау", "Use this design"],
+    done: ["Сохранено", "Сақталды", "Saved"],
+    guest: ["Карта гостя", "Қонақ картасы", "Guest card"],
+    prev: ["Предыдущий", "Алдыңғы", "Previous"],
+    next: ["Следующий", "Келесі", "Next"],
+    design: ["Дизайн", "Дизайн", "Design"],
+    page: ["Дизайн карты гостя — Astana Coffee Express", "Қонақ картасының дизайны — Astana Coffee Express", "Guest card design — Astana Coffee Express"],
+  };
+  let lang = "ru";
+  try { lang = localStorage.getItem("ace-lang") || "ru"; } catch (e) {}
+  const col = { ru: 0, kk: 1, en: 2 }[lang] || 0;
+  const t = k => T[k][col];
+  document.documentElement.lang = ["ru", "kk", "en"][col];
+  document.title = t("page");
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+
+  const N = 6, calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const stage = document.getElementById("stage"), dots = document.getElementById("dots");
+  const prev = document.getElementById("prev"), next = document.getElementById("next"), choose = document.getElementById("choose");
+  prev.setAttribute("aria-label", t("prev")); next.setAttribute("aria-label", t("next"));
+
+  let current = 0;
+  try { const s = localStorage.getItem("ace-card-design"); if (/^[1-6]$/.test(s)) current = +s - 1; } catch (e) {}
+  let pos = current;                 // дробная позиция во время перетаскивания
+  const cards = [], tilt = { rx: 0, ry: 0 };
+
+  for (let i = 0; i < N; i++) {
+    const c = document.createElement("button");
+    c.type = "button"; c.className = "card";
+    c.setAttribute("aria-label", t("design") + " " + (i + 1));
+    c.innerHTML = '<img class="photo" src="cards/card-' + (i + 1) + '.jpg" alt="" draggable="false">' +
+      '<span class="shade"></span><span class="num">0' + (i + 1) + '</span>' +
+      '<span class="brand"><img src="icon.svg" alt=""><span><b>Astana Coffee Express</b><span>' + t("guest") + '</span></span></span>' +
+      '<span class="glare"></span><span class="sweep"></span>';
+    stage.appendChild(c); cards.push(c);
+    const d = document.createElement("button");
+    d.type = "button"; d.setAttribute("aria-label", t("design") + " " + (i + 1));
+    d.addEventListener("click", () => go(i));
+    dots.appendChild(d);
+  }
+
+  function transformOf(i) {
+    const d = i - pos, a = Math.abs(d), w = cards[0].offsetWidth;
+    const x = d * w * (innerWidth < 640 ? .56 : .6), z = -Math.min(a, 3) * 190;
+    let ry = Math.max(-1, Math.min(1, d)) * -44, rx = 0;
+    if (i === current && a < .05) { rx = tilt.rx; ry += tilt.ry; }
+    return "translate3d(" + x.toFixed(1) + "px,0," + z.toFixed(1) + "px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
+  }
+  function layout() {
+    cards.forEach((c, i) => {
+      const a = Math.abs(i - pos);
+      c.style.transform = transformOf(i);
+      c.style.opacity = a > 2.6 ? 0 : 1;
+      c.style.filter = "brightness(" + (1 - Math.min(a, 2) * .32).toFixed(2) + ")";
+      c.style.zIndex = 100 - Math.round(a * 10);
+      c.classList.toggle("current", i === current);
+      c.tabIndex = i === current ? 0 : -1;
+    });
+  }
+  const ambA = document.getElementById("amb-a"), ambB = document.getElementById("amb-b");
+  let ambFlip = false;
+  function ambient() {
+    const on = ambFlip ? ambA : ambB, off = ambFlip ? ambB : ambA; ambFlip = !ambFlip;
+    on.style.backgroundImage = "url(cards/card-" + (current + 1) + ".jpg)";
+    on.classList.add("on"); off.classList.remove("on");
+  }
+  function go(i, quiet) {
+    i = Math.max(0, Math.min(N - 1, i));
+    const changed = i !== current;
+    current = i; pos = i; tilt.rx = tilt.ry = 0;
+    layout();
+    document.getElementById("cur").textContent = i + 1;
+    dots.querySelectorAll("button").forEach((d, k) => d.classList.toggle("on", k === i));
+    prev.disabled = i === 0; next.disabled = i === N - 1;
+    if (changed || quiet) ambient();
+    if (changed && !calm) {
+      const c = cards[i]; c.classList.remove("shine"); void c.offsetWidth; c.classList.add("shine");
+    }
+  }
+  prev.addEventListener("click", () => go(current - 1));
+  next.addEventListener("click", () => go(current + 1));
+  addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") go(current - 1);
+    else if (e.key === "ArrowRight") go(current + 1);
+    else if (e.key === "Escape") location.href = "index.html#bot";
+  });
+  addEventListener("resize", layout);
+
+  // перетаскивание / свайп
+  let startX = null, startPos = 0, moved = 0, downCard = -1;
+  stage.addEventListener("pointerdown", e => {
+    if (e.target.closest(".arrow")) return;
+    startX = e.clientX; startPos = pos; moved = 0;
+    downCard = cards.indexOf(e.target.closest(".card"));
+  });
+  addEventListener("pointermove", e => {
+    if (startX === null) return;
+    const dx = e.clientX - startX; moved = Math.max(moved, Math.abs(dx));
+    if (moved < 6) return;
+    stage.classList.add("drag");
+    pos = Math.max(-.35, Math.min(N - .65, startPos - dx / (cards[0].offsetWidth * .6)));
+    layout();
+  });
+  function release() {
+    if (startX === null) return;
+    startX = null; stage.classList.remove("drag");
+    if (moved < 6) { if (downCard >= 0 && downCard !== current) go(downCard); else if (downCard === current) confirm(); else layout(); }
+    else go(Math.round(pos));
+  }
+  addEventListener("pointerup", release); addEventListener("pointercancel", release);
+  stage.addEventListener("click", e => e.preventDefault());
+
+  // наклон центральной карты за курсором
+  if (!calm && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    stage.addEventListener("pointermove", e => {
+      const c = cards[current]; if (startX !== null || e.target.closest(".card") !== c) return;
+      const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      tilt.ry = (x - .5) * 16; tilt.rx = (.5 - y) * 12;
+      c.classList.add("tilting");
+      c.style.setProperty("--gx", (x * 100).toFixed(0) + "%"); c.style.setProperty("--gy", (y * 100).toFixed(0) + "%");
+      c.style.transform = transformOf(current);
+    });
+    stage.addEventListener("pointerleave", () => { tilt.rx = tilt.ry = 0; cards.forEach(c => c.classList.remove("tilting")); layout(); });
+    stage.addEventListener("pointerout", e => {
+      const c = e.target.closest(".card"); if (!c || c.contains(e.relatedTarget)) return;
+      tilt.rx = tilt.ry = 0; c.classList.remove("tilting"); layout();
+    });
+  }
+
+  // подтверждение: карта делает оборот, разлетаются искры, возвращаемся на сайт
+  let confirmed = false;
+  function confirm() {
+    if (confirmed) return; confirmed = true;
+    try { localStorage.setItem("ace-card-design", String(current + 1)); } catch (e) {}
+    choose.textContent = t("done") + " ✓"; choose.classList.add("done");
+    const c = cards[current], base = transformOf(current);
+    if (!calm && c.animate) {
+      c.animate([{ transform: base + " scale(1)" }, { transform: base + " rotateY(180deg) scale(1.1)", offset: .5 }, { transform: base + " rotateY(360deg) scale(1)" }],
+        { duration: 900, easing: "cubic-bezier(.4,0,.2,1)" });
+      c.classList.remove("shine"); void c.offsetWidth; c.classList.add("shine");
+      const r = c.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      for (let k = 0; k < 22; k++) {
+        const s = document.createElement("i"); s.className = "spark";
+        const ang = (k / 22) * Math.PI * 2 + Math.random() * .4, dist = r.width * (.55 + Math.random() * .45), size = 5 + Math.random() * 7;
+        s.style.cssText = "left:" + cx + "px;top:" + cy + "px;width:" + size + "px;height:" + size + "px;" + (k % 3 ? "" : "background:#f4ecdf;");
+        document.body.appendChild(s);
+        s.animate([{ transform: "translate(-50%,-50%) scale(0)", opacity: 1 },
+          { transform: "translate(calc(-50% + " + (Math.cos(ang) * dist).toFixed(0) + "px), calc(-50% + " + (Math.sin(ang) * dist * .7).toFixed(0) + "px)) scale(1)", opacity: 1, offset: .6 },
+          { transform: "translate(calc(-50% + " + (Math.cos(ang) * dist * 1.15).toFixed(0) + "px), calc(-50% + " + (Math.sin(ang) * dist * .7 + 40).toFixed(0) + "px)) scale(0)", opacity: 0 }],
+          { duration: 1000, delay: 250, easing: "cubic-bezier(.2,.7,.3,1)", fill: "both" }).onfinish = () => s.remove();
+      }
+    }
+    setTimeout(() => { location.href = "index.html#bot"; }, calm ? 500 : 1500);
+  }
+  choose.addEventListener("click", confirm);
+
+  go(current, true);
+  // появление: карты «сдаются» снизу веером
+  if (!calm && cards[0].animate) cards.forEach((c, i) => {
+    const to = transformOf(i);
+    c.animate([{ transform: to + " translateY(70vh) rotateZ(" + ((i - current) * 9) + "deg)", opacity: 0 }, { transform: to, opacity: c.style.opacity }],
+      { duration: 900, delay: 120 + Math.abs(i - current) * 90, easing: "cubic-bezier(.2,.9,.25,1)", fill: "backwards" });
+  });
+})();
+</script>
+</body>
+</html>
