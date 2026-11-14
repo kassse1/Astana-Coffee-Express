@@ -6,6 +6,13 @@ services:
     runtime: static
     buildCommand: ""
     staticPublishPath: ./site
+    headers: # картинки и иконки браузер хранит неделю и не скачивает заново
+      - path: /cards/*
+        name: Cache-Control
+        value: public, max-age=604800
+      - path: /*.svg
+        name: Cache-Control
+        value: public, max-age=604800
 
   # Telegram-бот: бесплатный Web Service, данные — во внешней бесплатной базе Postgres
   - type: web
