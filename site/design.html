@@ -138,6 +138,7 @@
   document.title = t("page");
   document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
 
+  const API = "https://astana-coffee-express-sa00.onrender.com"; // адрес службы бота, как SITE.api на главной
   const N = 6, calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const stage = document.getElementById("stage"), dots = document.getElementById("dots");
   const prev = document.getElementById("prev"), next = document.getElementById("next"), choose = document.getElementById("choose");
@@ -256,6 +257,12 @@
   function confirm() {
     if (confirmed) return; confirmed = true;
     try { localStorage.setItem("ace-card-design", String(current + 1)); } catch (e) {}
+    // если гость вошёл на сайте — сохраняем выбор на сервере, чтобы бот присылал такую же карту
+    let tk = null;
+    try { tk = localStorage.getItem("ace-site-token"); } catch (e) {}
+    if (tk) fetch(API + "/api/design", { method: "POST", keepalive: true,
+      headers: { "Content-Type": "application/json", Authorization: "Bearer " + tk },
+      body: JSON.stringify({ design: current + 1 }) }).catch(() => {});
     choose.textContent = t("done") + " ✓"; choose.classList.add("done");
     const c = cards[current], base = transformOf(current);
     if (!calm && c.animate) {

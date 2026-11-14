@@ -47,7 +47,7 @@ def setup_api(app: web.Application, db, cfg: Config) -> None:
     def card_json(user: User) -> dict:
         n = cfg.free_every
         data = {"login": user.login, "card": user.card, "total": user.total, "favorite": user.favorite,
-                "registered": user.registered[:10], "in_telegram": bool(user.tg_id), "free_every": n,
+                "registered": user.registered[:10], "in_telegram": bool(user.tg_id), "free_every": n, "design": user.design,
                 "barcode": "data:image/png;base64," + base64.b64encode(make_barcode_png(user.card)).decode()}
         if n >= 2:
             data["done"] = user.total % n
@@ -88,6 +88,20 @@ def setup_api(app: web.Application, db, cfg: Config) -> None:
             return fail(401, "Войдите заново.")
         return web.json_response({"card": card_json(user)})
 
+    async def design(request: web.Request) -> web.Response:
+        """Гость выбрал фон карты на сайте — запоминаем, чтобы бот присылал такую же карту."""
+        user_id = read_token(request)
+        if not user_id:
+            return fail(401, "Войдите заново.")
+        try:
+            number = int((await request.json())["design"])
+            user = await asyncio.to_thread(db.set_design, user_id, number)
+        except DBError as e:
+            return fail(400, str(e))
+        except Exception:
+            return fail(400, "Такого дизайна нет.")
+        return web.json_response({"card": card_json(user)})
+
     @web.middleware
     async def cors(request: web.Request, handler):
         if not request.path.startswith("/api/"):
@@ -109,4 +123,5 @@ def setup_api(app: web.Application, db, cfg: Config) -> None:
     app.router.add_post("/api/register", register)
     app.router.add_post("/api/login", login)
     app.router.add_get("/api/me", me)
+    app.router.add_post("/api/design", design)
     app.router.add_route("OPTIONS", "/api/{tail:.*}", lambda _: web.Response(status=204))

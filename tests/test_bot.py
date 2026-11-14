@@ -9,7 +9,7 @@ from aiogram.methods import GetFile, SendDocument, SendPhoto
 from aiogram.types import Chat, Message, PhotoSize, Update, User
 from openpyxl import load_workbook
 
-from bot.barcodes import make_barcode_png, normalize_code, read_barcode
+from bot.barcodes import make_barcode_png, make_card_png, normalize_code, read_barcode
 from bot.config import Config
 from bot.demo import PREFIX, build_demo
 from bot.db import DBError, ExcelDB, open_db
@@ -171,6 +171,13 @@ def test_site_api(tmp_path):
             assert card["total"] == 2 and card["favorite"] == "Латте" and card["next_free"] is True
             r = await c.post("/api/login", json={"login": "AIDA", "password": "pass1"})
             assert r.status == 200 and (await r.json())["token"] == token
+            # выбор дизайна карты на сайте сохраняется и виден боту
+            auth = {"Authorization": f"Bearer {token}"}
+            assert card["design"] == 1
+            assert (await c.post("/api/design", json={"design": 4})).status == 401
+            assert (await c.post("/api/design", json={"design": 9}, headers=auth)).status == 400
+            r = await c.post("/api/design", json={"design": 4}, headers=auth)
+            assert r.status == 200 and (await r.json())["card"]["design"] == 4 and db.by_id(1).design == 4
             # аккаунт с сайта подходит и для входа в Telegram-боте
             assert db.login("aida", "pass1", 77).tg_id == 77
             for _ in range(25):
@@ -178,6 +185,19 @@ def test_site_api(tmp_path):
             assert r.status == 429
 
     asyncio.run(run())
+
+
+def test_card_image(backend):
+    """Карта с фоном: штрихкод на ней читается, а дизайн переживает перезапуск."""
+    db = backend()
+    u = db.register("aida", "pass1", 10)
+    assert u.design == 1 and db.set_design(u.id, 4).design == 4
+    with pytest.raises(DBError):
+        db.set_design(u.id, 7)
+    assert backend().by_tg(10).design == 4
+    for n in (1, 4, 6):
+        assert read_barcode(make_card_png("ACE000042", "aida", n)) == "ACE000042"
+    assert read_barcode(make_card_png("ACE000042", "aida", 99)) == "ACE000042"  # нет фона — простой штрихкод
 
 
 def test_normalize_url():

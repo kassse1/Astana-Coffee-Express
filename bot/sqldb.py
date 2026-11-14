@@ -9,12 +9,12 @@ from collections import Counter, defaultdict
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from sqlalchemy import (BigInteger, Column, ForeignKey, Integer, MetaData, String, Table, Text,
-                        create_engine, delete, func, insert, select, update)
+                        create_engine, delete, func, insert, inspect, select, text, update)
 from sqlalchemy.exc import IntegrityError
 
 import secrets
 
-from .db import (HEADERS, S_DRINKS, S_LOG, S_PROMO, S_USERS, WIDTHS, DBError, User, _check, _hash,
+from .db import (DESIGNS, HEADERS, S_DRINKS, S_LOG, S_PROMO, S_USERS, WIDTHS, DBError, User, _check, _hash,
                  _now, _safe, validate_credentials)
 
 meta = MetaData()
@@ -26,6 +26,7 @@ users = Table(
     Column("password_hash", String(100), nullable=False),
     Column("tg_id", BigInteger, index=True),
     Column("registered", String(19), nullable=False),
+    Column("design", Integer),
 )
 purchases = Table(
     "purchases", meta,
@@ -57,6 +58,9 @@ class SqlDB:
         self.engine = create_engine(normalize_url(url), pool_pre_ping=True, pool_recycle=300)
         self._lock = threading.Lock()
         meta.create_all(self.engine)
+        if "design" not in {c["name"] for c in inspect(self.engine).get_columns("users")}:
+            with self.engine.begin() as conn:  # база от старой версии: добавляем колонку
+                conn.execute(text("ALTER TABLE users ADD COLUMN design INTEGER"))
 
     # ---------- служебное ----------
     def _counts(self, conn) -> dict[int, Counter]:
@@ -73,7 +77,7 @@ class SqlDB:
         counts = counts or Counter()
         return User(id=row.id, login=row.login, tg_id=row.tg_id, card=f"ACE{row.id:06d}",
                     registered=row.registered, total=sum(counts.values()),
-                    favorite=counts.most_common(1)[0][0] if counts else None)
+                    favorite=counts.most_common(1)[0][0] if counts else None, design=row.design or 1)
 
     def _one(self, conn, where) -> User | None:
         row = conn.execute(select(users).where(where)).first()
@@ -112,6 +116,14 @@ class SqlDB:
 
     def by_id(self, user_id: int) -> User | None:
         with self.engine.connect() as conn:
+            return self._one(conn, users.c.id == user_id)
+
+    def set_design(self, user_id: int, design: int) -> User:
+        if design not in DESIGNS:
+            raise DBError("Такого дизайна нет.")
+        with self.engine.begin() as conn:
+            if not conn.execute(update(users).where(users.c.id == user_id).values(design=design)).rowcount:
+                raise DBError("Пользователь не найден.")
             return self._one(conn, users.c.id == user_id)
 
     def logout(self, tg_id: int) -> None:
@@ -201,7 +213,7 @@ class SqlDB:
             promo_rows = conn.execute(select(promos).order_by(promos.c.id)).all()
             hashes = dict(conn.execute(select(users.c.id, users.c.password_hash)).all())
         rows = {
-            S_USERS: [[u.id, u.login, hashes[u.id], u.tg_id, u.card, u.registered, u.total, u.favorite]
+            S_USERS: [[u.id, u.login, hashes[u.id], u.tg_id, u.card, u.registered, u.total, u.favorite, u.design]
                       for u in all_users],
             S_LOG: [[p.ts, p.user_id, logins.get(p.user_id), p.drink] for p in log],
             S_DRINKS: [list(x) for x in self.drink_stats()],

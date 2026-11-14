@@ -21,12 +21,12 @@ from openpyxl.styles import Font
 S_USERS, S_LOG, S_DRINKS, S_PROMO = "Пользователи", "Покупки", "Напитки", "Акции"
 HEADERS = {
     S_USERS: ["ID", "Логин", "Хеш пароля", "Telegram ID", "Код карты", "Дата регистрации",
-              "Всего кофе", "Любимый напиток"],
+              "Всего кофе", "Любимый напиток", "Дизайн карты"],
     S_LOG: ["Дата", "ID пользователя", "Логин", "Напиток"],
     S_DRINKS: ["Напиток", "Сколько раз взяли"],
     S_PROMO: ["Дата", "Текст", "Получателей"],
 }
-WIDTHS = {S_USERS: [6, 20, 16, 16, 14, 20, 12, 20], S_LOG: [20, 16, 20, 20],
+WIDTHS = {S_USERS: [6, 20, 16, 16, 14, 20, 12, 20, 14], S_LOG: [20, 16, 20, 20],
           S_DRINKS: [22, 20], S_PROMO: [20, 70, 14]}
 
 
@@ -43,6 +43,10 @@ class User:
     registered: str
     total: int
     favorite: str | None
+    design: int = 1  # какой фон карты выбрал гость (1–6)
+
+
+DESIGNS = range(1, 7)
 
 
 ASTANA_TZ = timezone(timedelta(hours=5))  # сервер живёт в UTC, а время пишем астанинское
@@ -86,6 +90,9 @@ class ExcelDB:
             for name in HEADERS:
                 if name not in self.wb.sheetnames:
                     self._make_sheet(name)
+            head = self.wb[S_USERS].cell(row=1, column=9)  # файл от старой версии: добавляем колонку
+            if not head.value:
+                head.value, head.font = HEADERS[S_USERS][8], Font(bold=True)
         else:
             self.wb = Workbook()
             self.wb.remove(self.wb.active)
@@ -116,7 +123,8 @@ class ExcelDB:
     def _to_user(row) -> User:
         v = [c.value for c in row]
         return User(id=int(v[0]), login=str(v[1]), tg_id=int(v[3]) if v[3] else None, card=str(v[4]),
-                    registered=str(v[5]), total=int(v[6] or 0), favorite=v[7] or None)
+                    registered=str(v[5]), total=int(v[6] or 0), favorite=v[7] or None,
+                    design=int(v[8]) if len(v) > 8 and v[8] else 1)
 
     def _find(self, col: int, value):
         for row in self._user_rows():
@@ -166,6 +174,17 @@ class ExcelDB:
         with self._lock:
             row = self._find(0, user_id)
             return self._to_user(row) if row else None
+
+    def set_design(self, user_id: int, design: int) -> User:
+        if design not in DESIGNS:
+            raise DBError("Такого дизайна нет.")
+        with self._lock:
+            row = self._find(0, user_id)
+            if not row:
+                raise DBError("Пользователь не найден.")
+            self.wb[S_USERS].cell(row=row[0].row, column=9).value = design
+            self._save()
+            return self._to_user(self._find(0, user_id))
 
     def logout(self, tg_id: int) -> None:
         with self._lock:

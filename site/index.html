@@ -770,7 +770,16 @@
         if (stamps) { stamps.classList.remove("pulse"); void stamps.offsetWidth; stamps.classList.add("pulse"); }
       });
     }
-    document.querySelectorAll("#card-designs button").forEach(b => b.addEventListener("click", () => applyDesign(b.dataset.card, true)));
+    // выбранный дизайн уходит на сервер, чтобы бот в Telegram присылал такую же карту
+    function saveDesign(n) {
+      let tk = null;
+      try { tk = localStorage.getItem("ace-site-token"); } catch (e) {}
+      if (!SITE.api || !tk) return;
+      fetch(SITE.api + "/api/design", { method: "POST", keepalive: true,
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + tk },
+        body: JSON.stringify({ design: +n }) }).catch(() => {});
+    }
+    document.querySelectorAll("#card-designs button").forEach(b => b.addEventListener("click", () => { applyDesign(b.dataset.card, true); saveDesign(b.dataset.card); }));
     // наклон карты за курсором (только мышь)
     if (!calm && matchMedia("(hover: hover) and (pointer: fine)").matches) {
       document.querySelectorAll(".card-photo").forEach(box => {
@@ -801,7 +810,12 @@
 
     function setNote(text, isError) { put(note, text); note.classList.toggle("err", !!isError); }
 
-    function show(card) {
+    // adopt = гость только что вошёл: берём дизайн с сервера. Иначе главный — выбор в этом браузере.
+    function show(card, adopt) {
+      let local = null;
+      try { local = localStorage.getItem("ace-card-design"); } catch (e) {}
+      if (adopt || !local) applyDesign(String(card.design || 1));
+      else if (String(card.design) !== local) saveDesign(local);
       $("live-login").textContent = card.login;
       $("live-barcode").src = card.barcode;
       $("live-card").textContent = card.card;
@@ -865,7 +879,7 @@
         token = data.token;
         try { localStorage.setItem(KEY, token); } catch (e) {}
         form.password.value = "";
-        show(data.card);
+        show(data.card, mode === "login");
       } catch (err) { setNote(err.message, true); }
       finally { btn.disabled = false; }
     });
