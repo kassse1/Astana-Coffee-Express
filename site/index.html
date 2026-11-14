@@ -51,10 +51,15 @@
   nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 64px; }
   .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; letter-spacing: -.02em; font: 800 1.05rem var(--serif); white-space: nowrap; }
   .logo img { border-radius: 9px; flex: none; }
-  nav ul { display: flex; gap: 24px; list-style: none; padding: 0; font-size: .92rem; font-weight: 500; color: #4a3b32; }
+  nav ul { display: flex; gap: 20px; list-style: none; padding: 0; font-size: .92rem; font-weight: 500; color: #4a3b32; }
   nav ul a { text-decoration: none; padding: 6px 0; border-bottom: 1px solid transparent; transition: border-color .18s; }
   nav ul a:hover { border-color: var(--copper); }
   nav .btn { padding: 9px 16px; font-size: .88rem; }
+  .nav-end { display: flex; align-items: center; gap: 14px; }
+  .lang { display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .lang button { border: 0; background: transparent; color: var(--muted); font: 700 .78rem var(--sans); padding: 8px 9px; cursor: pointer; }
+  .lang button:hover { color: var(--ink); }
+  .lang button[aria-pressed="true"] { background: var(--espresso); color: var(--cream); }
 
   /* первый экран */
   .hero { padding: 64px 0 96px; }
@@ -261,7 +266,7 @@
     .scene { aspect-ratio: 1 / 1.08; }
     .facts { margin-top: 36px; gap: 12px; }
     .facts dt { font-size: 1.5rem; }
-    nav .btn { padding: 8px 12px; }
+    nav .btn { display: none; }
     .menu-head { margin-bottom: 36px; }
     .drinks { grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 0; }
     .drink { border-left: 0; border-top: 1px solid rgba(244,236,223,.18); padding: 26px 6px 22px; }
@@ -287,7 +292,12 @@
       <li><a href="#partners">Партнёрам</a></li>
       <li><a href="#contacts">Контакты</a></li>
     </ul>
-    <a class="btn" data-bot href="#bot">Бот в Telegram</a>
+    <div class="nav-end">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="ru" aria-pressed="true">RU</button><button type="button" data-lang="kk" aria-pressed="false">KZ</button><button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="btn" data-bot href="#bot">Бот в Telegram</a>
+    </div>
   </div>
 </nav>
 
@@ -517,6 +527,177 @@
 </footer>
 
 <script>
+  // ---------- Языки: русский (в разметке), казахский и английский (словарь ниже) ----------
+  // Ключ — русский текст со страницы, значение — [қазақша, English]. Новый текст на странице = новая строка здесь.
+  const I18N = {
+    "Напитки": ["Сусындар", "Drinks"],
+    "Как купить": ["Қалай сатып алу", "How to buy"],
+    "Карта гостя": ["Қонақ картасы", "Guest card"],
+    "Где найти": ["Қайдан табуға болады", "Where to find us"],
+    "Партнёрам": ["Серіктестерге", "For partners"],
+    "Контакты": ["Байланыс", "Contacts"],
+    "Бот в Telegram": ["Telegram-бот", "Telegram bot"],
+    "Кофе-аппараты самообслуживания в Астане": ["Астанадағы өзіне-өзі қызмет көрсететін кофе аппараттары", "Self-service coffee machines in Astana"],
+    "Кофе за 45 секунд.": ["45 секундта кофе.", "Coffee in 45 seconds."],
+    "Без очереди.": ["Кезексіз.", "No queue."],
+    "Выбрали напиток, оплатили Kaspi QR, забрали стакан. Аппараты работают круглосуточно.": ["Сусынды таңдадыңыз, Kaspi QR арқылы төледіңіз, стақанды алдыңыз. Аппараттар тәулік бойы жұмыс істейді.", "Pick a drink, pay with Kaspi QR, take your cup. The machines work around the clock."],
+    "Найти аппарат": ["Аппаратты табу", "Find a machine"],
+    "Завести карту гостя": ["Қонақ картасын ашу", "Get a guest card"],
+    "любой напиток": ["кез келген сусын", "any drink"],
+    "без выходных": ["демалыссыз", "every day"],
+    "6-я": ["6-шы", "6th"],
+    "чашка бесплатно": ["шыныаяқ тегін", "cup is free"],
+    "Выберите напиток": ["Сусынды таңдаңыз", "Choose a drink"],
+    "КАРТА / NFC": ["КАРТА / NFC", "CARD / NFC"],
+    "Любой напиток по одной цене": ["Кез келген сусын бір бағамен", "Every drink at one price"],
+    "за чашку": ["бір шыныаяқ", "per cup"],
+    "Эспрессо": ["Эспрессо", "Espresso"],
+    "Американо": ["Американо", "Americano"],
+    "Капучино": ["Капучино", "Cappuccino"],
+    "Латте": ["Латте", "Latte"],
+    "Мокко": ["Мокко", "Mocha"],
+    "Горячий шоколад": ["Ыстық шоколад", "Hot chocolate"],
+    "Аппарат мелет зерно под каждую чашку. Сахар и сироп — по вкусу. Оплата Kaspi QR, картой или телефоном (NFC). Если аппарат не выдал напиток, деньги возвращаются.": ["Аппарат әр шыныаяққа дәнді жаңадан тартады. Қант пен сироп — қалауыңызша. Төлем Kaspi QR, карта немесе телефон (NFC) арқылы. Аппарат сусын бермесе, ақша қайтарылады.", "The machine grinds beans for every cup. Sugar and syrup to taste. Pay with Kaspi QR, a card or your phone (NFC). If the machine fails to serve your drink, the money is refunded."],
+    "Три шага до чашки": ["Кофеге дейін үш қадам", "Three steps to your cup"],
+    "Эспрессо, капучино, латте и другие. Сахар и сироп — по вкусу.": ["Эспрессо, капучино, латте және басқалары. Қант пен сироп — қалауыңызша.", "Espresso, cappuccino, latte and more. Sugar and syrup to taste."],
+    "Оплатите одним сканом": ["Бір сканерлеумен төлеңіз", "Pay with one scan"],
+    "Наведите камеру на Kaspi QR или приложите карту либо телефон (NFC). Наличные не нужны.": ["Камераны Kaspi QR-ға бағыттаңыз немесе картаны не телефонды (NFC) жақындатыңыз. Қолма-қол ақша қажет емес.", "Point your camera at the Kaspi QR or tap your card or phone (NFC). No cash needed."],
+    "Заберите стакан": ["Стақанды алыңыз", "Take your cup"],
+    "Через 45 секунд кофе готов. Сканируйте штрихкод из бота, и чашка пойдёт в зачёт.": ["45 секундтан кейін кофе дайын. Боттағы штрихкодты сканерлеңіз — шыныаяқ есепке алынады.", "Your coffee is ready in 45 seconds. Scan the barcode from the bot and the cup is counted."],
+    "Карта гостя и Telegram-бот": ["Қонақ картасы және Telegram-бот", "Guest card and Telegram bot"],
+    "Каждая шестая чашка за наш счёт": ["Әр алтыншы шыныаяқ біздің есебімізден", "Every sixth cup is on us"],
+    "Заведите карту здесь или в боте, получите личный штрихкод и сканируйте его при каждой покупке. Чашки считаются сами.": ["Картаны осы жерде немесе ботта ашыңыз, жеке штрихкод алыңыз және оны әр сатып алғанда сканерлеңіз. Шыныаяқтар өзі есептеледі.", "Get a card here or in the bot, receive a personal barcode and scan it with every purchase. Cups are counted automatically."],
+    "Личный штрихкод": ["Жеке штрихкод", "Personal barcode"],
+    "Регистрация по логину и паролю занимает полминуты.": ["Логин мен құпиясөз арқылы тіркелу жарты минут алады.", "Signing up with a login and password takes half a minute."],
+    "Ваша статистика": ["Сіздің статистикаңыз", "Your stats"],
+    "Сколько чашек выпито и какой напиток вы берёте чаще всего.": ["Қанша шыныаяқ ішілгені және қай сусынды жиі алатыныңыз.", "How many cups you've had and which drink you order most."],
+    "Акции первыми": ["Акциялар бірінші сізге", "Offers first"],
+    "Новые точки и предложения приходят сообщением в Telegram.": ["Жаңа нүктелер мен ұсыныстар Telegram-ға хабарлама болып келеді.", "New locations and offers arrive as a Telegram message."],
+    "Открыть бота в Telegram": ["Ботты Telegram-да ашу", "Open the bot in Telegram"],
+    "Так будет выглядеть ваша карта": ["Картаңыз осылай көрінеді", "This is how your card will look"],
+    "До бесплатной чашки осталось:": ["Тегін шыныаяққа дейін қалды:", "Cups left until a free one:"],
+    "Следующая чашка — бесплатно!": ["Келесі шыныаяқ — тегін!", "Your next cup is free!"],
+    "чашек выпито": ["шыныаяқ ішілді", "cups so far"],
+    "любимый напиток": ["сүйікті сусын", "favourite drink"],
+    "Обновить": ["Жаңарту", "Refresh"],
+    "Обновляем…": ["Жаңартылуда…", "Refreshing…"],
+    "Выйти": ["Шығу", "Log out"],
+    "Войти": ["Кіру", "Log in"],
+    "Дизайн карты": ["Карта дизайны", "Card design"],
+    "Создать карту": ["Карта ашу", "Create a card"],
+    "У меня есть карта": ["Менде карта бар", "I have a card"],
+    "Логин": ["Логин", "Login"],
+    "Пароль": ["Құпиясөз", "Password"],
+    "например, aida": ["мысалы, aida", "e.g. aida"],
+    "минимум 4 символа": ["кемінде 4 таңба", "at least 4 characters"],
+    "Штрихкод вашей карты": ["Картаңыздың штрихкоды", "Your card barcode"],
+    "Тот же логин и пароль подойдут в Telegram-боте.": ["Осы логин мен құпиясөз Telegram-ботта да жарайды.", "The same login and password work in the Telegram bot."],
+    "Введите логин и пароль от карты.": ["Картаңыздың логині мен құпиясөзін енгізіңіз.", "Enter your card login and password."],
+    "Секунду… Если сервис спал, первый запрос занимает до минуты.": ["Бір сәт… Сервис ұйықтап тұрса, алғашқы сұраныс бір минутқа дейін созылады.", "One moment… If the service was asleep, the first request can take up to a minute."],
+    "Что-то пошло не так. Попробуйте ещё раз.": ["Бірдеңе дұрыс болмады. Қайталап көріңіз.", "Something went wrong. Please try again."],
+    "Не получилось связаться с сервисом. Попробуйте ещё раз через минуту.": ["Сервиспен байланысу мүмкін болмады. Бір минуттан кейін қайталап көріңіз.", "Couldn't reach the service. Please try again in a minute."],
+    "Войдите заново.": ["Қайта кіріңіз.", "Please log in again."],
+    "Введите логин и пароль.": ["Логин мен құпиясөзді енгізіңіз.", "Enter a login and password."],
+    "Такой логин уже занят.": ["Бұл логин бос емес.", "This login is already taken."],
+    "Неверный логин или пароль.": ["Логин немесе құпиясөз қате.", "Wrong login or password."],
+    "Логин: 3–20 символов, только буквы, цифры и _.": ["Логин: 3–20 таңба, тек әріптер, сандар және _.", "Login: 3–20 characters, letters, digits and _ only."],
+    "Пароль слишком короткий (минимум 4 символа).": ["Құпиясөз тым қысқа (кемінде 4 таңба).", "Password is too short (at least 4 characters)."],
+    "Слишком много попыток. Подождите пару минут.": ["Әрекет тым көп. Бірнеше минут күтіңіз.", "Too many attempts. Wait a couple of minutes."],
+    "Там, где вы бываете каждый день": ["Күнде болатын жерлеріңізде", "Where you are every day"],
+    "Университеты": ["Университеттер", "Universities"],
+    "между парами и перед экзаменом": ["сабақ арасында және емтихан алдында", "between classes and before exams"],
+    "Бизнес-центры": ["Бизнес-орталықтар", "Business centres"],
+    "не выходя из здания": ["ғимараттан шықпай-ақ", "without leaving the building"],
+    "Клиники": ["Емханалар", "Clinics"],
+    "пока ждёте приёма": ["қабылдауды күтіп отырғанда", "while you wait for your appointment"],
+    "Транспортные узлы": ["Көлік торабтары", "Transport hubs"],
+    "по пути, в любое время": ["жол-жөнекей, кез келген уақытта", "on your way, any time"],
+    "Точные адреса аппаратов и новые точки присылает": ["Аппараттардың нақты мекенжайлары мен жаңа нүктелерді жіберетін —", "Exact machine addresses and new locations are sent by the"],
+    "Telegram-бот": ["Telegram-бот", "Telegram bot"],
+    "Карта Астаны": ["Астана картасы", "Map of Astana"],
+    "Владельцам зданий": ["Ғимарат иелеріне", "For building owners"],
+    "Хотите аппарат в своём здании?": ["Ғимаратыңызға аппарат қойғыңыз келе ме?", "Want a machine in your building?"],
+    "Ставим аппараты в университетах, бизнес-центрах, клиниках и на транспортных узлах. Напишите нам — расскажем об условиях размещения.": ["Аппараттарды университеттерге, бизнес-орталықтарға, емханаларға және көлік торабтарына орнатамыз. Бізге жазыңыз — орналастыру шарттарын айтып береміз.", "We place machines in universities, business centres, clinics and transport hubs. Write to us and we'll tell you about placement terms."],
+    "Написать о размещении": ["Орналастыру туралы жазу", "Write about placement"],
+    "Аппарат на связи": ["Аппарат байланыста", "Always connected"],
+    "Запасы и неисправности видим онлайн и приезжаем раньше, чем что-то закончится.": ["Қорлар мен ақауларды онлайн көреміз және бірдеңе таусылғанша келеміз.", "We see stock and faults online and arrive before anything runs out."],
+    "Чисто каждый день": ["Күн сайын таза", "Clean every day"],
+    "Чистим ежедневно, фильтры меняем раз в две недели.": ["Күн сайын тазалаймыз, сүзгілерді екі аптада бір ауыстырамыз.", "We clean daily and change filters every two weeks."],
+    "Работает сам": ["Өзі жұмыс істейді", "Runs by itself"],
+    "Круглосуточно, без персонала и наличных: Kaspi QR, карта или NFC.": ["Тәулік бойы, қызметкерсіз және қолма-қол ақшасыз: Kaspi QR, карта немесе NFC.", "Around the clock, no staff and no cash: Kaspi QR, card or NFC."],
+    "О нас": ["Біз туралы", "About us"],
+    "Кофейня размером с один аппарат": ["Бір аппараттай ғана кофехана", "A coffee shop the size of one machine"],
+    "Astana Coffee Express — сеть кофе-аппаратов самообслуживания в Астане. Мы ставим их там, где кофе нужен здесь и сейчас.": ["Astana Coffee Express — Астанадағы өзіне-өзі қызмет көрсететін кофе аппараттарының желісі. Біз оларды кофе дәл қазір керек жерлерге қоямыз.", "Astana Coffee Express is a network of self-service coffee machines in Astana. We put them where coffee is needed right here, right now."],
+    "Кофе из зерна": ["Дәннен жасалған кофе", "Coffee from beans"],
+    "Аппарат мелет зерно под каждую чашку. Есть молочные напитки и сиропы.": ["Аппарат әр шыныаяққа дәнді жаңадан тартады. Сүтті сусындар мен сироптар бар.", "The machine grinds beans for every cup. Milk drinks and syrups are available."],
+    "Всегда в наличии": ["Әрқашан бар", "Always in stock"],
+    "Мы видим запасы онлайн и пополняем аппарат заранее.": ["Қорларды онлайн көріп, аппаратты алдын ала толтырамыз.", "We see stock online and refill the machine in advance."],
+    "Чисто и аккуратно": ["Таза әрі ұқыпты", "Clean and tidy"],
+    "Чистим каждый день, фильтры меняем раз в две недели. Стаканы и размешиватели — эко.": ["Күн сайын тазалаймыз, сүзгілерді екі аптада бір ауыстырамыз. Стақандар мен араластырғыштар — эко.", "We clean every day and change filters every two weeks. Cups and stirrers are eco-friendly."],
+    "Вопросы": ["Сұрақтар", "Questions"],
+    "Что обычно спрашивают": ["Жиі қойылатын сұрақтар", "What people usually ask"],
+    "Как оплатить?": ["Қалай төлеуге болады?", "How do I pay?"],
+    "Kaspi QR на аппарате, банковская карта или телефон (NFC). Наличные аппарат не принимает.": ["Аппараттағы Kaspi QR, банк картасы немесе телефон (NFC). Аппарат қолма-қол ақша қабылдамайды.", "Kaspi QR on the machine, a bank card or your phone (NFC). The machine doesn't take cash."],
+    "Аппарат не выдал напиток. Что делать?": ["Аппарат сусын бермеді. Не істеу керек?", "The machine didn't serve my drink. What now?"],
+    "Деньги за невыданный напиток возвращаются. Если что-то пошло не так, напишите нам — контакты ниже.": ["Берілмеген сусынның ақшасы қайтарылады. Бірдеңе дұрыс болмаса, бізге жазыңыз — байланыс төменде.", "Money for a drink that wasn't served is refunded. If something went wrong, write to us — contacts are below."],
+    "Когда работают аппараты?": ["Аппараттар қашан жұмыс істейді?", "When do the machines work?"],
+    "Круглосуточно, без выходных. Точнее — всегда, когда открыто здание, где стоит аппарат.": ["Тәулік бойы, демалыссыз. Дәлірек айтсақ — аппарат тұрған ғимарат ашық кезде.", "Around the clock, every day. More precisely, whenever the building with the machine is open."],
+    "Как получить бесплатную чашку?": ["Тегін шыныаяқты қалай алуға болады?", "How do I get a free cup?"],
+    "Завести карту гостя на сайте или в Telegram-боте и сканировать свой штрихкод при каждой покупке. Каждая шестая чашка бесплатная, карта покажет, сколько осталось.": ["Сайтта немесе Telegram-ботта қонақ картасын ашып, әр сатып алғанда штрихкодыңызды сканерлеңіз. Әр алтыншы шыныаяқ тегін, қаншасы қалғанын карта көрсетеді.", "Get a guest card on this site or in the Telegram bot and scan your barcode with every purchase. Every sixth cup is free, and the card shows how many are left."],
+    "Нужно что-то скачивать?": ["Бірдеңе жүктеу керек пе?", "Do I need to download anything?"],
+    "Нет. Для оплаты хватит Kaspi или карты, а карта гостя работает в обычном Telegram и на этом сайте.": ["Жоқ. Төлеуге Kaspi немесе карта жеткілікті, ал қонақ картасы кәдімгі Telegram-да және осы сайтта жұмыс істейді.", "No. Kaspi or a card is enough to pay, and the guest card works in regular Telegram and on this site."],
+    "Напишите нам": ["Бізге жазыңыз", "Write to us"],
+    "Возвраты, работа аппаратов, размещение — по любому вопросу.": ["Қайтарымдар, аппараттардың жұмысы, орналастыру — кез келген сұрақ бойынша.", "Refunds, machine issues, placement — any question."],
+    "Санжар Мурат": ["Санжар Мұрат", "Sanzhar Murat"],
+    "Генеральный директор": ["Бас директор", "Chief Executive Officer"],
+    "Рахман Даниал": ["Рахман Даниал", "Rakhman Danial"],
+    "Финансовый директор": ["Қаржы директоры", "Chief Financial Officer"],
+    "Астана, Казахстан": ["Астана, Қазақстан", "Astana, Kazakhstan"],
+    "кофе за 45 секунд": ["45 секундта кофе", "coffee in 45 seconds"],
+    "Astana Coffee Express — кофе за 45 секунд, 24/7": ["Astana Coffee Express — 45 секундта кофе, 24/7", "Astana Coffee Express — coffee in 45 seconds, 24/7"],
+  };
+  let LANG = "ru";
+  try { LANG = localStorage.getItem("ace-lang") || "ru"; } catch (e) {}
+  if (!["ru", "kk", "en"].includes(LANG)) LANG = "ru";
+
+  function t(ru) {
+    if (LANG === "ru" || ru == null) return ru;
+    const s = String(ru), key = s.trim().replace(/\s+/g, " "), col = LANG === "kk" ? 0 : 1;
+    if (!key) return s;
+    const pad = (out) => s.match(/^\s*/)[0] + out + s.match(/\s*$/)[0];
+    if (I18N[key]) return pad(I18N[key][col]);
+    const m = key.match(/^(.+:) (\d+)$/);             // «…осталось: 3», «Дизайн 3»
+    if (m && I18N[m[1]]) return pad(I18N[m[1]][col] + " " + m[2]);
+    const d = key.match(/^Дизайн (\d)$/);
+    if (d) return pad((col ? "Design " : "Дизайн ") + d[1]);
+    return s;
+  }
+  // текст, который ставит скрипт: запоминаем русский оригинал, чтобы переключение языка его перевело
+  function put(el, ru) { el.textContent = ""; const n = document.createTextNode(t(ru)); n.__ru = String(ru); el.appendChild(n); }
+  const RU_TITLE = document.title;
+  function applyLang(lang) {
+    if (lang) { LANG = lang; try { localStorage.setItem("ace-lang", lang); } catch (e) {} }
+    document.documentElement.lang = LANG;
+    document.title = t(RU_TITLE);
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), nodes = [];
+    while (w.nextNode()) nodes.push(w.currentNode);
+    nodes.forEach(n => {
+      if (n.parentElement.closest("script, style, .lang")) return;
+      if (n.__ru === undefined) { if (!/[А-Яа-яЁё]/.test(n.nodeValue)) return; n.__ru = n.nodeValue; }
+      n.nodeValue = t(n.__ru);
+    });
+    document.querySelectorAll("[placeholder], [aria-label], [title], [alt]").forEach(el => {
+      el.__ru = el.__ru || {};
+      ["placeholder", "aria-label", "title", "alt"].forEach(a => {
+        if (!el.hasAttribute(a)) return;
+        if (!(a in el.__ru)) el.__ru[a] = el.getAttribute(a);
+        el.setAttribute(a, t(el.__ru[a]));
+      });
+    });
+    document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === LANG));
+  }
+  document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => applyLang(b.dataset.lang)));
+
   // Ссылка на Telegram-бота и адрес сервиса бота
   const SITE = {
     bot: "https://t.me/astanacoffeeexpress_bot",
@@ -552,14 +733,14 @@
     const FREE = 6; // должно совпадать с FREE_EVERY в настройках бота
     let mode = "register", token = null;
 
-    function setNote(text, isError) { note.textContent = text; note.classList.toggle("err", !!isError); }
+    function setNote(text, isError) { put(note, text); note.classList.toggle("err", !!isError); }
 
     function show(card) {
       $("live-login").textContent = card.login;
       $("live-barcode").src = card.barcode;
       $("live-card").textContent = card.card;
       $("live-total").textContent = card.total;
-      $("live-fav").textContent = card.favorite || "—";
+      put($("live-fav"), card.favorite || "—");
       const n = card.free_every || 0, stamps = $("live-stamps");
       stamps.hidden = n < 2;
       if (n >= 2) {
@@ -567,9 +748,9 @@
         for (let i = 1; i < n; i++) html += '<i' + (i <= card.done ? ' class="on">ACE' : ">" + i) + "</i>";
         stamps.style.gridTemplateColumns = "repeat(" + n + ", minmax(0, 1fr))";
         stamps.innerHTML = html + '<i class="free">0 ₸</i>';
-        $("live-progress").textContent = card.next_free
+        put($("live-progress"), card.next_free
           ? "Следующая чашка — бесплатно!"
-          : "До бесплатной чашки осталось: " + (n - 1 - card.done);
+          : "До бесплатной чашки осталось: " + (n - 1 - card.done));
       } else {
         $("live-progress").textContent = "";
       }
@@ -600,7 +781,7 @@
     form.querySelectorAll(".tabs button").forEach(btn => btn.addEventListener("click", () => {
       mode = btn.dataset.mode;
       form.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b === btn));
-      form.querySelector(".btn").textContent = mode === "register" ? "Создать карту" : "Войти";
+      put(form.querySelector(".btn"), mode === "register" ? "Создать карту" : "Войти");
       form.password.autocomplete = mode === "register" ? "new-password" : "current-password";
       setNote(mode === "register" ? "Тот же логин и пароль подойдут в Telegram-боте." : "Введите логин и пароль от карты.");
     }));
@@ -625,13 +806,13 @@
 
     $("live-refresh").addEventListener("click", async () => {
       $("live-refresh").disabled = true;
-      $("live-progress").textContent = "Обновляем…";
+      put($("live-progress"), "Обновляем…");
       try {
         const data = await call("/api/me", { headers: { Authorization: "Bearer " + token } });
         show(data.card);
       } catch (err) {
         if (err.status === 401) { try { localStorage.removeItem(KEY); } catch (e) {} token = null; showForm("Войдите заново."); }
-        else $("live-progress").textContent = err.message;
+        else put($("live-progress"), err.message);
       } finally { $("live-refresh").disabled = false; }
     });
 
@@ -698,7 +879,7 @@
     el.innerHTML = '<div class="center">' + html +
       '<i class="intro-steam"></i><i class="intro-steam"></i><i class="intro-steam"></i>' +
       '<div class="intro-cup"><div class="intro-coffee"></div></div><div class="intro-flood"></div></div>' +
-      '<div class="intro-title">Astana Coffee <span>Express</span><small>кофе за 45 секунд</small></div>';
+      '<div class="intro-title">Astana Coffee <span>Express</span><small>' + t("кофе за 45 секунд") + '</small></div>';
     document.body.appendChild(el);
     document.documentElement.classList.add("intro-lock");
 
@@ -713,6 +894,8 @@
     el.addEventListener("click", finish);
     setTimeout(finish, 4150);
   })();
+
+  applyLang();
 </script>
 </body>
 </html>
