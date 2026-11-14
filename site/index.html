@@ -254,8 +254,6 @@
 
   /* партнёрам */
   #partners { background: var(--machine); color: var(--cream); position: relative; overflow: hidden; }
-  #partners::before { content: ""; position: absolute; inset: 0 auto 0 0; width: min(9vw, 120px);
-    background: linear-gradient(180deg, rgba(255,228,186,.2), rgba(0,0,0,.35)), repeating-linear-gradient(90deg, #ab7948 0 13px, #946339 13px 15px, #5a3a20 15px 21px); }
   #partners .wrap { position: relative; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 64px; align-items: end; }
   #partners h2 { font-size: clamp(2rem, 4.4vw, 3.4rem); }
   #partners .lead { color: #cdbdae; margin: 20px 0 30px; }
@@ -416,7 +414,6 @@
     .where, #partners .wrap, .cols, .people { grid-template-columns: minmax(0, 1fr); gap: 32px; }
     .req-form { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; }
     .map-box iframe { height: 340px; }
-    #partners::before { display: none; }
     #partners .calc { margin: 44px 22px 0; gap: 0; }
     .calc-in, .calc-out { padding: 24px 20px; }
     .calc-out { border-left: 0; border-top: 1px solid rgba(244,236,223,.18); }
