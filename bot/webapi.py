@@ -113,7 +113,7 @@ def setup_api(app: web.Application, db, cfg: Config) -> None:
                 response = await handler(request)
             except web.HTTPException as e:
                 response = e
-        response.headers["Access-Control-Allow-Origin"] = cfg.site_origin
+        response.headers["Access-Control-Allow-Origin"] = cfg.site_origin if cfg.site_origin else "*"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response.headers["Access-Control-Max-Age"] = "86400"

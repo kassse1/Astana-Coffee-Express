@@ -277,3 +277,105 @@ def test_full_scenario(tmp_path, sql):
         assert h.db.by_tg(GUEST).total == 3
 
     asyncio.run(run())
+
+
+def test_admin_panel(tmp_path):
+    """Панель: вход по ссылке из бота, аппараты, продажи по аппаратам, заявки, цена и акция."""
+    from aiohttp import web
+    from aiohttp.test_utils import TestClient, TestServer
+    from bot.admin import AdminStore, check_admin_token, make_admin_token, setup_admin_api
+    from bot.webapi import setup_api
+
+    async def run():
+        cfg = Config(token="1:x", admin_ids={ADMIN}, free_every=3, db_path=str(tmp_path / "coffee.xlsx"),
+                     site_origin="https://site.example")
+        db = open_db(cfg)
+        for login in ("aida", "bek"):
+            db.register(login, "pass1", None)
+        for _ in range(3):
+            db.add_coffee(1, "Латте")
+        store = AdminStore(cfg)
+        assert store.backfill(db.purchases(), cfg.free_every) == 3 and store.backfill(db.purchases(), 3) == 0
+        token = make_admin_token(cfg, ADMIN)
+        assert check_admin_token(cfg, token) == ADMIN and check_admin_token(cfg, token[:-1] + "0") in (None, ADMIN)
+        assert check_admin_token(cfg, make_admin_token(cfg, GUEST)) is None  # не админ
+        app = web.Application()
+        setup_api(app, db, cfg)
+        setup_admin_api(app, db, store, cfg)
+        auth = {"Authorization": f"Bearer {token}"}
+        async with TestClient(TestServer(app)) as c:
+            assert (await c.get("/api/admin/summary")).status == 401
+            assert (await c.post("/api/admin/machines", json={"name": ""}, headers=auth)).status == 400
+            r = await c.post("/api/admin/machines", json={"name": "ЕНУ, главный корпус", "address": "Сатпаева 2",
+                                                          "kind": "Университет"}, headers=auth)
+            mid = (await r.json())["id"]
+            await c.post("/api/admin/machines", json={"name": "Склад", "active": False}, headers=auth)
+            store.add_sale(2, "Капучино", mid, False)
+            store.add_sale(2, "Капучино", mid, False)
+            assert (await c.post("/api/admin/settings", json={"price": 0}, headers=auth)).status == 400
+            assert (await c.post("/api/admin/settings", json={"price": 700, "promo": "Сироп в подарок"},
+                                 headers=auth)).status == 200
+            store.add_sale(2, "Латте", None, True)
+            data = await (await c.get("/api/admin/summary", headers=auth)).json()
+            assert data["price"] == 700 and data["users"]["total"] == 2
+            # 3 перенесённые (одна из них бесплатная) + 2 у аппарата + 1 бесплатная
+            assert data["sales"]["day"] == {"cups": 6, "free": 2, "revenue": 600 * 2 + 600 * 2}
+            top = data["machines"][0]
+            assert top["id"] == mid and top["cups"] == 2 and top["revenue"] == 1200
+            assert data["drinks"][0] == ["Латте", 4] and data["days"][-1]["cups"] == 6
+            assert data["loyalty"]["top"][0]["login"] == "aida"
+            pub = await (await c.get("/api/public")).json()
+            assert pub["price"] == 700 and pub["promo"] == "Сироп в подарок"
+            assert [m["name"] for m in pub["machines"]] == ["ЕНУ, главный корпус"]
+            # обращения с сайта
+            assert (await c.post("/api/request", json={"kind": "spam", "name": "a", "contact": "b"})).status == 400
+            assert (await c.post("/api/request", json={"kind": "refund", "name": "Aida", "contact": "a@b.kz"})).status == 400
+            r = await c.post("/api/request", json={"kind": "refund", "name": "Aida", "contact": "a@b.kz",
+                                                   "text": "Не выдал латте", "machine_id": mid})
+            assert r.status == 200
+            await c.post("/api/request", json={"kind": "placement", "name": "БЦ Москва", "contact": "+7 700"})
+            items = (await (await c.get("/api/admin/requests", headers=auth)).json())["requests"]
+            assert len(items) == 2 and items[0]["kind"] == "placement" and items[1]["machine_id"] == mid
+            assert (await c.post(f"/api/admin/requests/{items[1]['id']}", json={"status": "done", "note": "вернули"},
+                                 headers=auth)).status == 200
+            data = await (await c.get("/api/admin/summary", headers=auth)).json()
+            assert data["new_requests"] == 1
+            for _ in range(6):
+                r = await c.post("/api/request", json={"kind": "placement", "name": "x", "contact": "y"})
+            assert r.status == 429
+
+    asyncio.run(run())
+
+
+def test_admin_in_bot(tmp_path):
+    """Бот: /admin даёт ссылку только админу, отметка кофе попадает в журнал продаж с аппаратом."""
+    from aiogram.types import CallbackQuery
+    from bot.admin import AdminStore
+
+    async def run():
+        h = Harness(tmp_path, True)
+        h.cfg.site_origin = "https://site.example"
+        store = AdminStore(h.cfg)
+        mid = store.save_machine({"name": "ЕНУ"})
+        h.dp = Dispatcher()
+        h.dp.include_router(build_router(h.db, h.cfg, store))
+        assert "Выберите действие" in texts(await h.say(GUEST, "/admin"))
+        calls = await h.say(ADMIN, "/admin")
+        assert "admin.html#" in calls[0].reply_markup.inline_keyboard[0][0].url
+        user = h.db.register("aida", "pass1", None)
+        calls = await h.say(ADMIN, B_MARK)
+        assert "У какого аппарата" in texts(calls)
+
+        async def press(data):
+            msg = Message(message_id=5, date=dt.datetime.now(), chat=Chat(id=ADMIN, type="private"), text="x")
+            cq = CallbackQuery(id="1", from_user=User(id=ADMIN, is_bot=False, first_name="a"),
+                               chat_instance="c", data=data, message=msg)
+            await h.dp.feed_update(h.bot, h._upd(callback_query=cq))
+        await press(f"mach:{mid}")
+        calls = await h.say(ADMIN, "1")
+        assert calls[-1].reply_markup.inline_keyboard[0][0].callback_data == f"mark:{user.id}:0:{mid}"
+        await press(f"mark:{user.id}:0:{mid}")
+        top = store.summary()["machines"][0]
+        assert top["cups"] == 1 and top["revenue"] == 600
+
+    asyncio.run(run())
