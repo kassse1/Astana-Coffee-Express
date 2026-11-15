@@ -6,6 +6,7 @@
 <title>Админ-панель — Astana Coffee Express</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#120d0a">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,6 +91,37 @@
     .two { grid-template-columns: minmax(0, 1fr); }
     .row { grid-template-columns: minmax(0, 40%) minmax(0, 1fr) auto; }
   }
+  /* тёмная тема — как на сайте, мягкая для глаз */
+  :root { --bg: #120d0a; --card: #1b1410; --ink: #f1e8db; --muted: #a8998b; --line: rgba(244,236,223,.1); --espresso: #e0b56a;
+    --bar: #d6a06c; --bar-soft: rgba(244,236,223,.08); --good: #86cfa0; color-scheme: dark; }
+  html { scrollbar-color: #5a4030 #120d0a; }
+  header { background: #0d0907; color: var(--ink); border-bottom: 1px solid var(--line); }
+  header .btn { color: var(--ink); border-color: rgba(244,236,223,.22); }
+  header .btn:hover { background: rgba(244,236,223,.08); }
+  .btn { background: var(--espresso); border-color: var(--espresso); color: #1d1410; }
+  .btn:hover { background: #ebc682; }
+  .btn.ghost { color: var(--ink); border-color: rgba(244,236,223,.2); background: transparent; }
+  .btn.ghost:hover { background: rgba(244,236,223,.07); }
+  nav { background: #17110d; }
+  nav button:hover { color: var(--ink); }
+  nav .badge { color: #1d1410; }
+  .panel { border-color: var(--line); }
+  .tile .num { color: #fff6ea; }
+  .days { border-color: var(--line); }
+  .days .d i { background: linear-gradient(180deg, #e0b56a, #a8672f); }
+  .row .track i { background: linear-gradient(90deg, #a8672f, #e0b56a); }
+  .tip { background: #2a1f18; color: var(--ink); border: 1px solid var(--line); }
+  .pill { background: rgba(244,236,223,.1); color: var(--ink); }
+  .pill.new { background: rgba(224,181,106,.2); color: #f0cf91; }
+  .pill.done { background: rgba(134,207,160,.16); color: #9ed9b2; }
+  .pill.off { background: rgba(244,236,223,.06); color: var(--muted); }
+  input[type=text], input[type=number], select, textarea { background: #0f0b08; color: var(--ink); border-color: rgba(244,236,223,.14); }
+  input::placeholder, textarea::placeholder { color: #6f6257; }
+  .chips button { background: transparent; color: var(--muted); border-color: rgba(244,236,223,.16); }
+  .chips button[aria-pressed="true"] { background: var(--espresso); color: #1d1410; border-color: var(--espresso); }
+  .msg.err { color: #ffa392; }
+  th { color: var(--muted); }
+  input[type=checkbox] { accent-color: #e0b56a; }
 </style>
 </head>
 <body>
