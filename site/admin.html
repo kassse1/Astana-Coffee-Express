@@ -122,6 +122,8 @@
   .msg.err { color: #ffa392; }
   th { color: var(--muted); }
   input[type=checkbox] { accent-color: #e0b56a; }
+  .gate.loading img { animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .4; transform: scale(.92); } }
 </style>
 </head>
 <body>
@@ -234,14 +236,20 @@
     if (text) $("gate-text").textContent = text;
   }
   async function call(path, data) {
-    const res = await fetch(API + path, {
+    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 90000);
+    let res;
+    try {
+      res = await fetch(API + path, { signal: ctrl.signal,
       method: data ? "POST" : "GET",
       headers: Object.assign({ Authorization: "Bearer " + token }, data ? { "Content-Type": "application/json" } : {}),
       body: data ? JSON.stringify(data) : undefined,
     });
+    } catch (e) {
+      throw new Error(e.name === "AbortError" ? "Сервис бота не ответил за 1,5 минуты." : "Нет связи с сервисом бота.");
+    } finally { clearTimeout(timer); }
     const json = await res.json().catch(() => ({}));
     if (res.status === 401) { try { sessionStorage.removeItem("ace-admin"); } catch (e) {} gate(json.error); throw new Error("auth"); }
-    if (!res.ok) throw new Error(json.error || "Что-то пошло не так.");
+    if (!res.ok) throw new Error(json.error || (res.status === 404 ? "На сервисе бота нет админ-панели — он не обновился до новой версии." : "Ошибка сервиса бота (" + res.status + ")."));
     return json;
   }
   function say(id, text, ok) { const el = $(id); el.textContent = text; el.className = "msg " + (ok ? "ok" : "err"); }
@@ -302,7 +310,7 @@
   async function load() {
     $("reload").disabled = true;
     try { render(await call("/api/admin/summary")); $("gate").hidden = true; $("app").hidden = false; }
-    catch (e) { if (e.message !== "auth") gate("Не получилось связаться с сервисом. Если он спал, подождите минуту и обновите страницу."); }
+    catch (e) { if (e.message !== "auth") gate(e.message + " Если сервис спал, подождите минуту и нажмите «Обновить» в браузере. Не помогает — откройте логи бота на Render."); }
     finally { $("reload").disabled = false; }
   }
   $("reload").addEventListener("click", () => { load(); if (!document.querySelector('[data-view="requests"]').hidden) loadRequests(); });
@@ -382,7 +390,8 @@
     finally { btn.disabled = false; }
   });
 
-  if (!token) gate(); else load();
+  if (!token) gate();
+  else { gate("Загружаем данные… На бесплатном тарифе сервис бота просыпается до минуты."); $("gate").classList.add("loading"); load().finally(() => $("gate").classList.remove("loading")); }
 })();
 </script>
 </body>
