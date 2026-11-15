@@ -330,39 +330,41 @@
   .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
   .js .reveal.in { opacity: 1; transform: none; }
 
-  /* ---------- заставка: зёрна -> чашка кофе ---------- */
+  /* ---------- заставка: зёрна → помол → струя в стакан → сайт ---------- */
   .intro-lock { overflow: hidden; }
-  #intro { position: fixed; inset: 0; z-index: 100; background: #0d0907; overflow: hidden; cursor: pointer; transition: opacity .5s ease; }
+  #intro { position: fixed; inset: 0; z-index: 100; overflow: hidden; cursor: pointer; background: radial-gradient(ellipse 70% 60% at 50% 42%, #2a1b12, #0d0907 72%); transition: opacity .55s ease; }
   #intro.done { opacity: 0; pointer-events: none; }
-  #intro .center { position: absolute; left: 50%; top: 46%; width: 0; height: 0; }
-  .intro-bean { position: absolute; left: -17px; top: -23px; width: 34px; height: 46px; opacity: 0;
-    animation: bean-in .95s cubic-bezier(.22,.9,.3,1.12) var(--d) forwards, bean-merge .6s cubic-bezier(.6,0,.9,.4) calc(1.55s + var(--m)) forwards; }
-  @keyframes bean-in {
-    from { opacity: 0; transform: translate(var(--sx), -75vh) rotate(var(--r0)) scale(var(--s)); }
-    15% { opacity: 1; }
-    to { opacity: 1; transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(var(--s)); }
-  }
-  @keyframes bean-merge {
-    from { opacity: 1; transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(var(--s)); }
-    to { opacity: 0; transform: translate(0, 0) rotate(calc(var(--r) + 220deg)) scale(.15); }
-  }
-  .intro-cup { position: absolute; left: -84px; top: -84px; width: 168px; height: 168px; border-radius: 50%; background: #fff; box-shadow: 0 18px 50px rgba(0,0,0,.6), inset 0 -6px 14px rgba(0,0,0,.18); transform: scale(0); animation: cup-pop .7s cubic-bezier(.3,1.5,.5,1) 1.85s forwards; }
-  .intro-cup::before { content: ""; position: absolute; right: -40px; top: 58px; width: 52px; height: 52px; border: 13px solid #fff; border-radius: 50%; z-index: -1; }
-  .intro-coffee { position: absolute; inset: 14px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle, #7a4a26 0, #5a3319 55%, #3b2010 100%); }
-  .intro-coffee::before { content: ""; position: absolute; inset: -20%; opacity: 0;
-    background: conic-gradient(from 0deg, transparent 0 20%, rgba(232,196,150,.75) 28%, transparent 40% 62%, rgba(232,196,150,.55) 72%, transparent 84%);
-    filter: blur(7px); animation: crema 1.5s ease-out 2.1s forwards; }
-  @keyframes cup-pop { to { transform: scale(1); } }
-  @keyframes crema { from { opacity: 0; transform: rotate(-140deg) scale(.5); } to { opacity: 1; transform: rotate(40deg) scale(1); } }
-  .intro-steam { position: absolute; left: -3px; top: -110px; width: 6px; height: 46px; border-radius: 6px; background: linear-gradient(transparent, rgba(255,255,255,.45), transparent); opacity: 0; filter: blur(2px); animation: steam 1.3s ease-out 2.35s forwards; }
-  .intro-steam:nth-of-type(2) { margin-left: -26px; animation-delay: 2.5s; }
-  .intro-steam:nth-of-type(3) { margin-left: 26px; animation-delay: 2.6s; }
-  .intro-title { position: absolute; left: 0; right: 0; top: calc(46% + 124px); text-align: center; font: 700 clamp(1rem, 3.6vw, 1.5rem) var(--serif); color: #fff; opacity: 0; animation: title-in .7s ease 2.25s forwards; padding: 0 20px; }
-  .intro-title span { color: var(--gold); }
-  .intro-title small { display: block; margin-top: 10px; font: 600 .7rem var(--sans); letter-spacing: .16em; text-transform: uppercase; opacity: .6; }
-  @keyframes title-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-  .intro-flood { position: absolute; left: -70px; top: -70px; width: 140px; height: 140px; border-radius: 50%; background: var(--cream); transform: scale(0); animation: flood .8s cubic-bezier(.7,0,.3,1) 3.45s forwards; }
-  @keyframes flood { to { transform: scale(30); } }
+  #intro .st { position: absolute; left: 50%; top: 42%; width: 0; height: 0; transition: transform .6s cubic-bezier(.5,0,.2,1), opacity .5s; }
+  #intro.out .st { transform: scale(1.35) translateY(-20px); opacity: 0; }
+  .ib { position: absolute; left: -13px; top: -18px; width: 26px; height: 36px; opacity: 0; will-change: transform;
+    animation: i-fall .85s cubic-bezier(.35,.7,.45,1.15) var(--d) both, i-grind .42s cubic-bezier(.6,0,.9,.4) calc(.95s + var(--m)) forwards; }
+  @keyframes i-fall { from { opacity: 1; transform: translate(var(--sx), -70vh) rotate(var(--r0)); } to { opacity: 1; transform: translate(var(--tx), var(--ty)) rotate(var(--r)); } }
+  @keyframes i-grind { from { opacity: 1; transform: translate(var(--tx), var(--ty)) rotate(var(--r)); } to { opacity: 0; transform: translate(0, -128px) rotate(calc(var(--r) + 320deg)) scale(.15); } }
+  .ig { position: absolute; left: -2px; top: -126px; width: 4px; height: 4px; border-radius: 50%; background: #6a3d1f; opacity: 0;
+    animation: i-dust .55s cubic-bezier(.4,0,.8,.6) var(--d) forwards; }
+  @keyframes i-dust { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translate(var(--x), 76px); } }
+  .is { position: absolute; left: -3px; top: -128px; width: 6px; height: 118px; border-radius: 3px; transform-origin: 50% 0; transform: scaleY(0);
+    background: linear-gradient(90deg, #4a2a14, #8a5530 50%, #4a2a14); animation: i-stream 1.15s cubic-bezier(.4,0,.2,1) 1.25s forwards; }
+  @keyframes i-stream { 0% { transform: scaleY(0); } 18% { transform: scaleY(1); } 78% { transform: scaleY(1); top: -128px; height: 118px; } 100% { transform: scaleY(1); top: -10px; height: 0; } }
+  .iglass { position: absolute; left: -56px; top: -52px; width: 112px; height: 132px; overflow: visible; opacity: 0; animation: i-glass .6s cubic-bezier(.2,.8,.2,1) .35s forwards, i-pop .5s cubic-bezier(.3,1.6,.5,1) 2.15s; }
+  @keyframes i-glass { from { opacity: 0; transform: translateY(16px) scale(.92); } to { opacity: 1; transform: none; } }
+  @keyframes i-pop { 50% { transform: scale(1.06); } }
+  .iglass .lay { transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0); }
+  .iglass .l1 { animation: i-up 1s cubic-bezier(.3,.6,.3,1) 1.4s forwards; }
+  .iglass .l2 { animation: i-up .45s ease-out 2.15s forwards; }
+  @keyframes i-up { to { transform: scaleY(1); } }
+  .ihalo { position: absolute; left: -150px; top: -130px; width: 300px; height: 300px; border-radius: 50%; opacity: 0;
+    background: radial-gradient(circle, rgba(224,181,106,.32), transparent 62%); animation: i-halo 1.2s ease-out 2.1s forwards; }
+  @keyframes i-halo { 0% { opacity: 0; transform: scale(.6); } 40% { opacity: 1; } 100% { opacity: .75; transform: scale(1); } }
+  .iw { position: absolute; left: -22px; top: -110px; width: 44px; height: 80px; border-radius: 50%; opacity: 0;
+    background: radial-gradient(ellipse, rgba(255,246,230,.38), transparent 66%); animation: i-steam 1.4s ease-out var(--d) forwards; }
+  @keyframes i-steam { 0% { opacity: 0; transform: translateY(20px) scale(.5); } 35% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--x), -70px) scale(1.6); } }
+  .ititle { position: absolute; left: 0; right: 0; top: calc(42% + 108px); padding: 0 20px; text-align: center; color: #f4ecdf; opacity: 0;
+    font: 800 clamp(1.3rem, 4.4vw, 2rem)/1.15 var(--sans); letter-spacing: -.03em; animation: i-title .7s cubic-bezier(.2,.8,.2,1) 2.05s forwards; transition: opacity .4s; }
+  .ititle span { color: var(--gold); }
+  .ititle small { display: block; margin-top: 10px; font: 600 .95rem var(--sans); letter-spacing: 0; color: #cdbdae; }
+  @keyframes i-title { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  #intro.out .ititle { opacity: 0; }
 
   /* список и карта аппаратов */
   .machines { list-style: none; padding: 0; margin-top: 28px; border-top: 1px solid var(--line); max-height: 440px; overflow-y: auto; scrollbar-width: thin; }
@@ -407,7 +409,6 @@
   .req-form input, .req-form select, .req-form textarea { background: rgba(0,0,0,.3); color: var(--cream); }
   .req-form option { background: #1d1510; color: var(--cream); }
   .req-note.ok { color: #86cfa0; } .req-note.err { color: #ffa392; }
-  .intro-flood { background: #120d0a; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -1313,53 +1314,47 @@
     calc();
   })();
 
-  // ---------- Заставка: зёрна сыплются и собираются в чашку кофе ----------
+  // ---------- Заставка: зёрна падают, перемалываются, кофе льётся в стакан ----------
   // Показывается один раз за визит; клик пропускает. При «уменьшении движения» в системе не показывается.
   (function () {
     let seen = false;
     try { seen = sessionStorage.getItem("ace-intro") === "1"; sessionStorage.setItem("ace-intro", "1"); } catch (e) {}
     if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const bean = '<svg viewBox="0 0 34 46" width="34" height="46"><use href="#i-bean"/></svg>';
-    const defs = '<svg width="0" height="0" style="position:absolute"><defs>' +
-      '<radialGradient id="bg" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#9a6336"/><stop offset=".6" stop-color="#6a3d1f"/><stop offset="1" stop-color="#3f2211"/></radialGradient>' +
-      '<g id="i-bean"><ellipse cx="17" cy="23" rx="15" ry="21" fill="url(#bg)"/><path d="M19 3 C8 14 26 30 15 43" fill="none" stroke="#2a160b" stroke-width="2.6" stroke-linecap="round"/></g>' +
-      '</defs></svg>';
-    let html = defs, n = 24;
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2 + Math.random() * .5, rad = 40 + Math.random() * 95;
-      const vars = [
-        "--sx:" + Math.round((Math.random() - .5) * 90) + "vw",
-        "--tx:" + Math.round(Math.cos(a) * rad * 1.25) + "px",
-        "--ty:" + Math.round(Math.sin(a) * rad * .8) + "px",
-        "--r0:" + Math.round(Math.random() * 720 - 360) + "deg",
-        "--r:" + Math.round(Math.random() * 360) + "deg",
-        "--s:" + (.7 + Math.random() * .6).toFixed(2),
-        "--d:" + (Math.random() * .55).toFixed(2) + "s",
-        "--m:" + (Math.random() * .25).toFixed(2) + "s",
-      ].join(";");
-      html += '<div class="intro-bean" style="' + vars + '">' + bean + "</div>";
+    const R = (a, b) => a + Math.random() * (b - a);
+    let html = '<svg width="0" height="0" style="position:absolute"><defs>' +
+      '<radialGradient id="ibg" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#a06a3a"/><stop offset=".6" stop-color="#6a3d1f"/><stop offset="1" stop-color="#3a1f0f"/></radialGradient>' +
+      '<g id="ibean"><ellipse cx="13" cy="18" rx="11.5" ry="16.5" fill="url(#ibg)"/><path d="M14.5 2.5C7 11 20 23 11.5 33.5" fill="none" stroke="#2a160b" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="9" cy="10" rx="3" ry="5" fill="#fff" opacity=".12"/></g>' +
+      '</defs></svg><div class="st"><div class="ihalo"></div>';
+    for (let i = 0; i < 18; i++) {             // зёрна ложатся воронкой над стаканом
+      const row = i % 3, a = (i / 18) * Math.PI * 2;
+      html += '<div class="ib" style="--sx:' + Math.round(R(-45, 45)) + 'vw;--tx:' + Math.round(Math.cos(a) * (34 + row * 18)) + 'px;--ty:' +
+        Math.round(-150 - row * 14 + Math.sin(a) * 12) + 'px;--r0:' + Math.round(R(-540, 540)) + 'deg;--r:' + Math.round(R(0, 360)) + 'deg;--d:' +
+        R(0, .45).toFixed(2) + 's;--m:' + R(0, .22).toFixed(2) + 's"><svg viewBox="0 0 26 36" width="26" height="36"><use href="#ibean"/></svg></div>';
     }
+    for (let i = 0; i < 16; i++)               // молотый кофе сыплется вниз
+      html += '<i class="ig" style="--x:' + Math.round(R(-14, 14)) + 'px;--d:' + R(1.05, 1.5).toFixed(2) + 's"></i>';
+    html += '<i class="is"></i>' +
+      '<svg class="iglass" viewBox="0 0 112 132" aria-hidden="true"><clipPath id="icl"><path d="M10 4h92l-9 118q-1 6-7 6H26q-6 0-7-6z"/></clipPath>' +
+      '<g clip-path="url(#icl)"><rect class="lay l1" x="0" y="44" width="112" height="88" fill="#4a2a14"/><rect class="lay l2" x="0" y="34" width="112" height="12" fill="#c98d4f"/></g>' +
+      '<path d="M10 4h92l-9 118q-1 6-7 6H26q-6 0-7-6z" fill="rgba(255,255,255,.05)" stroke="rgba(244,236,223,.7)" stroke-width="2.5" stroke-linejoin="round"/>' +
+      '<path d="M22 14l7 98" stroke="#fff" stroke-opacity=".16" stroke-width="5" stroke-linecap="round"/></svg>';
+    for (let i = 0; i < 3; i++)
+      html += '<i class="iw" style="--x:' + [-18, 8, 24][i] + 'px;--d:' + (2.3 + i * .25).toFixed(2) + 's;margin-left:' + [-16, 4, 18][i] + 'px"></i>';
+    html += '</div><div class="ititle">Astana Coffee <span>Express</span><small>' + t("кофе за 45 секунд") + '</small></div>';
+
     const el = document.createElement("div");
-    el.id = "intro";
-    el.setAttribute("aria-hidden", "true");
-    el.innerHTML = '<div class="center">' + html +
-      '<i class="intro-steam"></i><i class="intro-steam"></i><i class="intro-steam"></i>' +
-      '<div class="intro-cup"><div class="intro-coffee"></div></div><div class="intro-flood"></div></div>' +
-      '<div class="intro-title">Astana Coffee <span>Express</span><small>' + t("кофе за 45 секунд") + '</small></div>';
+    el.id = "intro"; el.setAttribute("aria-hidden", "true"); el.innerHTML = html;
     document.body.appendChild(el);
     document.documentElement.classList.add("intro-lock");
-
     let finished = false;
     function finish() {
-      if (finished) return;
-      finished = true;
-      el.classList.add("done");
-      document.documentElement.classList.remove("intro-lock");
-      setTimeout(function () { el.remove(); }, 600);
+      if (finished) return; finished = true;
+      el.classList.add("out");
+      setTimeout(() => { el.classList.add("done"); document.documentElement.classList.remove("intro-lock"); }, 250);
+      setTimeout(() => el.remove(), 900);
     }
     el.addEventListener("click", finish);
-    setTimeout(finish, 4150);
+    setTimeout(finish, 3300);
   })();
 
   applyLang();
