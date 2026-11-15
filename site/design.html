@@ -19,7 +19,6 @@
   }
   * { box-sizing: border-box; margin: 0; }
   html, body { height: 100%; }
-  html { overflow: hidden; }
   body { font: 16px/1.5 var(--sans); color: var(--cream); background: var(--machine); overflow: hidden; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100dvh; }
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
@@ -45,15 +44,17 @@
   @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
 
   /* сцена с картами */
-  .stage { position: relative; height: calc(var(--cw) / 1.586 + 90px); margin-top: 12px; perspective: 1500px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+  .stage { overflow-x: clip; position: relative; height: calc(var(--cw) / 1.586 + 90px); margin-top: 12px; perspective: 1500px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
   .stage.drag { cursor: grabbing; }
   .card { position: absolute; left: 50%; top: 50%; width: var(--cw); aspect-ratio: 1.586; margin: calc(var(--cw) / -3.172) 0 0 calc(var(--cw) / -2); border: 0; padding: 0; border-radius: calc(var(--cw) * .045); overflow: hidden; background: #000; color: #fff; font: inherit; text-align: left; cursor: pointer;
-    box-shadow: 0 24px 40px -22px rgba(0,0,0,.9); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s; will-change: transform; }
+    transition: transform .42s cubic-bezier(.2,.9,.2,1), opacity .3s, --sx .42s cubic-bezier(.2,.9,.2,1), --ang .42s cubic-bezier(.2,.9,.2,1); will-change: transform; }
   .card::after { content: ""; position: absolute; inset: 0; background: #0c0907; opacity: var(--dim, 0); transition: opacity .5s; pointer-events: none; }
   .stage.drag .card, .card.tilting { transition: opacity .3s; }
+  @property --sx { syntax: "<number>"; inherits: false; initial-value: 0; }
+  @property --ang { syntax: "<angle>"; inherits: false; initial-value: 115deg; }
   /* объёмная карта: толщина по краю, фаска сверху, тень и блик зависят от угла поворота */
   .card { box-shadow: 0 1px 0 #3d2a18, 0 2px 0 #2d1e12, 0 3px 0 #21150c, 0 4px 0 #180f09, inset 0 1px 0 rgba(255,236,204,.38), inset 0 0 0 1px rgba(0,0,0,.35), calc(var(--sx, 0) * 1px) 30px 42px -18px rgba(0,0,0,.9); }
-  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 1px 0 #3d2a18, 0 2px 0 #2d1e12, 0 3px 0 #21150c, 0 4px 0 #180f09, inset 0 1px 0 rgba(255,236,204,.45), calc(var(--sx, 0) * 1px) 30px 46px -18px rgba(0,0,0,.9), 0 0 60px -14px rgba(224,181,106,.35); }
+  .card.current { box-shadow: 0 1px 0 #3d2a18, 0 2px 0 #2d1e12, 0 3px 0 #21150c, 0 4px 0 #180f09, 0 0 0 2px rgba(224,181,106,.9), inset 0 1px 0 rgba(255,236,204,.45), inset 0 0 0 1px rgba(0,0,0,.35), calc(var(--sx, 0) * 1px) 30px 46px -18px rgba(0,0,0,.9), 0 0 60px -14px rgba(224,181,106,.35); }
   .card .solid { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(var(--ang, 115deg), rgba(255,244,222,0) 38%, rgba(255,244,222,.2) 50%, rgba(0,0,0,.18) 66%, rgba(0,0,0,.28) 100%); }
   .card img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   .card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 35%, rgba(18,16,14,.86)); }
@@ -75,7 +76,7 @@
   .arrow.next { right: calc(50% - 150px); }
 
   .dots { display: flex; justify-content: center; gap: 8px; margin-top: 4px; }
-  .dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 8px; background: rgba(244,236,223,.3); cursor: pointer; transition: width .3s cubic-bezier(.2,.8,.2,1), background .3s; }
+  .dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 8px; background: rgba(244,236,223,.3); cursor: pointer; transition: width .2s cubic-bezier(.2,.9,.2,1), background .15s; }
   .dots button.on { width: 30px; background: var(--gold); }
 
   footer { padding: 18px 22px 26px; display: flex; justify-content: center; }
@@ -158,9 +159,9 @@
     c.type = "button"; c.className = "card";
     c.setAttribute("aria-label", t("design") + " " + (i + 1));
     c.innerHTML = '<img class="photo" src="cards/card-' + (i + 1) + '.webp" alt="" draggable="false" decoding="async">' +
-      '<span class="shade"></span><span class="num">0' + (i + 1) + '</span>' +
+      '<span class="shade"></span><span class="solid"></span><span class="num">0' + (i + 1) + '</span>' +
       '<span class="brand"><img src="icon.svg" alt=""><span><b>Astana Coffee Express</b><span>' + t("guest") + '</span></span></span>' +
-      '<span class="solid"></span><span class="glare"></span><span class="sweep"></span>';
+      '<span class="glare"></span><span class="sweep"></span>';
     stage.appendChild(c); cards.push(c);
     const d = document.createElement("button");
     d.type = "button"; d.setAttribute("aria-label", t("design") + " " + (i + 1));
@@ -168,11 +169,23 @@
     dots.appendChild(d);
   }
 
-  function transformOf(i) {
-    const d = i - pos, a = Math.abs(d), w = cards[0].offsetWidth;
-    const x = d * w * (innerWidth < 640 ? .56 : .6), z = -Math.min(a, 3) * 190;
+  // угол поворота карты i и наклон курсора (только у выбранной карты)
+  function turnOf(i) {
+    const d = i - pos, a = Math.abs(d);
     let ry = Math.max(-1, Math.min(1, d)) * -44, rx = 0;
     if (i === current && a < .05) { rx = tilt.rx; ry += tilt.ry; }
+    return { rx, ry, a };
+  }
+  // свет и тень: следуют за поворотом; во время перетаскивания не меняются, чтобы не перерисовывать тени каждый кадр
+  function lightOf(c, i) {
+    if (stage.classList.contains("drag")) return;
+    const { ry } = turnOf(i);
+    c.style.setProperty("--sx", (-ry * .5).toFixed(1));
+    c.style.setProperty("--ang", (115 + ry * .6).toFixed(1) + "deg");
+  }
+  function transformOf(i) {
+    const w = cards[0].offsetWidth, { rx, ry, a } = turnOf(i), d = i - pos;
+    const x = d * w * (innerWidth < 640 ? .56 : .6), z = -Math.min(a, 3) * 190;
     return "translate3d(" + x.toFixed(1) + "px,0," + z.toFixed(1) + "px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
   }
   function layout() {
@@ -181,9 +194,7 @@
       c.style.transform = transformOf(i);
       c.style.opacity = a > 2.6 ? 0 : 1;
       c.style.setProperty("--dim", (Math.min(a, 2) * .34).toFixed(2));
-      const ry = Math.max(-1, Math.min(1, i - pos)) * -44;
-      c.style.setProperty("--sx", (-ry * .5).toFixed(1));
-      c.style.setProperty("--ang", (115 + ry * .6).toFixed(1) + "deg");
+      lightOf(c, i);
       c.style.zIndex = 100 - Math.round(a * 10);
       c.classList.toggle("current", i === current);
       c.tabIndex = i === current ? 0 : -1;
@@ -253,6 +264,7 @@
       c.classList.add("tilting");
       c.style.setProperty("--gx", (x * 100).toFixed(0) + "%"); c.style.setProperty("--gy", (y * 100).toFixed(0) + "%");
       c.style.transform = transformOf(current);
+      lightOf(c, current);
     });
     stage.addEventListener("pointerleave", () => { tilt.rx = tilt.ry = 0; cards.forEach(c => c.classList.remove("tilting")); layout(); });
     stage.addEventListener("pointerout", e => {
