@@ -60,7 +60,7 @@
   nav button:hover { color: var(--ink); }
   nav button[aria-selected="true"] { color: var(--ink); background: rgba(255,255,255,.16); box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 4px 14px rgba(0,0,0,.3); }
   nav .badge { background: var(--gold); color: #1d1410; border-radius: 10px; font-size: .72rem; font-weight: 600; padding: 1px 7px; margin-left: 6px; }
-  main { padding: 10px 0 56px; }
+  main { padding: 10px 0 56px; overflow-x: clip; }
 
   /* кнопки и поля */
   .btn { border: 1px solid rgba(255,255,255,.35); background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: #231911; font-weight: 600; padding: 10px 18px; border-radius: 14px; cursor: pointer; white-space: nowrap;
@@ -90,7 +90,12 @@
   .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .g21 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
   .mt { margin-top: 16px; }
-  .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 12px; }
+  .head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+  .head > * { min-width: 0; } .chips { max-width: 100%; overflow-x: auto; scrollbar-width: none; } .chips::-webkit-scrollbar { display: none; }
+  .chips button { white-space: nowrap; flex: none; }
+  .grid > * { min-width: 0; }
+  .short { display: none; }
 
   /* показатели */
   .tile .label { color: var(--muted); font-size: .86rem; }
@@ -146,9 +151,12 @@
   .pill { display: inline-block; font-size: .76rem; font-weight: 600; padding: 2px 10px; border-radius: 12px; background: rgba(255,255,255,.12); white-space: nowrap; }
   .pill.new { color: var(--gold-2); background: rgba(230,185,107,.18); } .pill.done { color: var(--good); background: rgba(127,214,160,.16); } .pill.off { color: var(--muted); background: rgba(255,255,255,.07); }
   .req { border-top: 1px solid var(--line); padding: 16px 0; } .req:first-child { border-top: 0; }
-  .req .headline { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .req-top { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .req-top .when { margin-left: auto; color: var(--faint); font-size: .8rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .req-who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 10px; }
+  .req-who b { font-weight: 600; font-size: 1.02rem; overflow-wrap: anywhere; } .req-who .sub { overflow-wrap: anywhere; }
   .req .text { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .req .note-row { display: flex; gap: 10px; } .req .note-row input { margin: 0; }
+  .req .note-row { display: flex; gap: 10px; } .req .note-row input { margin: 0; flex: 1; min-width: 0; }
 
   /* вход */
   .gate { max-width: 460px; margin: 14vh auto 0; text-align: center; }
@@ -162,9 +170,24 @@
     .g2, .g21 { grid-template-columns: minmax(0, 1fr); }
   }
   @media (max-width: 520px) {
+    .hide-m, .full { display: none; } .short { display: inline; }
+    nav .seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; }
+    nav button { padding: 9px 4px; text-align: center; }
+    nav .badge { margin-left: 4px; }
+    .head .chips { width: 100%; display: flex; } .head .chips button { flex: 1; padding: 6px 6px; }
+    .req .note-row { flex-direction: column; } .req .note-row .btn { width: 100%; }
+    .req-top .when { margin-left: 0; width: 100%; }
+    /* аппараты: таблица превращается в карточки */
+    #machines tr:first-child { display: none; }
+    #machines tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    #machines tr:last-child { border-bottom: 0; }
+    #machines td { padding: 0; border: 0; }
+    #machines td:nth-child(1) { grid-column: 1 / -1; }
+    #machines td:nth-child(3) { text-align: right; }
+    #machines td:nth-child(4) { grid-column: 1 / -1; } #machines td:nth-child(4) .btn { width: 100%; }
     .wrap { padding: 0 14px; } .panel, .tile { padding: 18px; border-radius: 20px; }
     .tile .num { font-size: 1.55rem; } .row { grid-template-columns: minmax(0, 40%) minmax(0, 1fr) auto; gap: 8px; }
-    .ring { flex-direction: column; align-items: flex-start; }
+    .ring svg { width: 84px; height: 84px; } .ring .big { font-size: 1.4rem; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -180,12 +203,12 @@
 </div>
 
 <div id="app" hidden>
-<header><div class="wrap"><div class="bar"><img src="icon.svg" width="30" height="30" alt=""><b>Astana Coffee Express · панель</b><button class="btn ghost" id="reload" type="button">Обновить</button></div></div></header>
+<header><div class="wrap"><div class="bar"><img src="icon.svg" width="30" height="30" alt=""><b>Astana Coffee Express<span class="hide-m"> · панель</span></b><button class="btn ghost" id="reload" type="button">Обновить</button></div></div></header>
 <div class="wrap"><nav><div class="seg" role="tablist">
   <button role="tab" data-tab="home" aria-selected="true">Обзор</button>
   <button role="tab" data-tab="machines" aria-selected="false">Аппараты</button>
-  <button role="tab" data-tab="requests" aria-selected="false">Обращения<span class="badge" id="badge" hidden></span></button>
-  <button role="tab" data-tab="promo" aria-selected="false">Цена и акции</button>
+  <button role="tab" data-tab="requests" aria-selected="false"><span class="full">Обращения</span><span class="short">Заявки</span><span class="badge" id="badge" hidden></span></button>
+  <button role="tab" data-tab="promo" aria-selected="false"><span class="full">Цена и акции</span><span class="short">Цены</span></button>
 </div></nav></div>
 
 <main class="wrap">
@@ -227,7 +250,7 @@
         <label>Название<input type="text" name="name" maxlength="80" required placeholder="Например: ЕНУ, главный корпус"></label>
         <label>Адрес и где стоит<input type="text" name="address" maxlength="200" placeholder="Улица, дом, этаж"></label>
         <label>Часы работы<input type="text" name="hours" maxlength="40" placeholder="08:00–20:00 или 24/7"></label>
-        <div class="grid g2" style="gap:0 12px"><label>Широта<input type="text" name="lat" inputmode="decimal" placeholder="51.1612"></label><label>Долгота<input type="text" name="lon" inputmode="decimal" placeholder="71.4690"></label></div>
+        <div class="pair"><label>Широта<input type="text" name="lat" inputmode="decimal" placeholder="51.1612"></label><label>Долгота<input type="text" name="lon" inputmode="decimal" placeholder="71.4690"></label></div>
         <p class="note">С координатами аппарат появится на карте сайта. Их можно скопировать из 2ГИС или Google Карт (правый клик по точке).</p>
         <label>Тип места<select name="kind"><option>Университет</option><option>Бизнес-центр</option><option>Клиника</option><option>Транспортный узел</option><option>Другое</option></select></label>
         <label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" name="active" checked> Работает</label>
@@ -333,7 +356,7 @@
 
   // график выручки: плавная линия с заливкой, подсказка по наведению
   function chart() {
-    const days = state.days.slice(-range), W = 720, H = 250, L = 46, R = 14, T = 16, B = 30, n = days.length;
+    const days = state.days.slice(-range), W = Math.max(300, Math.round($("chart").clientWidth || 720)), H = W < 520 ? 210 : 250, L = 46, R = 14, T = 16, B = 30, n = days.length;
     const max = niceMax(Math.max(1, ...days.map(x => x.revenue)));
     const x = i => L + (n === 1 ? 0 : i * (W - L - R) / (n - 1)), y = v => T + (H - T - B) * (1 - v / max);
     const pts = days.map((d, i) => [x(i), y(d.revenue)]);
@@ -412,11 +435,12 @@
   }
   async function load() {
     $("reload").disabled = true;
-    try { render(await call("/api/admin/summary")); $("gate").hidden = true; $("app").hidden = false; }
+    try { const d = await call("/api/admin/summary"); $("gate").hidden = true; $("app").hidden = false; render(d); }
     catch (e) { if (e.message !== "auth") gate(e.message + " Если сервис спал, подождите минуту и нажмите «Обновить» в браузере. Не помогает — откройте логи бота на Render."); }
     finally { $("reload").disabled = false; }
   }
   $("reload").addEventListener("click", () => { load(); if (!document.querySelector('[data-view="requests"]').hidden) loadRequests(); });
+  let rz = 0; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (state && !document.querySelector('[data-view="home"]').hidden) chart(); }, 150); });
   $("range").addEventListener("click", e => {
     const n = e.target.dataset && +e.target.dataset.n; if (!n || !state) return;
     range = n; $("range").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.n === n)); chart();
@@ -447,8 +471,8 @@
     const items = requests.filter(r => !filter || r.kind === filter);
     $("requests").innerHTML = items.length ? items.map(r => {
       const m = r.machine_id && machines.find(x => x.id === r.machine_id);
-      return '<div class="req"><div class="headline"><span class="pill">' + KIND[r.kind] + '</span><span class="pill ' + r.status + '">' + (r.status === "new" ? "новое" : "закрыто") + "</span><b>" + esc(r.name) + "</b><span>" + esc(r.contact) +
-        '</span><span class="sub">' + esc(r.ts.slice(0, 16)) + (m ? " · " + esc(m.name) : "") + '</span></div><p class="text">' + esc(r.text || "Без комментария.") +
+      return '<div class="req"><div class="req-top"><span class="pill">' + KIND[r.kind] + '</span><span class="pill ' + r.status + '">' + (r.status === "new" ? "новое" : "закрыто") + '</span><span class="when">' + esc(r.ts.slice(0, 16).replace("T", " ")) + "</span></div>" +
+        '<div class="req-who"><b>' + esc(r.name) + '</b><span class="sub">' + esc(r.contact) + (m ? " · " + esc(m.name) : "") + '</span></div><p class="text">' + esc(r.text || "Без комментария.") +
         '</p><div class="note-row"><input type="text" maxlength="1000" placeholder="Заметка: что сделали" value="' + esc(r.note) + '" data-note="' + r.id + '"><button class="btn' + (r.status === "new" ? "" : " ghost") +
         '" type="button" data-req="' + r.id + '" data-status="' + (r.status === "new" ? "done" : "new") + '">' + (r.status === "new" ? "Закрыть" : "Вернуть") + "</button></div></div>";
     }).join("") : '<p class="sub">Здесь пока пусто.</p>';
