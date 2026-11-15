@@ -407,6 +407,16 @@
     .sb-art { order: -1; } .sb-art svg { max-width: 190px; }
   }
 
+  /* плавающая кнопка заявки: только на телефоне */
+  .fab { display: none; }
+  @media (max-width: 880px) {
+    .fab { display: block; position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+      bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 40; text-align: center; padding: 14px 20px; border-radius: 12px;
+      background: #e0b56a; color: #1d1410; font-weight: 600; text-decoration: none; box-shadow: 0 10px 30px rgba(0,0,0,.55); }
+    .fab:focus-visible { outline: 2px solid #f4ecdf; outline-offset: 3px; }
+    footer { padding-bottom: 96px; }
+  }
+
   /* тёмная тема всего сайта */
   :root { --muted: #b9a999; --line: rgba(244,236,223,.14); --paper: #17100c; --card: #1d1510; --copper: #d6a06c; }
   body { color: var(--cream); background: #120d0a; }
@@ -770,6 +780,8 @@
   </div>
 </section>
 
+<a class="fab" href="#request">Оставить заявку</a>
+
 <footer>
   <div class="wrap"><span>© <span id="year"></span> Astana Coffee Express</span><span><a data-channel href="#">Наш Telegram-канал</a> · <span>Астана, Казахстан</span></span></div>
 </footer>
@@ -880,6 +892,7 @@
     "Владельцам зданий": ["Ғимарат иелеріне", "For building owners"],
     "Хотите аппарат в своём здании?": ["Ғимаратыңызға аппарат қойғыңыз келе ме?", "Want a machine in your building?"],
     "Ставим аппараты в университетах, бизнес-центрах, клиниках и на транспортных узлах. Напишите нам — расскажем об условиях размещения.": ["Аппараттарды университеттерге, бизнес-орталықтарға, емханаларға және көлік торабтарына орнатамыз. Бізге жазыңыз — орналастыру шарттарын айтып береміз.", "We place machines in universities, business centres, clinics and transport hubs. Write to us and we'll tell you about placement terms."],
+    "Оставить заявку": ["Өтініш қалдыру", "Send a request"],
     "Оставить заявку на размещение": ["Орналастыруға өтінім қалдыру", "Request a machine"],
     "Новые точки первыми присылает": ["Жаңа нүктелерді бірінші болып жіберетін —", "New locations are announced first by the"],
     "Открыто": ["Ашық", "Open"],
