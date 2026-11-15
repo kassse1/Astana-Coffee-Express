@@ -29,8 +29,9 @@ B_REG, B_LOGIN = "📝 Регистрация", "🔑 Войти"
 B_CARD, B_STATS, B_LOGOUT = "🎫 Мой штрихкод", "☕ Моя статистика", "🚪 Выйти"
 B_MARK, B_USERS, B_PROMO, B_FILE = "✅ Отметить кофе", "👥 Гости", "📣 Акция", "📊 Excel-база"
 B_KPI = "📈 Статистика"
+B_SUB = "🎁 Кофе за подписку"
 B_CANCEL = "❌ Отмена"
-ALL_BUTTONS = {B_REG, B_LOGIN, B_CARD, B_STATS, B_LOGOUT, B_MARK, B_USERS, B_PROMO, B_FILE, B_KPI,
+ALL_BUTTONS = {B_SUB, B_REG, B_LOGIN, B_CARD, B_STATS, B_LOGOUT, B_MARK, B_USERS, B_PROMO, B_FILE, B_KPI,
                B_CANCEL}
 
 
@@ -56,7 +57,10 @@ def build_router(db, cfg: Config, store: AdminStore | None = None) -> Router:
         return tg_id in cfg.admin_ids
 
     def menu(tg_id: int) -> ReplyKeyboardMarkup:
-        rows = ([[B_CARD, B_STATS], [B_LOGOUT]] if db.by_tg(tg_id) else [[B_REG, B_LOGIN]])
+        user = db.by_tg(tg_id)
+        rows = ([[B_CARD, B_STATS], [B_SUB] if cfg.channel and user.sub_bonus == 0 else [], [B_LOGOUT]]
+                if user else [[B_REG, B_LOGIN]])
+        rows = [row for row in rows if row]
         if is_admin(tg_id):
             rows += [[B_MARK, B_USERS], [B_KPI, B_PROMO], [B_FILE]]
         return ReplyKeyboardMarkup(
@@ -213,6 +217,55 @@ def build_router(db, cfg: Config, store: AdminStore | None = None) -> Router:
             return await message.answer("Сначала войдите.", reply_markup=menu(message.from_user.id))
         await send_card(message, user)
 
+    # ---------- гость: бесплатная чашка за подписку на канал ----------
+    channel_url = "https://t.me/" + cfg.channel.lstrip("@")
+
+    def sub_kb() -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="📢 Открыть канал", url=channel_url)],
+            [InlineKeyboardButton(text="✅ Я подписался", callback_data="sub:check")]])
+
+    @r.message(F.text == B_SUB)
+    async def sub_offer(message: Message):
+        user = db.by_tg(message.from_user.id)
+        if not cfg.channel:
+            return await message.answer("Сейчас этой акции нет.", reply_markup=menu(message.from_user.id))
+        if not user:
+            return await message.answer("Сначала войдите или зарегистрируйтесь.", reply_markup=menu(message.from_user.id))
+        if user.sub_bonus == 1:
+            return await message.answer("🎁 Бесплатная чашка уже ваша — покажите штрихкод у аппарата.")
+        if user.sub_bonus == 2:
+            return await message.answer("Бесплатную чашку за подписку вы уже получили. Спасибо, что с нами! ☕",
+                                        reply_markup=menu(message.from_user.id))
+        await message.answer("Подпишитесь на наш Telegram-канал — там новые точки и акции — "
+                             "и получите <b>одну чашку кофе бесплатно</b> 🎁\n\n"
+                             "Подписались? Нажмите «Я подписался».", reply_markup=sub_kb())
+
+    @r.callback_query(F.data == "sub:check")
+    async def sub_check(call: CallbackQuery, bot: Bot):
+        user = db.by_tg(call.from_user.id)
+        if not user or not cfg.channel:
+            return await call.answer("Сначала войдите в бота.", show_alert=True)
+        try:
+            member = await bot.get_chat_member(cfg.channel, call.from_user.id)
+        except TelegramAPIError as e:
+            log.warning("Не удалось проверить подписку на %s: %s (бот должен быть админом канала)", cfg.channel, e)
+            return await call.answer("Не получилось проверить подписку. Попробуйте чуть позже.", show_alert=True)
+        subscribed = member.status in ("creator", "administrator", "member") or \
+            (member.status == "restricted" and getattr(member, "is_member", False))
+        if not subscribed:
+            return await call.answer("Пока не видим подписки. Подпишитесь на канал и нажмите ещё раз.", show_alert=True)
+        granted = db.claim_sub_bonus(user.id)
+        await call.answer("Готово!" if granted else "Бонус уже получен")
+        text = ("🎉 Спасибо за подписку! <b>Одна чашка кофе — бесплатно.</b>\n"
+                "Покажите свой штрихкод у аппарата, бонус спишется автоматически.") if granted else \
+            "Бонус за подписку уже был получен раньше."
+        try:
+            await call.message.edit_text(text)
+        except TelegramAPIError:
+            pass
+        await call.message.answer("Меню обновлено 👇", reply_markup=menu(call.from_user.id))
+
     @r.message(F.text == B_STATS)
     async def stats(message: Message):
         user = db.by_tg(message.from_user.id)
@@ -269,7 +322,8 @@ def build_router(db, cfg: Config, store: AdminStore | None = None) -> Router:
         await message.answer(
             f"Гость: <b>{html.escape(user.login)}</b> ({user.card})\n"
             f"Чашек: {user.total}, любит: {html.escape(user.favorite or '—')}\n"
-            + ("🎁 <b>Эта чашка — бесплатная</b>\n" if next_is_free(user.total) else "")
+            + ("🎁 <b>Эта чашка — бесплатная</b>\n" if next_is_free(user.total) else
+               "🎁 <b>Бонус за подписку на канал: эта чашка бесплатная</b>\n" if user.sub_bonus == 1 else "")
             + "\nЧто берёт?",
             reply_markup=drinks_kb(user.id, (await state.get_data()).get("machine", 0)))
 
@@ -282,6 +336,8 @@ def build_router(db, cfg: Config, store: AdminStore | None = None) -> Router:
         except (DBError, IndexError) as e:
             return await call.answer(str(e) or "Ошибка", show_alert=True)
         was_free = cfg.free_every >= 2 and user.total % cfg.free_every == 0
+        by_sub = not was_free and db.use_sub_bonus(user.id)  # бонус за подписку тратится, если чашка не и так бесплатная
+        was_free = was_free or by_sub
         if store:  # журнал продаж для админ-панели
             store.add_sale(user.id, drink, int(rest[0]) if rest and rest[0] != "0" else None, was_free)
         await call.message.edit_text(
@@ -289,7 +345,8 @@ def build_router(db, cfg: Config, store: AdminStore | None = None) -> Router:
             f"{' 🎁 (бесплатная)' if was_free else ''}. Всего чашек: {user.total}")
         await call.answer("Отмечено")
         if user.tg_id:
-            note = "🎁 Эта чашка была бесплатной — спасибо, что вы с нами!\n\n" if was_free else ""
+            note = ("🎁 Эта чашка — подарок за подписку на канал!\n\n" if by_sub else
+                    "🎁 Эта чашка была бесплатной — спасибо, что вы с нами!\n\n" if was_free else "")
             try:
                 await bot.send_message(
                     user.tg_id, f"☕ Отмечен <b>{html.escape(drink)}</b>. Всего чашек: <b>{user.total}</b>\n\n"

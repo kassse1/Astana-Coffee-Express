@@ -86,6 +86,7 @@ class FakeSession(BaseSession):
         super().__init__()
         self.calls = []
         self.photo = b""
+        self.subscribed = False
 
     async def make_request(self, bot, method, timeout=None):
         self.calls.append(method)
@@ -94,6 +95,10 @@ class FakeSession(BaseSession):
             return File(file_id="f", file_unique_id="f", file_path="p")
         if method.__api_method__ in ("deleteMessage", "answerCallbackQuery"):
             return True
+        if method.__api_method__ == "getChatMember":
+            from aiogram.types import ChatMemberLeft, ChatMemberMember
+            who = User(id=method.user_id, is_bot=False, first_name="u")
+            return ChatMemberMember(user=who) if self.subscribed else ChatMemberLeft(user=who)
         return Message(message_id=1, date=dt.datetime.now(), chat=Chat(id=1, type="private"))
 
     async def stream_content(self, url, headers=None, timeout=30, chunk_size=65536, raise_for_status=True):
@@ -382,5 +387,47 @@ def test_admin_in_bot(tmp_path):
         await press(f"mark:{user.id}:0:{mid}")
         top = store.summary()["machines"][0]
         assert top["cups"] == 1 and top["revenue"] == 600
+
+    asyncio.run(run())
+
+
+def test_sub_bonus(backend):
+    """Чашка за подписку выдаётся один раз и списывается один раз, переживает перезапуск."""
+    db = backend()
+    u = db.register("aida", "pass1", 10)
+    assert u.sub_bonus == 0 and not db.use_sub_bonus(u.id)
+    assert db.claim_sub_bonus(u.id) and not db.claim_sub_bonus(u.id)
+    assert backend().by_tg(10).sub_bonus == 1
+    assert db.use_sub_bonus(u.id) and not db.use_sub_bonus(u.id) and not db.claim_sub_bonus(u.id)
+    assert backend().by_tg(10).sub_bonus == 2
+
+
+def test_sub_bonus_in_bot(tmp_path):
+    """Бот проверяет подписку, даёт бонус, а при отметке кофе чашка идёт бесплатной."""
+    from aiogram.types import CallbackQuery
+    from bot.main import B_SUB
+
+    async def run():
+        h = Harness(tmp_path, True)
+        await h.say(GUEST, B_REG); await h.say(GUEST, "aida"); await h.say(GUEST, "secret")
+
+        async def press(uid, data):
+            h.session.calls.clear()
+            msg = Message(message_id=5, date=dt.datetime.now(), chat=Chat(id=uid, type="private"), text="x")
+            cq = CallbackQuery(id="1", from_user=User(id=uid, is_bot=False, first_name="a"),
+                               chat_instance="c", data=data, message=msg)
+            await h.dp.feed_update(h.bot, h._upd(callback_query=cq))
+            return h.session.calls
+        calls = await h.say(GUEST, B_SUB)
+        assert calls[-1].reply_markup.inline_keyboard[1][0].callback_data == "sub:check"
+        calls = await press(GUEST, "sub:check")  # ещё не подписан
+        assert "Пока не видим" in calls[-1].text and h.db.by_tg(GUEST).sub_bonus == 0
+        h.session.subscribed = True
+        await press(GUEST, "sub:check")
+        assert h.db.by_tg(GUEST).sub_bonus == 1
+        assert "Бонус за подписку" in texts(await h.say(ADMIN, B_MARK) + await h.say(ADMIN, "1"))
+        await press(ADMIN, "mark:1:0:0")
+        assert h.db.by_tg(GUEST).sub_bonus == 2 and h.db.by_tg(GUEST).total == 1
+        assert "подарок за подписку" in texts(h.session.calls)
 
     asyncio.run(run())

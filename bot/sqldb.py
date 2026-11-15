@@ -27,6 +27,7 @@ users = Table(
     Column("tg_id", BigInteger, index=True),
     Column("registered", String(19), nullable=False),
     Column("design", Integer),
+    Column("sub_bonus", Integer),
 )
 purchases = Table(
     "purchases", meta,
@@ -58,9 +59,11 @@ class SqlDB:
         self.engine = create_engine(normalize_url(url), pool_pre_ping=True, pool_recycle=300)
         self._lock = threading.Lock()
         meta.create_all(self.engine)
-        if "design" not in {c["name"] for c in inspect(self.engine).get_columns("users")}:
-            with self.engine.begin() as conn:  # база от старой версии: добавляем колонку
-                conn.execute(text("ALTER TABLE users ADD COLUMN design INTEGER"))
+        have = {c["name"] for c in inspect(self.engine).get_columns("users")}
+        with self.engine.begin() as conn:  # база от старой версии: добавляем новые колонки
+            for name in ("design", "sub_bonus"):
+                if name not in have:
+                    conn.execute(text(f"ALTER TABLE users ADD COLUMN {name} INTEGER"))
 
     # ---------- служебное ----------
     def _counts(self, conn) -> dict[int, Counter]:
@@ -77,7 +80,8 @@ class SqlDB:
         counts = counts or Counter()
         return User(id=row.id, login=row.login, tg_id=row.tg_id, card=f"ACE{row.id:06d}",
                     registered=row.registered, total=sum(counts.values()),
-                    favorite=counts.most_common(1)[0][0] if counts else None, design=row.design or 1)
+                    favorite=counts.most_common(1)[0][0] if counts else None, design=row.design or 1,
+                    sub_bonus=row.sub_bonus or 0)
 
     def _one(self, conn, where) -> User | None:
         row = conn.execute(select(users).where(where)).first()
@@ -125,6 +129,22 @@ class SqlDB:
             if not conn.execute(update(users).where(users.c.id == user_id).values(design=design)).rowcount:
                 raise DBError("Пользователь не найден.")
             return self._one(conn, users.c.id == user_id)
+
+    def _bonus(self, user_id: int, frm: int, to: int) -> bool:
+        with self.engine.begin() as conn:
+            if not conn.execute(select(users.c.id).where(users.c.id == user_id)).first():
+                raise DBError("Пользователь не найден.")
+            current = func.coalesce(users.c.sub_bonus, 0)
+            return bool(conn.execute(update(users).where(users.c.id == user_id, current == frm)
+                                     .values(sub_bonus=to)).rowcount)
+
+    def claim_sub_bonus(self, user_id: int) -> bool:
+        """Подписался на канал: выдаём одну бесплатную чашку. False — уже получал."""
+        return self._bonus(user_id, 0, 1)
+
+    def use_sub_bonus(self, user_id: int) -> bool:
+        """Гость пришёл за чашкой: списываем бонус. False — бонуса нет."""
+        return self._bonus(user_id, 1, 2)
 
     def logout(self, tg_id: int) -> None:
         with self.engine.begin() as conn:
@@ -213,7 +233,7 @@ class SqlDB:
             promo_rows = conn.execute(select(promos).order_by(promos.c.id)).all()
             hashes = dict(conn.execute(select(users.c.id, users.c.password_hash)).all())
         rows = {
-            S_USERS: [[u.id, u.login, hashes[u.id], u.tg_id, u.card, u.registered, u.total, u.favorite, u.design]
+            S_USERS: [[u.id, u.login, hashes[u.id], u.tg_id, u.card, u.registered, u.total, u.favorite, u.design, u.sub_bonus]
                       for u in all_users],
             S_LOG: [[p.ts, p.user_id, logins.get(p.user_id), p.drink] for p in log],
             S_DRINKS: [list(x) for x in self.drink_stats()],

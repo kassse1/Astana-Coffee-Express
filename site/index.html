@@ -570,6 +570,7 @@
         <li><h3>Личный штрихкод</h3><p>Регистрация по логину и паролю занимает полминуты.</p></li>
         <li><h3>Ваша статистика</h3><p>Сколько чашек выпито и какой напиток вы берёте чаще всего.</p></li>
         <li><h3>Акции первыми</h3><p>Новые точки и предложения приходят сообщением в Telegram.</p></li>
+        <li><h3>Чашка за подписку</h3><p>Подпишитесь на наш <a data-channel href="#">Telegram-канал</a> и получите одну чашку бесплатно — бот проверит подписку сам.</p></li>
       </ul>
       <a class="btn" data-bot href="#">Открыть бота в Telegram</a>
     </div>
@@ -726,7 +727,7 @@
 </section>
 
 <footer>
-  <div class="wrap"><span>© <span id="year"></span> Astana Coffee Express</span><span>Астана, Казахстан</span></div>
+  <div class="wrap"><span>© <span id="year"></span> Astana Coffee Express</span><span><a data-channel href="#">Наш Telegram-канал</a> · Астана, Казахстан</span></div>
 </footer>
 
 <script>
@@ -776,6 +777,11 @@
     "Сколько чашек выпито и какой напиток вы берёте чаще всего.": ["Қанша шыныаяқ ішілгені және қай сусынды жиі алатыныңыз.", "How many cups you've had and which drink you order most."],
     "Акции первыми": ["Акциялар бірінші сізге", "Offers first"],
     "Новые точки и предложения приходят сообщением в Telegram.": ["Жаңа нүктелер мен ұсыныстар Telegram-ға хабарлама болып келеді.", "New locations and offers arrive as a Telegram message."],
+    "Чашка за подписку": ["Жазылым үшін шыныаяқ", "A cup for subscribing"],
+    "Подпишитесь на наш": ["Біздің", "Subscribe to our"],
+    "Telegram-канал": ["Telegram-арнамызға жазылып,", "Telegram channel"],
+    "и получите одну чашку бесплатно — бот проверит подписку сам.": ["бір шыныаяқ тегін алыңыз — бот жазылымды өзі тексереді.", "and get one cup free — the bot checks your subscription itself."],
+    "Наш Telegram-канал": ["Біздің Telegram-арна", "Our Telegram channel"],
     "Открыть бота в Telegram": ["Ботты Telegram-да ашу", "Open the bot in Telegram"],
     "Так будет выглядеть ваша карта": ["Картаңыз осылай көрінеді", "This is how your card will look"],
     "До бесплатной чашки осталось:": ["Тегін шыныаяққа дейін қалды:", "Cups left until a free one:"],
@@ -939,8 +945,10 @@
   // Ссылка на Telegram-бота и адрес сервиса бота
   const SITE = {
     bot: "https://t.me/astanacoffeeexpress_bot",
+    channel: "https://t.me/astanaCoffeeExpress",
     api: "https://astana-coffee-express-sa00.onrender.com", // адрес службы бота (Web Service) на Render
   };
+  document.querySelectorAll("[data-channel]").forEach(a => { a.href = SITE.channel; a.target = "_blank"; a.rel = "noopener"; });
   document.querySelectorAll("[data-bot]").forEach(a => {
     if (SITE.bot) { a.href = SITE.bot; a.target = "_blank"; a.rel = "noopener"; }
     else { a.href = "#bot"; }

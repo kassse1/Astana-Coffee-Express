@@ -16,6 +16,7 @@ class Config:
     port: int = 10000
     site_origin: str = "*"  # с какого адреса сайту разрешено обращаться к API
     free_every: int = 6  # каждая N-я чашка бесплатно; 0 — программа выключена
+    channel: str = "@astanaCoffeeExpress"  # канал: за подписку одна бесплатная чашка; пусто — акция выключена
     drinks: list[str] = field(default_factory=lambda: list(DEFAULT_DRINKS))
 
 
@@ -36,5 +37,6 @@ def load_config() -> Config:
         port=int(os.getenv("PORT", "10000")),
         site_origin=os.getenv("SITE_ORIGIN", "*").strip().rstrip("/") or "*",
         free_every=max(0, int(os.getenv("FREE_EVERY", "6"))),
+        channel=os.getenv("CHANNEL", "@astanaCoffeeExpress").strip(),
         drinks=drinks or list(DEFAULT_DRINKS),
     )

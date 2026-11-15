@@ -47,7 +47,7 @@ def setup_api(app: web.Application, db, cfg: Config) -> None:
     def card_json(user: User) -> dict:
         n = cfg.free_every
         data = {"login": user.login, "card": user.card, "total": user.total, "favorite": user.favorite,
-                "registered": user.registered[:10], "in_telegram": bool(user.tg_id), "free_every": n, "design": user.design,
+                "registered": user.registered[:10], "in_telegram": bool(user.tg_id), "free_every": n, "design": user.design, "sub_bonus": user.sub_bonus,
                 "barcode": "data:image/png;base64," + base64.b64encode(make_barcode_png(user.card)).decode()}
         if n >= 2:
             data["done"] = user.total % n
