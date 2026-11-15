@@ -19,6 +19,7 @@
   }
   * { box-sizing: border-box; margin: 0; }
   html, body { height: 100%; }
+  html { overflow: hidden; }
   body { font: 16px/1.5 var(--sans); color: var(--cream); background: var(--machine); overflow: hidden; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; min-height: 100dvh; }
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
@@ -50,7 +51,10 @@
     box-shadow: 0 24px 40px -22px rgba(0,0,0,.9); transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .5s; will-change: transform; }
   .card::after { content: ""; position: absolute; inset: 0; background: #0c0907; opacity: var(--dim, 0); transition: opacity .5s; pointer-events: none; }
   .stage.drag .card, .card.tilting { transition: opacity .3s; }
-  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 24px 40px -22px rgba(0,0,0,.9); }
+  /* объёмная карта: толщина по краю, фаска сверху, тень и блик зависят от угла поворота */
+  .card { box-shadow: 0 1px 0 #3d2a18, 0 2px 0 #2d1e12, 0 3px 0 #21150c, 0 4px 0 #180f09, inset 0 1px 0 rgba(255,236,204,.38), inset 0 0 0 1px rgba(0,0,0,.35), calc(var(--sx, 0) * 1px) 30px 42px -18px rgba(0,0,0,.9); }
+  .card.current { box-shadow: 0 0 0 2px rgba(224,181,106,.9), 0 1px 0 #3d2a18, 0 2px 0 #2d1e12, 0 3px 0 #21150c, 0 4px 0 #180f09, inset 0 1px 0 rgba(255,236,204,.45), calc(var(--sx, 0) * 1px) 30px 46px -18px rgba(0,0,0,.9), 0 0 60px -14px rgba(224,181,106,.35); }
+  .card .solid { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(var(--ang, 115deg), rgba(255,244,222,0) 38%, rgba(255,244,222,.2) 50%, rgba(0,0,0,.18) 66%, rgba(0,0,0,.28) 100%); }
   .card img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
   .card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 35%, rgba(18,16,14,.86)); }
   .card .brand { position: absolute; left: 6%; right: 6%; bottom: 8%; display: flex; align-items: center; gap: 4%; }
@@ -156,7 +160,7 @@
     c.innerHTML = '<img class="photo" src="cards/card-' + (i + 1) + '.webp" alt="" draggable="false" decoding="async">' +
       '<span class="shade"></span><span class="num">0' + (i + 1) + '</span>' +
       '<span class="brand"><img src="icon.svg" alt=""><span><b>Astana Coffee Express</b><span>' + t("guest") + '</span></span></span>' +
-      '<span class="glare"></span><span class="sweep"></span>';
+      '<span class="solid"></span><span class="glare"></span><span class="sweep"></span>';
     stage.appendChild(c); cards.push(c);
     const d = document.createElement("button");
     d.type = "button"; d.setAttribute("aria-label", t("design") + " " + (i + 1));
@@ -177,6 +181,9 @@
       c.style.transform = transformOf(i);
       c.style.opacity = a > 2.6 ? 0 : 1;
       c.style.setProperty("--dim", (Math.min(a, 2) * .34).toFixed(2));
+      const ry = Math.max(-1, Math.min(1, i - pos)) * -44;
+      c.style.setProperty("--sx", (-ry * .5).toFixed(1));
+      c.style.setProperty("--ang", (115 + ry * .6).toFixed(1) + "deg");
       c.style.zIndex = 100 - Math.round(a * 10);
       c.classList.toggle("current", i === current);
       c.tabIndex = i === current ? 0 : -1;
