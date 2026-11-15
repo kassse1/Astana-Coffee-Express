@@ -134,9 +134,14 @@
   .machine { bottom: 0; height: 100%; animation: arrive 1.1s cubic-bezier(.2,.8,.2,1) both; }
   @keyframes arrive { from { opacity: 0; transform: translateX(-50%) translateY(40px) scale(.96); } }
   .wisp { position: absolute; left: 50%; top: 66%; z-index: 2; width: 46px; height: 90px; margin-left: -23px; border-radius: 50%; pointer-events: none; opacity: 0;
-    background: radial-gradient(ellipse, rgba(255,246,230,.4), rgba(255,246,230,.12) 40%, transparent 68%); will-change: transform, opacity; animation: wisp 5s ease-out infinite; }
+    background: radial-gradient(ellipse, rgba(var(--glow, 255,246,230), .45), rgba(var(--glow, 255,246,230), .14) 40%, transparent 68%); will-change: transform, opacity; animation: wisp 5s ease-out infinite; }
   .wisp:nth-of-type(2) { animation-delay: 1.7s; margin-left: -40px; }
   .wisp:nth-of-type(3) { animation-delay: 3.3s; margin-left: -8px; }
+  .halo-c { transition: stop-color .8s ease; }
+  .halo { transform-origin: 180px 335px; }
+  .halo.flash { animation: halo .9s ease-out; }
+  @keyframes halo { 0% { transform: scale(.7); opacity: .3; } 40% { transform: scale(1.25); opacity: 1; } 100% { transform: none; } }
+  .cup .band { transition: fill .6s ease; }
   @keyframes wisp { 0% { opacity: 0; transform: translateY(0) scale(.5); } 25% { opacity: .9; } 100% { opacity: 0; transform: translateY(-190px) translateX(22px) scale(1.9); } }
 
   /* общие сетки */
@@ -409,6 +414,7 @@
     .js .reveal { opacity: 1; transform: none; transition: none; }
     .steam path, .brew, .hero h1 span, .stamps.pulse > .on, .drink.pour .fill rect, .drink.pour .stream, .machine { animation: none; }
     .wisp { display: none; }
+    .halo.flash { animation: none; }
     .designs button, .designs button img, .designs button::after { transition: none; }
     .steam path { opacity: 0; } .brew { transform: none; }
   }
@@ -491,7 +497,7 @@
     <div class="scene" aria-hidden="true">
       <i class="wisp"></i><i class="wisp"></i><i class="wisp"></i>
       <svg class="machine" viewBox="72 16 216 444">
-        <defs><linearGradient id="gloss" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity=".02"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="scr" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#1c3a30"/><stop offset="1" stop-color="#08100d"/></radialGradient></defs>
+        <defs><linearGradient id="gloss" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".45" stop-color="#fff" stop-opacity=".02"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="halo"><stop offset="0" class="halo-c" stop-color="#e0b56a" stop-opacity=".55"/><stop offset="1" class="halo-c" stop-color="#e0b56a" stop-opacity="0"/></radialGradient><radialGradient id="scr" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#1c3a30"/><stop offset="1" stop-color="#08100d"/></radialGradient></defs>
         <rect x="76" y="20" width="208" height="436" rx="10" fill="#161210"/>
         <text x="180" y="44" text-anchor="middle" font-family="Manrope" font-size="9" font-weight="700" letter-spacing="1.6" fill="#d9a06b">ASTANA COFFEE EXPRESS</text>
         <rect x="76" y="20" width="208" height="436" rx="10" fill="url(#gloss)"/><rect x="94" y="56" width="172" height="118" rx="6" fill="url(#scr)" stroke="#3a2c22"/>
@@ -509,7 +515,8 @@
         <text x="170" y="212" font-family="Manrope" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">KASPI QR</text>
         <text x="170" y="222" font-family="Manrope" font-size="6.5" font-weight="600" fill="#cdbdae" letter-spacing=".5">КАРТА / NFC</text>
         <rect x="110" y="262" width="140" height="110" rx="8" fill="#0a0807"/>
-        <g class="cup"><path d="M162 322h36l-4 38h-28z" fill="#f6efe4"/><rect x="160" y="316" width="40" height="7" rx="2" fill="#fff"/><rect x="164" y="334" width="32" height="10" fill="#b5703a"/></g>
+        <ellipse class="halo" cx="180" cy="335" rx="66" ry="54" fill="url(#halo)"/>
+        <g class="cup"><path d="M162 322h36l-4 38h-28z" fill="#f6efe4"/><rect x="160" y="316" width="40" height="7" rx="2" fill="#fff"/><rect class="band" x="164" y="334" width="32" height="10" fill="#b5703a"/></g>
         <g class="steam" fill="none" stroke="#f6efe4" stroke-width="1.6" stroke-linecap="round" opacity=".7"><path d="M172 308c-4-6 4-8 0-14"/><path d="M180 306c-4-6 4-8 0-14"/><path d="M188 308c-4-6 4-8 0-14"/></g>
         <rect x="94" y="390" width="172" height="44" rx="8" fill="#0d0907" stroke="#3a2c22"/>
         <g fill="#3a2c22"><rect x="108" y="404" width="2" height="16"/><rect x="113" y="404" width="2" height="16"/><rect x="118" y="404" width="2" height="16"/><rect x="123" y="404" width="2" height="16"/><rect x="128" y="404" width="2" height="16"/><rect x="133" y="404" width="2" height="16"/></g>
@@ -1261,6 +1268,31 @@
     d.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pour(); } });
     d.addEventListener("pointerleave", () => d.classList.remove("pour"));
   });
+
+  // ---------- Аппарат на первом экране: каждая заполненная шкала — новый напиток и новое свечение ----------
+  (function () {
+    const svg = document.querySelector(".machine"), brew = svg && svg.querySelector(".brew");
+    if (!brew || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // кнопки на экране аппарата, цвет полоски на стакане и цвет свечения (R,G,B)
+    const DRINKS = [[2, "#b5703a", "224,181,106"], [3, "#7a4a2a", "255,170,90"], [0, "#5b3419", "255,214,150"],
+                    [4, "#e6cfae", "250,235,210"], [5, "#3a1f12", "255,140,110"], [1, "#c98d4f", "236,196,140"]];
+    const buttons = svg.querySelectorAll(".s1"), band = svg.querySelector(".band"), halo = svg.querySelector(".halo");
+    const stops = svg.querySelectorAll(".halo-c"), scene = svg.closest(".scene");
+    let k = 0;
+    function show([btn, color, glow]) {
+      buttons.forEach((g, i) => {
+        const c = g.querySelector("circle"), path = g.querySelector("path"), on = i === btn;
+        c.setAttribute("fill", on ? "#d9a06b" : "none");
+        c.setAttribute("stroke", on ? "none" : "#d9a06b");
+        path.setAttribute("stroke", on ? "#161210" : "#d9a06b");
+      });
+      band.setAttribute("fill", color);
+      stops.forEach(st => { st.style.stopColor = "rgb(" + glow + ")"; });
+      scene.style.setProperty("--glow", glow);
+      halo.classList.remove("flash"); void halo.getBoundingClientRect(); halo.classList.add("flash");
+    }
+    brew.addEventListener("animationiteration", () => { k = (k + 1) % DRINKS.length; show(DRINKS[k]); });
+  })();
 
   // ---------- Калькулятор дохода для владельца помещения ----------
   (function () {
