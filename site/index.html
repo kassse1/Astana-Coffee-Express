@@ -45,7 +45,7 @@
   .lead { color: var(--muted); max-width: 46ch; }
   :focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; }
 
-  .btn { display: inline-block; font: 600 .96rem var(--sans); text-decoration: none; padding: 14px 24px; border-radius: 10px; border: 1px solid var(--espresso); background: var(--espresso); color: var(--cream); transition: transform .18s, background .18s; white-space: nowrap; cursor: pointer; }
+  .btn { display: inline-block; font: 600 .96rem/1.3 var(--sans); text-decoration: none; padding: 12px 22px; border-radius: 10px; border: 1px solid var(--espresso); background: var(--espresso); color: var(--cream); transition: transform .18s, background .18s; white-space: nowrap; cursor: pointer; }
   .btn:hover { transform: translateY(-2px); background: #3b2619; }
   .btn.ghost { background: transparent; color: var(--espresso); }
   .btn.ghost:hover { background: rgba(38,23,15,.07); }
@@ -149,8 +149,6 @@
   .drink svg { display: block; width: 74px; height: auto; margin: 0 auto 18px; }
   .drink b { display: block; font-weight: 600; line-height: 1.3; }
   .drink span { color: var(--gold); font-size: .9rem; }
-  .js .drink .fill { transform: translateY(84px); transition: transform 1.3s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--i) * .09s); }
-  .js .drinks.in .fill { transform: none; }
   .drink { cursor: pointer; transition: transform .3s cubic-bezier(.2,.8,.2,1), background .3s; border-radius: 0 0 14px 14px; }
   .drink:hover, .drink.pour { transform: translateY(-6px); background: rgba(244,236,223,.05); }
   .drink .stream { transform-origin: 50% 0; transform-box: fill-box; transform: scaleY(0); }
@@ -275,7 +273,7 @@
   .calc-out dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; border-top: 1px solid rgba(244,236,223,.18); padding-top: 18px; }
   .calc-out dt { color: #cdbdae; font-size: .86rem; }
   .calc-out dd { font-weight: 600; font-size: 1.15rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .calc-note { color: #a39283; font-size: .82rem; margin-top: 20px; }
+  .calc-note { color: #c9b9a8; font-size: .82rem; margin-top: 20px; }
 
   /* о нас */
   .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px; margin-top: 44px; }
@@ -599,8 +597,7 @@
 
 <section id="how">
   <div class="wrap">
-    <p class="eyebrow">Как купить</p>
-    <h2>Три шага до чашки</h2>
+        <h2>Три шага до чашки</h2>
     <ol class="steps">
       <li><h3>Выберите напиток</h3><p>Эспрессо, капучино, латте и другие. Сахар и сироп — по вкусу.</p></li>
       <li><h3>Оплатите одним сканом</h3><p>Наведите камеру на Kaspi QR или приложите карту либо телефон (NFC). Наличные не нужны.</p></li>
@@ -727,8 +724,7 @@
 
 <section id="about">
   <div class="wrap">
-    <p class="eyebrow">О нас</p>
-    <h2>Кофейня размером с один аппарат</h2>
+        <h2>Кофейня размером с один аппарат</h2>
     <p class="lead">Astana Coffee Express — сеть кофе-аппаратов самообслуживания в Астане. Мы ставим их там, где кофе нужен здесь и сейчас.</p>
     <div class="cols">
       <div><h3>Кофе из зерна</h3><p>Аппарат мелет зерно под каждую чашку. Есть молочные напитки и сиропы.</p></div>
@@ -741,8 +737,7 @@
 <section id="faq">
   <div class="wrap split">
     <div>
-      <p class="eyebrow">Вопросы</p>
-      <h2>Что обычно спрашивают</h2>
+            <h2>Что обычно спрашивают</h2>
     </div>
     <div>
       <details open><summary>Как оплатить?</summary><p>Kaspi QR на аппарате, банковская карта или телефон (NFC). Наличные аппарат не принимает.</p></details>
