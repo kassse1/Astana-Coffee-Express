@@ -333,6 +333,7 @@ def test_admin_panel(tmp_path):
             assert top["id"] == mid and top["cups"] == 2 and top["revenue"] == 1200
             assert data["drinks"][0] == ["Латте", 4] and data["days"][-1]["cups"] == 6
             assert data["loyalty"]["top"][0]["login"] == "aida"
+            assert len(data["hours"]) == 24 and sum(data["hours"]) == data["sales"]["month"]["cups"]
             pub = await (await c.get("/api/public")).json()
             assert pub["price"] == 700 and pub["promo"] == "Сироп в подарок"
             assert [m["name"] for m in pub["machines"]] == ["ЕНУ, главный корпус"]

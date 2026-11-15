@@ -166,7 +166,10 @@ class AdminStore:
         by_day: dict[str, list[int]] = defaultdict(lambda: [0, 0])
         by_machine: dict[int | None, list[int]] = defaultdict(lambda: [0, 0])
         drinks = Counter()
+        by_hour = [0] * 24  # чашек по часам суток за 30 дней
         for r in rows:
+            if len(r.ts) >= 13 and r.ts[11:13].isdigit() and int(r.ts[11:13]) < 24:
+                by_hour[int(r.ts[11:13])] += 1
             paid = 0 if r.free else r.price
             by_day[r.ts[:10]][0] += 1
             by_day[r.ts[:10]][1] += paid
@@ -179,7 +182,7 @@ class AdminStore:
             "price": self.price(), "promo": self.get("promo"),
             "sales": {"day": block(day), "week": block(week), "month": block(month)},
             "days": [{"date": d, "cups": by_day[d][0], "revenue": by_day[d][1]} for d in days],
-            "drinks": drinks.most_common(),
+            "drinks": drinks.most_common(), "hours": by_hour,
             "machines": sorted(machine_rows, key=lambda m: -m["revenue"]),
             "no_machine": {"cups": by_machine[None][0], "revenue": by_machine[None][1]},
             "all_time": {"cups": total[0], "free": int(total[1])},

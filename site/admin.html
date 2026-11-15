@@ -6,164 +6,220 @@
 <title>Админ-панель — Astana Coffee Express</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#120d0a">
+<meta name="theme-color" content="#0b0807">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* Стекло: тёмная основа, мягкие цветные пятна под панелями, полупрозрачные поверхности с размытием и бликом по краю */
   :root {
-    --bg: #f4ecdf; --card: #fffdf8; --ink: #1d1410; --muted: #6f5e53; --line: #e2d5c1; --espresso: #26170f;
-    --bar: #a8672f; --bar-soft: #ead9c4; --good: #2f7a4d; --warn: #a8672f;
+    --ink: #f3ebe0; --muted: rgba(243,235,224,.62); --faint: rgba(243,235,224,.38);
+    --gold: #e6b96b; --gold-2: #f2d08e; --good: #7fd6a0; --bad: #ff9a8a; --blue: #7db4f0;
+    --line: rgba(255,255,255,.14); --r: 24px;
     --sans: "Manrope", "Segoe UI", Roboto, Arial, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; }
-  body { font: 15px/1.5 var(--sans); color: var(--ink); background: var(--bg); -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 18px; }
-  header { background: var(--espresso); color: #f4ecdf; position: sticky; top: 0; z-index: 10; }
-  header .wrap { display: flex; align-items: center; gap: 12px; height: 56px; }
-  header img { border-radius: 8px; }
-  header b { font-weight: 800; letter-spacing: -.02em; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html { scrollbar-color: rgba(255,255,255,.25) transparent; color-scheme: dark; }
+  body { min-height: 100vh; font: 400 15px/1.5 var(--sans); color: var(--ink); background: #0b0807; -webkit-font-smoothing: antialiased; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(48% 42% at 12% 8%, rgba(230,185,107,.34), transparent 70%),
+      radial-gradient(44% 40% at 92% 18%, rgba(214,104,90,.26), transparent 70%),
+      radial-gradient(52% 46% at 78% 98%, rgba(80,134,214,.30), transparent 70%),
+      radial-gradient(40% 38% at 6% 86%, rgba(64,170,160,.20), transparent 70%); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
   button, input, select, textarea { font: inherit; color: inherit; }
-  .btn { border: 1px solid var(--espresso); background: var(--espresso); color: #f4ecdf; font-weight: 700; padding: 9px 16px; border-radius: 9px; cursor: pointer; white-space: nowrap; }
-  .btn:hover { background: #3b2619; }
-  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
-  .btn.ghost:hover { background: rgba(38,23,15,.06); }
-  header .btn { border-color: rgba(244,236,223,.3); background: transparent; padding: 7px 12px; }
-  .btn[disabled] { opacity: .55; cursor: wait; }
-  nav { background: var(--card); border-bottom: 1px solid var(--line); position: sticky; top: 56px; z-index: 9; }
-  nav .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
-  nav button { border: 0; background: none; padding: 13px 12px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
-  nav button[aria-selected="true"] { color: var(--ink); border-color: var(--bar); }
-  nav .badge { background: var(--bar); color: #fff; border-radius: 10px; font-size: .72rem; padding: 1px 7px; margin-left: 5px; }
-  main { padding: 22px 0 60px; }
-  h2 { font-size: 1.05rem; font-weight: 800; letter-spacing: -.02em; }
-  .sub { color: var(--muted); font-size: .86rem; }
-  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
-  .grid { display: grid; gap: 14px; }
-  .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .tile .label { color: var(--muted); font-size: .84rem; }
-  .tile .num { font-size: 1.7rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.2; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .mt { margin-top: 14px; }
-  /* столбики по дням */
-  .days { position: relative; display: flex; align-items: flex-end; gap: 2px; height: 170px; margin-top: 14px; border-bottom: 1px solid var(--line); }
-  .days .d { flex: 1; height: 100%; display: flex; align-items: flex-end; cursor: default; }
-  .days .d i { display: block; width: 100%; background: var(--bar); border-radius: 4px 4px 0 0; min-height: 0; transition: opacity .15s; }
-  .days:hover .d i { opacity: .45; } .days .d:hover i { opacity: 1; }
-  .axis { display: flex; justify-content: space-between; color: var(--muted); font-size: .76rem; margin-top: 6px; }
-  .tip { position: fixed; z-index: 50; background: var(--espresso); color: #f4ecdf; padding: 7px 10px; border-radius: 8px; font-size: .82rem; pointer-events: none; white-space: nowrap; transform: translate(-50%, -115%); }
-  /* горизонтальные полосы */
-  .rows { margin-top: 12px; }
-  .row { display: grid; grid-template-columns: minmax(0, 34%) minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 6px 0; }
-  .row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .row .track { height: 10px; background: var(--bar-soft); border-radius: 4px; }
-  .row .track i { display: block; height: 100%; background: var(--bar); border-radius: 4px; }
-  .row .val { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-  th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { color: var(--muted); font-weight: 600; font-size: .82rem; }
-  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .scroll { overflow-x: auto; }
-  .pill { display: inline-block; font-size: .76rem; font-weight: 700; padding: 2px 9px; border-radius: 10px; background: var(--bar-soft); color: var(--ink); white-space: nowrap; }
-  .pill.new { background: #f3d9b8; } .pill.done { background: #d7ead9; } .pill.off { background: #e6e0d6; color: var(--muted); }
-  label { display: block; font-size: .84rem; color: var(--muted); margin-top: 12px; }
-  input[type=text], input[type=number], select, textarea { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
-  textarea { min-height: 90px; resize: vertical; }
-  :focus-visible { outline: 2px solid var(--bar); outline-offset: 2px; }
-  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
-  .chips button { border: 1px solid var(--line); background: var(--card); border-radius: 20px; padding: 6px 13px; cursor: pointer; font-weight: 600; }
-  .chips button[aria-pressed="true"] { background: var(--espresso); color: #f4ecdf; border-color: var(--espresso); }
-  .req { border-top: 1px solid var(--line); padding: 14px 0; }
-  .req:first-child { border-top: 0; }
-  .req .head { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .req .text { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .req .note { display: flex; gap: 8px; }
-  .req .note input { margin: 0; }
-  .msg { margin-top: 10px; font-size: .88rem; min-height: 1.4em; }
-  .msg.ok { color: var(--good); } .msg.err { color: #a3301f; }
-  .gate { max-width: 460px; margin: 12vh auto; text-align: center; }
-  .gate h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; margin: 14px 0 8px; }
+  :focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; }
   [hidden] { display: none !important; }
-  @media (max-width: 860px) {
-    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .two { grid-template-columns: minmax(0, 1fr); }
-    .row { grid-template-columns: minmax(0, 40%) minmax(0, 1fr) auto; }
+
+  /* стеклянная поверхность */
+  .glass, .panel, .tile, header .bar, nav .seg, .tip {
+    position: relative; background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
+    -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(255,255,255,.04), 0 24px 48px -26px rgba(0,0,0,.7); }
+  .panel, .tile { border-radius: var(--r); padding: 22px; }
+  .panel::before, .tile::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(120% 70% at 0% 0%, rgba(255,255,255,.10), transparent 55%); }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass, .panel, .tile, header .bar, nav .seg, .tip { background: rgba(34,27,23,.92); }
   }
-  /* тёмная тема — как на сайте, мягкая для глаз */
-  :root { --bg: #120d0a; --card: #1b1410; --ink: #f1e8db; --muted: #a8998b; --line: rgba(244,236,223,.1); --espresso: #e0b56a;
-    --bar: #d6a06c; --bar-soft: rgba(244,236,223,.08); --good: #86cfa0; color-scheme: dark; }
-  html { scrollbar-color: #5a4030 #120d0a; }
-  header { background: #0d0907; color: var(--ink); border-bottom: 1px solid var(--line); }
-  header .btn { color: var(--ink); border-color: rgba(244,236,223,.22); }
-  header .btn:hover { background: rgba(244,236,223,.08); }
-  .btn { background: var(--espresso); border-color: var(--espresso); color: #1d1410; }
-  .btn:hover { background: #ebc682; }
-  .btn.ghost { color: var(--ink); border-color: rgba(244,236,223,.2); background: transparent; }
-  .btn.ghost:hover { background: rgba(244,236,223,.07); }
-  nav { background: #17110d; }
+  @media (prefers-reduced-transparency: reduce) {
+    .glass, .panel, .tile, header .bar, nav .seg, .tip { background: rgba(34,27,23,.96); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  }
+
+  /* шапка и вкладки */
+  header { position: sticky; top: 0; z-index: 20; padding-top: 14px; }
+  header .bar { display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 16px; border-radius: 20px; }
+  header img { border-radius: 8px; }
+  header b { font-weight: 600; letter-spacing: -.01em; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  nav { padding: 14px 0 6px; }
+  nav .seg { display: inline-flex; gap: 2px; padding: 4px; border-radius: 16px; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  nav button { border: 0; background: none; padding: 9px 16px; border-radius: 12px; color: var(--muted); font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .2s, color .2s; }
   nav button:hover { color: var(--ink); }
-  nav .badge { color: #1d1410; }
-  .panel { border-color: var(--line); }
-  .tile .num { color: #fff6ea; }
-  .days { border-color: var(--line); }
-  .days .d i { background: linear-gradient(180deg, #e0b56a, #a8672f); }
-  .row .track i { background: linear-gradient(90deg, #a8672f, #e0b56a); }
-  .tip { background: #2a1f18; color: var(--ink); border: 1px solid var(--line); }
-  .pill { background: rgba(244,236,223,.1); color: var(--ink); }
-  .pill.new { background: rgba(224,181,106,.2); color: #f0cf91; }
-  .pill.done { background: rgba(134,207,160,.16); color: #9ed9b2; }
-  .pill.off { background: rgba(244,236,223,.06); color: var(--muted); }
-  input[type=text], input[type=number], select, textarea { background: #0f0b08; color: var(--ink); border-color: rgba(244,236,223,.14); }
-  input::placeholder, textarea::placeholder { color: #6f6257; }
-  .chips button { background: transparent; color: var(--muted); border-color: rgba(244,236,223,.16); }
-  .chips button[aria-pressed="true"] { background: var(--espresso); color: #1d1410; border-color: var(--espresso); }
-  .msg.err { color: #ffa392; }
-  th { color: var(--muted); }
-  input[type=checkbox] { accent-color: #e0b56a; }
+  nav button[aria-selected="true"] { color: var(--ink); background: rgba(255,255,255,.16); box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 4px 14px rgba(0,0,0,.3); }
+  nav .badge { background: var(--gold); color: #1d1410; border-radius: 10px; font-size: .72rem; font-weight: 600; padding: 1px 7px; margin-left: 6px; }
+  main { padding: 10px 0 56px; }
+
+  /* кнопки и поля */
+  .btn { border: 1px solid rgba(255,255,255,.35); background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: #231911; font-weight: 600; padding: 10px 18px; border-radius: 14px; cursor: pointer; white-space: nowrap;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 8px 20px -8px rgba(230,185,107,.6); transition: transform .12s, filter .2s; }
+  .btn:hover { filter: brightness(1.06); } .btn:active { transform: scale(.97); }
+  .btn.ghost { background: rgba(255,255,255,.08); color: var(--ink); border-color: var(--line); box-shadow: inset 0 1px 0 rgba(255,255,255,.18); }
+  .btn.ghost:hover { background: rgba(255,255,255,.14); }
+  header .btn { padding: 8px 14px; }
+  .btn[disabled] { opacity: .55; cursor: wait; }
+  label { display: block; font-size: .84rem; color: var(--muted); margin-top: 14px; }
+  input[type=text], input[type=number], select, textarea { display: block; width: 100%; margin-top: 6px; padding: 11px 13px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0,0,0,.28); color: var(--ink);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.35); transition: border-color .2s; }
+  input:focus, select:focus, textarea:focus { border-color: rgba(242,208,142,.7); outline: none; }
+  input::placeholder, textarea::placeholder { color: var(--faint); }
+  textarea { min-height: 96px; resize: vertical; }
+  option { background: #1b1410; }
+  input[type=checkbox] { accent-color: var(--gold); width: 16px; height: 16px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+  .msg { margin-top: 10px; min-height: 1.4em; font-size: .88rem; }
+  .msg.ok { color: var(--good); } .msg.err { color: var(--bad); }
+
+  /* текст */
+  h2 { font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em; }
+  .sub { color: var(--muted); font-size: .86rem; }
+  .grid { display: grid; gap: 16px; }
+  .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g21 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .mt { margin-top: 16px; }
+  .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+
+  /* показатели */
+  .tile .label { color: var(--muted); font-size: .86rem; }
+  .tile .num { font-size: 1.95rem; font-weight: 600; letter-spacing: -.03em; line-height: 1.15; margin-top: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tile .meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; font-size: .82rem; color: var(--muted); }
+  .d { font-weight: 600; font-size: .78rem; padding: 2px 9px; border-radius: 12px; background: rgba(255,255,255,.1); font-variant-numeric: tabular-nums; }
+  .d.up { color: var(--good); background: rgba(127,214,160,.14); } .d.down { color: var(--bad); background: rgba(255,154,138,.14); }
+
+  /* график выручки */
+  .chips { display: inline-flex; gap: 2px; padding: 3px; border-radius: 12px; background: rgba(0,0,0,.25); }
+  .chips button { border: 0; background: none; border-radius: 9px; padding: 5px 12px; color: var(--muted); font-weight: 500; cursor: pointer; font-size: .84rem; }
+  .chips button[aria-pressed="true"] { background: rgba(255,255,255,.16); color: var(--ink); box-shadow: inset 0 1px 0 rgba(255,255,255,.22); }
+  .chart { position: relative; margin-top: 6px; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .chart .grid-l { stroke: rgba(255,255,255,.09); stroke-width: 1; } .chart text { fill: var(--faint); font: 400 11px var(--sans); }
+  .tip { position: absolute; z-index: 5; padding: 8px 12px; border-radius: 14px; font-size: .82rem; pointer-events: none; white-space: nowrap; transform: translate(-50%, -112%); }
+  .tip b { display: block; font-weight: 600; font-size: .95rem; font-variant-numeric: tabular-nums; }
+  .note { color: var(--faint); font-size: .8rem; margin-top: 10px; }
+
+  /* списки с полосами */
+  .rows { display: grid; gap: 4px; margin-top: 6px; }
+  .row { display: grid; grid-template-columns: minmax(0, 36%) minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 7px 0; }
+  .row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .track { height: 8px; border-radius: 8px; background: rgba(255,255,255,.09); overflow: hidden; }
+  .row .track i { display: block; height: 100%; border-radius: 8px; background: linear-gradient(90deg, #b8742f, var(--gold-2)); }
+  .row .val { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .row .val .sub { font-weight: 400; }
+
+  /* часы суток */
+  .hours { display: flex; align-items: flex-end; gap: 4px; height: 230px; margin-top: 14px; }
+  .hours i { flex: 1; border-radius: 6px 6px 2px 2px; background: rgba(255,255,255,.16); min-height: 3px; transition: background .2s; }
+  .hours i.peak { background: linear-gradient(180deg, var(--gold-2), #b8742f); }
+  .hours i:hover { background: rgba(255,255,255,.34); } .hours i.peak:hover { filter: brightness(1.1); }
+  .haxis { display: flex; justify-content: space-between; color: var(--faint); font-size: .76rem; margin-top: 6px; }
+
+  /* кольцо лояльности */
+  .ring { display: flex; align-items: center; gap: 18px; margin-top: 8px; }
+  .ring svg { flex: none; width: 112px; height: 112px; transform: rotate(-90deg); }
+  .ring .bg { stroke: rgba(255,255,255,.1); } .ring .fg { stroke: url(#rg); stroke-linecap: round; transition: stroke-dasharray .6s ease; }
+  .ring .c { position: relative; }
+  .ring .big { font-size: 1.6rem; font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .kv { display: grid; gap: 0; margin-top: 14px; }
+  .kv div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+  .kv dt { color: var(--muted); } .kv dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+
+  /* таблицы и обращения */
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { text-align: left; padding: 11px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { color: var(--muted); font-weight: 500; font-size: .82rem; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pill { display: inline-block; font-size: .76rem; font-weight: 600; padding: 2px 10px; border-radius: 12px; background: rgba(255,255,255,.12); white-space: nowrap; }
+  .pill.new { color: var(--gold-2); background: rgba(230,185,107,.18); } .pill.done { color: var(--good); background: rgba(127,214,160,.16); } .pill.off { color: var(--muted); background: rgba(255,255,255,.07); }
+  .req { border-top: 1px solid var(--line); padding: 16px 0; } .req:first-child { border-top: 0; }
+  .req .headline { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .req .text { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .req .note-row { display: flex; gap: 10px; } .req .note-row input { margin: 0; }
+
+  /* вход */
+  .gate { max-width: 460px; margin: 14vh auto 0; text-align: center; }
+  .gate .panel { padding: 36px 28px; }
+  .gate h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: -.02em; margin: 14px 0 8px; }
   .gate.loading img { animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 50% { opacity: .4; transform: scale(.92); } }
+
+  @media (max-width: 960px) {
+    .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .g2, .g21 { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 14px; } .panel, .tile { padding: 18px; border-radius: 20px; }
+    .tile .num { font-size: 1.55rem; } .row { grid-template-columns: minmax(0, 40%) minmax(0, 1fr) auto; gap: 8px; }
+    .ring { flex-direction: column; align-items: flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
 
 <div class="gate wrap" id="gate" hidden>
-  <img src="icon.svg" width="56" height="56" alt="">
-  <h1>Админ-панель</h1>
-  <p class="sub" id="gate-text">Чтобы войти, отправьте боту команду /admin и откройте ссылку из ответа. Ссылка действует 12 часов.</p>
+  <div class="panel">
+    <img src="icon.svg" width="56" height="56" alt="" style="border-radius:14px">
+    <h1>Админ-панель</h1>
+    <p class="sub" id="gate-text">Чтобы войти, отправьте боту команду /admin и откройте ссылку из ответа. Ссылка действует 12 часов.</p>
+  </div>
 </div>
 
 <div id="app" hidden>
-<header><div class="wrap"><img src="icon.svg" width="30" height="30" alt=""><b>Astana Coffee Express · панель</b><button class="btn" id="reload" type="button">Обновить</button></div></header>
-<nav><div class="wrap" role="tablist">
+<header><div class="wrap"><div class="bar"><img src="icon.svg" width="30" height="30" alt=""><b>Astana Coffee Express · панель</b><button class="btn ghost" id="reload" type="button">Обновить</button></div></div></header>
+<div class="wrap"><nav><div class="seg" role="tablist">
   <button role="tab" data-tab="home" aria-selected="true">Обзор</button>
   <button role="tab" data-tab="machines" aria-selected="false">Аппараты</button>
   <button role="tab" data-tab="requests" aria-selected="false">Обращения<span class="badge" id="badge" hidden></span></button>
   <button role="tab" data-tab="promo" aria-selected="false">Цена и акции</button>
-</div></nav>
+</div></nav></div>
 
 <main class="wrap">
   <section data-view="home">
-    <div class="grid tiles" id="tiles"></div>
-    <div class="panel mt">
-      <h2>Выручка по дням, 30 дней</h2>
-      <p class="sub">Считаются только чашки, отмеченные в боте по карте гостя. Бесплатные чашки в выручку не входят.</p>
-      <div class="days" id="days" role="img" aria-label="Выручка по дням за 30 дней"></div>
-      <div class="axis"><span id="ax-from"></span><span id="ax-max"></span><span id="ax-to"></span></div>
+    <div class="grid g4" id="tiles"></div>
+
+    <div class="grid g21 mt">
+      <div class="panel">
+        <div class="head">
+          <div><h2>Выручка по дням</h2><p class="sub" id="chart-sub"></p></div>
+          <div class="chips" id="range" role="group" aria-label="Период"><button type="button" data-n="7" aria-pressed="false">7 дней</button><button type="button" data-n="30" aria-pressed="true">30 дней</button></div>
+        </div>
+        <div class="chart" id="chart"></div>
+        <p class="note">Считаются только чашки, отмеченные в боте по карте гостя. Бесплатные чашки в выручку не входят.</p>
+      </div>
+      <div class="panel">
+        <h2>Программа лояльности</h2>
+        <div id="loyalty"></div>
+      </div>
     </div>
-    <div class="grid two mt">
+
+    <div class="grid g2 mt">
       <div class="panel"><h2>Популярные напитки</h2><p class="sub">Чашек за 30 дней</p><div class="rows" id="drinks"></div></div>
       <div class="panel"><h2>Аппараты по выручке</h2><p class="sub">За 30 дней</p><div class="rows" id="top-machines"></div></div>
     </div>
-    <div class="grid two mt">
-      <div class="panel"><h2>Программа лояльности</h2><div id="loyalty"></div></div>
+
+    <div class="grid g21 mt">
+      <div class="panel"><h2>Когда берут кофе</h2><p class="sub" id="hours-sub">Чашек по часам суток, 30 дней</p><div class="hours" id="hours"></div><div class="haxis"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div></div>
       <div class="panel"><h2>Самые активные гости</h2><div class="scroll"><table id="top-users"></table></div></div>
     </div>
   </section>
 
   <section data-view="machines" hidden>
-    <div class="grid two">
+    <div class="grid g2">
       <div class="panel"><h2>Аппараты</h2><p class="sub">Активные аппараты видны на сайте и в боте при отметке кофе.</p><div class="scroll"><table id="machines"></table></div></div>
       <form class="panel" id="machine-form">
         <h2 id="machine-title">Новый аппарат</h2>
@@ -171,45 +227,46 @@
         <label>Название<input type="text" name="name" maxlength="80" required placeholder="Например: ЕНУ, главный корпус"></label>
         <label>Адрес и где стоит<input type="text" name="address" maxlength="200" placeholder="Улица, дом, этаж"></label>
         <label>Часы работы<input type="text" name="hours" maxlength="40" placeholder="08:00–20:00 или 24/7"></label>
-        <div class="grid two" style="gap:0 12px"><label>Широта<input type="text" name="lat" inputmode="decimal" placeholder="51.1612"></label><label>Долгота<input type="text" name="lon" inputmode="decimal" placeholder="71.4690"></label></div>
-        <p class="sub" style="margin-top:6px">С координатами аппарат появится на карте сайта. Их можно скопировать из 2ГИС или Google Карт (правый клик по точке).</p>
+        <div class="grid g2" style="gap:0 12px"><label>Широта<input type="text" name="lat" inputmode="decimal" placeholder="51.1612"></label><label>Долгота<input type="text" name="lon" inputmode="decimal" placeholder="71.4690"></label></div>
+        <p class="note">С координатами аппарат появится на карте сайта. Их можно скопировать из 2ГИС или Google Карт (правый клик по точке).</p>
         <label>Тип места<select name="kind"><option>Университет</option><option>Бизнес-центр</option><option>Клиника</option><option>Транспортный узел</option><option>Другое</option></select></label>
-        <label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" name="active" checked style="width:auto;margin:0"> Работает</label>
+        <label style="display:flex;gap:8px;align-items:center;color:var(--ink)"><input type="checkbox" name="active" checked> Работает</label>
         <div class="actions"><button class="btn" type="submit">Сохранить</button><button class="btn ghost" type="reset">Очистить</button></div>
-        <p class="msg" id="machine-msg"></p>
+        <p class="msg" id="machine-msg" role="status"></p>
       </form>
     </div>
   </section>
 
   <section data-view="requests" hidden>
     <div class="panel">
-      <h2>Обращения с сайта</h2>
-      <div class="chips" id="req-filter">
-        <button type="button" data-kind="" aria-pressed="true">Все</button>
-        <button type="button" data-kind="placement" aria-pressed="false">Установка</button>
-        <button type="button" data-kind="complaint" aria-pressed="false">Жалобы</button>
-        <button type="button" data-kind="refund" aria-pressed="false">Возвраты</button>
+      <div class="head"><h2>Обращения с сайта</h2>
+        <div class="chips" id="req-filter">
+          <button type="button" data-kind="" aria-pressed="true">Все</button>
+          <button type="button" data-kind="placement" aria-pressed="false">Установка</button>
+          <button type="button" data-kind="complaint" aria-pressed="false">Жалобы</button>
+          <button type="button" data-kind="refund" aria-pressed="false">Возвраты</button>
+        </div>
       </div>
       <div id="requests"></div>
     </div>
   </section>
 
   <section data-view="promo" hidden>
-    <div class="grid two">
+    <div class="grid g2">
       <form class="panel" id="price-form">
         <h2>Цена за чашку</h2>
         <p class="sub">Показывается на сайте и используется для подсчёта выручки по новым чашкам. На самом аппарате цену нужно менять отдельно.</p>
         <label>Цена, ₸<input type="number" name="price" min="1" max="100000" required></label>
         <label>Акция на сайте (строка вверху страницы; пусто — не показывать)<input type="text" name="promo" maxlength="300" placeholder="Например: до пятницы сироп в подарок"></label>
         <div class="actions"><button class="btn" type="submit">Сохранить</button></div>
-        <p class="msg" id="price-msg"></p>
+        <p class="msg" id="price-msg" role="status"></p>
       </form>
       <form class="panel" id="send-form">
         <h2>Рассылка в Telegram</h2>
         <p class="sub">Сообщение получат все гости, которые вошли в бота.</p>
         <label>Текст<textarea name="text" maxlength="1000" required></textarea></label>
         <div class="actions"><button class="btn" type="submit">Отправить всем</button></div>
-        <p class="msg" id="send-msg"></p>
+        <p class="msg" id="send-msg" role="status"></p>
       </form>
     </div>
   </section>
@@ -221,8 +278,10 @@
   const API = "https://astana-coffee-express-sa00.onrender.com"; // адрес службы бота, как SITE.api на главной
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const money = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₸";
+  const money = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₸";
+  const short = n => n >= 1000 ? (Math.round(n / 100) / 10).toString().replace(".", ",") + " тыс" : String(Math.round(n));
   const KIND = { placement: "Установка", complaint: "Жалоба", refund: "Возврат" };
+  const dm = iso => iso.slice(8) + "." + iso.slice(5, 7);
 
   // ссылка из бота несёт ключ после #; прячем его из адресной строки и держим до закрытия вкладки
   let token = null;
@@ -231,19 +290,14 @@
     token = sessionStorage.getItem("ace-admin");
   } catch (e) { token = location.hash.slice(1) || null; }
 
-  function gate(text) {
-    $("app").hidden = true; $("gate").hidden = false;
-    if (text) $("gate-text").textContent = text;
-  }
+  function gate(text) { $("app").hidden = true; $("gate").hidden = false; if (text) $("gate-text").textContent = text; }
   async function call(path, data) {
     const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 90000);
     let res;
     try {
-      res = await fetch(API + path, { signal: ctrl.signal,
-      method: data ? "POST" : "GET",
-      headers: Object.assign({ Authorization: "Bearer " + token }, data ? { "Content-Type": "application/json" } : {}),
-      body: data ? JSON.stringify(data) : undefined,
-    });
+      res = await fetch(API + path, { signal: ctrl.signal, method: data ? "POST" : "GET",
+        headers: Object.assign({ Authorization: "Bearer " + token }, data ? { "Content-Type": "application/json" } : {}),
+        body: data ? JSON.stringify(data) : undefined });
     } catch (e) {
       throw new Error(e.name === "AbortError" ? "Сервис бота не ответил за 1,5 минуты." : "Нет связи с сервисом бота.");
     } finally { clearTimeout(timer); }
@@ -262,45 +316,94 @@
   }));
 
   // ---------- обзор ----------
-  let state = null, machines = [];
+  let state = null, machines = [], range = 30;
+  const sum = (a, k) => a.reduce((t, x) => t + x[k], 0);
+  function delta(cur, prev, label) {
+    if (!prev) return "";
+    const p = Math.round((cur - prev) / prev * 100), cls = p > 0 ? "up" : p < 0 ? "down" : "";
+    return '<span class="d ' + cls + '">' + (p > 0 ? "+" : p < 0 ? "−" : "") + Math.abs(p) + "%</span><span>" + label + "</span>";
+  }
   function bars(el, items, fmt) {
     const max = Math.max(1, ...items.map(i => i[1]));
     el.innerHTML = items.length ? items.map(i =>
       '<div class="row"><span class="name" title="' + esc(i[0]) + '">' + esc(i[0]) + '</span><span class="track"><i style="width:' + (i[1] / max * 100).toFixed(1) + '%"></i></span><span class="val">' + fmt(i[1]) + (i[2] ? ' <span class="sub">' + esc(i[2]) + "</span>" : "") + "</span></div>").join("")
       : '<p class="sub">Пока нет данных.</p>';
   }
+  function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= v) return m * p; return 10 * p; }
+
+  // график выручки: плавная линия с заливкой, подсказка по наведению
+  function chart() {
+    const days = state.days.slice(-range), W = 720, H = 250, L = 46, R = 14, T = 16, B = 30, n = days.length;
+    const max = niceMax(Math.max(1, ...days.map(x => x.revenue)));
+    const x = i => L + (n === 1 ? 0 : i * (W - L - R) / (n - 1)), y = v => T + (H - T - B) * (1 - v / max);
+    const pts = days.map((d, i) => [x(i), y(d.revenue)]);
+    let line = "M" + pts[0][0] + " " + pts[0][1];
+    for (let i = 0; i < n - 1; i++) {                        // сглаживание Катмулла-Рома → кривая Безье
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, Math.min(H - B, Math.max(T, p1[1] + (p2[1] - p0[1]) / 6))];
+      const c2 = [p2[0] - (p3[0] - p1[0]) / 6, Math.min(H - B, Math.max(T, p2[1] - (p3[1] - p1[1]) / 6))];
+      line += " C" + c1.map(v => v.toFixed(1)).join(" ") + " " + c2.map(v => v.toFixed(1)).join(" ") + " " + p2.map(v => v.toFixed(1)).join(" ");
+    }
+    const area = line + " L" + x(n - 1) + " " + (H - B) + " L" + x(0) + " " + (H - B) + " Z";
+    let grid = "";
+    for (let k = 0; k <= 4; k++) { const v = max * k / 4, yy = y(v); grid += '<line class="grid-l" x1="' + L + '" x2="' + (W - R) + '" y1="' + yy + '" y2="' + yy + '"/><text x="' + (L - 8) + '" y="' + (yy + 4) + '" text-anchor="end">' + short(v) + "</text>"; }
+    const last = pts[n - 1], mid = Math.floor((n - 1) / 2);
+    $("chart").innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Выручка по дням за ' + n + ' дней">' +
+      '<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6b96b" stop-opacity=".55"/><stop offset="1" stop-color="#e6b96b" stop-opacity="0"/></linearGradient></defs>' +
+      grid + '<path d="' + area + '" fill="url(#ag)"/><path d="' + line + '" fill="none" stroke="#f2d08e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<line id="cx" y1="' + T + '" y2="' + (H - B) + '" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 4" visibility="hidden"/><circle id="cd" r="5" fill="#f2d08e" stroke="#2a1f17" stroke-width="3" visibility="hidden"/>' +
+      '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="5" fill="#f2d08e" stroke="#2a1f17" stroke-width="3"/>' +
+      '<text x="' + x(0) + '" y="' + (H - 8) + '" text-anchor="start">' + dm(days[0].date) + '</text><text x="' + x(mid) + '" y="' + (H - 8) + '" text-anchor="middle">' + dm(days[mid].date) + '</text><text x="' + x(n - 1) + '" y="' + (H - 8) + '" text-anchor="end">' + dm(days[n - 1].date) + "</text></svg>" +
+      '<div class="tip" id="ctip" hidden></div>';
+    const svg = $("chart").querySelector("svg"), tip = $("ctip");
+    function show(e) {
+      const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W;
+      const i = Math.max(0, Math.min(n - 1, Math.round((px - L) / ((W - L - R) / Math.max(1, n - 1)))));
+      const cx = $("cx"), cd = $("cd"); cx.setAttribute("x1", pts[i][0]); cx.setAttribute("x2", pts[i][0]); cd.setAttribute("cx", pts[i][0]); cd.setAttribute("cy", pts[i][1]);
+      cx.setAttribute("visibility", "visible"); cd.setAttribute("visibility", "visible");
+      tip.innerHTML = dm(days[i].date) + "<b>" + money(days[i].revenue) + "</b>" + days[i].cups + " чаш.";
+      tip.style.left = Math.min(r.width - 70, Math.max(70, pts[i][0] / W * r.width)) + "px"; tip.style.top = (pts[i][1] / H * r.height) + "px"; tip.hidden = false;
+    }
+    svg.addEventListener("pointermove", show);
+    svg.addEventListener("pointerleave", () => { tip.hidden = true; $("cx").setAttribute("visibility", "hidden"); $("cd").setAttribute("visibility", "hidden"); });
+    const total = sum(days, "revenue");
+    $("chart-sub").textContent = "За " + n + " дн.: " + money(total) + ", лучший день " + money(Math.max(...days.map(d => d.revenue)));
+  }
+
   function render(d) {
     state = d; machines = d.machines;
-    const s = d.sales, tile = (label, num, sub) => '<div class="panel tile"><div class="label">' + label + '</div><div class="num">' + num + '</div><div class="sub">' + sub + "</div></div>";
-    const cups = b => b.cups + " чаш." + (b.free ? ", из них " + b.free + " беспл." : "");
-    $("tiles").innerHTML = tile("Выручка сегодня", money(s.day.revenue), cups(s.day)) + tile("За 7 дней", money(s.week.revenue), cups(s.week)) +
-      tile("За 30 дней", money(s.month.revenue), cups(s.month)) + tile("Гости", d.users.total, "в Telegram: " + d.users.telegram) +
-      tile("Новые обращения", d.new_requests, d.new_requests ? "ждут ответа" : "всё разобрано");
+    const days = d.days, s = d.sales, n = days.length;
+    const yest = days[n - 2] || { revenue: 0 }, prevWeek = sum(days.slice(n - 14, n - 7), "revenue");
+    const tile = (label, num, meta) => '<div class="tile"><div class="label">' + label + '</div><div class="num">' + num + '</div><div class="meta">' + meta + "</div></div>";
+    const cups = b => "<span>" + b.cups + " чаш." + (b.free ? ", беспл. " + b.free : "") + "</span>";
+    $("tiles").innerHTML =
+      tile("Выручка сегодня", money(s.day.revenue), delta(s.day.revenue, yest.revenue, "к вчера") + cups(s.day)) +
+      tile("За 7 дней", money(s.week.revenue), delta(s.week.revenue, prevWeek, "к прошлой неделе") + cups(s.week)) +
+      tile("За 30 дней", money(s.month.revenue), cups(s.month)) +
+      tile("Гости", d.users.total, "<span>в Telegram: " + d.users.telegram + ", с чашками: " + d.users.with_cups + "</span>");
     $("badge").hidden = !d.new_requests; $("badge").textContent = d.new_requests;
+    chart();
 
-    const max = Math.max(1, ...d.days.map(x => x.revenue));
-    $("days").innerHTML = d.days.map((x, i) => '<div class="d" data-i="' + i + '"><i style="height:' + (x.revenue / max * 100).toFixed(1) + '%"></i></div>').join("");
-    const short = iso => iso.slice(8) + "." + iso.slice(5, 7);
-    $("ax-from").textContent = short(d.days[0].date); $("ax-to").textContent = short(d.days[d.days.length - 1].date);
-    $("ax-max").textContent = "максимум за день: " + money(Math.max(...d.days.map(x => x.revenue)));
-
-    bars($("drinks"), d.drinks.map(x => [x[0], x[1]]), n => n);
+    bars($("drinks"), d.drinks.map(x => [x[0], x[1]]), v => v);
     const mrows = d.machines.filter(m => m.cups).map(m => [m.name, m.revenue, m.cups + " чаш."]);
     if (d.no_machine.cups) mrows.push(["Аппарат не указан", d.no_machine.revenue, d.no_machine.cups + " чаш."]);
     bars($("top-machines"), mrows, money);
 
-    const l = d.loyalty;
-    $("loyalty").innerHTML = l.free_every < 2 ? '<p class="sub mt">Программа выключена.</p>' :
-      '<table><tr><td>Правило</td><td class="n">каждая ' + l.free_every + "-я бесплатно</td></tr>" +
-      "<tr><td>Гостей с чашками</td><td class=\"n\">" + d.users.with_cups + " из " + d.users.total + "</td></tr>" +
-      "<tr><td>Бесплатных чашек выдано</td><td class=\"n\">" + d.all_time.free + " из " + d.all_time.cups + "</td></tr>" +
-      "<tr><td>Следующая чашка бесплатно</td><td class=\"n\">" + l.next_free.length + " гост.</td></tr></table>" +
-      (l.next_free.length ? '<p class="sub mt">' + l.next_free.map(esc).join(", ") + "</p>" : "");
-    $("top-users").innerHTML = l.top.length ? "<tr><th>Гость</th><th>Любимый напиток</th><th class=\"n\">Чашек</th></tr>" +
+    const hrs = d.hours || new Array(24).fill(0), hmax = Math.max(1, ...hrs), peak = hrs.indexOf(Math.max(...hrs));
+    $("hours").innerHTML = hrs.map((v, h) => '<i class="' + (v && h === peak ? "peak" : "") + '" style="height:' + Math.max(2, v / hmax * 100) + '%" title="' + String(h).padStart(2, "0") + ":00 — " + v + ' чаш."></i>').join("");
+    $("hours-sub").textContent = Math.max(...hrs) ? "Больше всего чашек в " + String(peak).padStart(2, "0") + ":00" : "Чашек по часам суток, 30 дней";
+
+    const l = d.loyalty, share = d.all_time.cups ? d.all_time.free / d.all_time.cups : 0, C = 2 * Math.PI * 46;
+    $("loyalty").innerHTML = l.free_every < 2 ? '<p class="sub" style="margin-top:12px">Программа выключена.</p>' :
+      '<div class="ring"><svg viewBox="0 0 112 112"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2d08e"/><stop offset="1" stop-color="#d9743a"/></linearGradient></defs><circle class="bg" cx="56" cy="56" r="46" fill="none" stroke-width="10"/><circle class="fg" cx="56" cy="56" r="46" fill="none" stroke-width="10" stroke-dasharray="' + (share * C).toFixed(1) + " " + C.toFixed(1) + '"/></svg>' +
+      '<div class="c"><div class="big">' + Math.round(share * 100) + '%</div><div class="sub">чашек были бесплатными</div></div></div>' +
+      '<dl class="kv"><div><dt>Правило</dt><dd>каждая ' + l.free_every + "-я бесплатно</dd></div><div><dt>Бесплатных выдано</dt><dd>" + d.all_time.free + " из " + d.all_time.cups + "</dd></div>" +
+      "<div><dt>Гостей с чашками</dt><dd>" + d.users.with_cups + " из " + d.users.total + "</dd></div><div><dt>Следующая — бесплатно</dt><dd>" + (l.next_free.length ? esc(l.next_free.slice(0, 3).join(", ")) + (l.next_free.length > 3 ? " +" + (l.next_free.length - 3) : "") : "никому") + "</dd></div></dl>";
+    $("top-users").innerHTML = l.top.length ? '<tr><th>Гость</th><th>Любимый напиток</th><th class="n">Чашек</th></tr>' +
       l.top.map(u => "<tr><td>" + esc(u.login) + "</td><td>" + esc(u.favorite || "—") + '</td><td class="n">' + u.total + "</td></tr>").join("")
       : '<tr><td class="sub">Пока никто не отметил ни одной чашки.</td></tr>';
 
-    $("machines").innerHTML = "<tr><th>Аппарат</th><th>Статус</th><th class=\"n\">Выручка, 30 дн.</th><th></th></tr>" + (d.machines.length ? d.machines.map(m =>
+    $("machines").innerHTML = '<tr><th>Аппарат</th><th>Статус</th><th class="n">Выручка, 30 дн.</th><th></th></tr>' + (d.machines.length ? d.machines.map(m =>
       "<tr><td><b>" + esc(m.name) + '</b><div class="sub">' + esc([m.kind, m.address].filter(Boolean).join(" · ")) + '</div></td><td><span class="pill ' + (m.active ? "done" : "off") + '">' + (m.active ? "работает" : "выключен") +
       '</span></td><td class="n">' + money(m.revenue) + '<div class="sub">' + m.cups + ' чаш.</div></td><td><button class="btn ghost" type="button" data-edit="' + m.id + '">Изменить</button></td></tr>').join("")
       : '<tr><td colspan="4" class="sub">Аппаратов пока нет — добавьте первый в форме.</td></tr>');
@@ -314,17 +417,10 @@
     finally { $("reload").disabled = false; }
   }
   $("reload").addEventListener("click", () => { load(); if (!document.querySelector('[data-view="requests"]').hidden) loadRequests(); });
-
-  // подсказка над столбиком дня
-  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; document.body.appendChild(tip);
-  $("days").addEventListener("pointermove", e => {
-    const col = e.target.closest(".d"); if (!col || !state) { tip.hidden = true; return; }
-    const x = state.days[+col.dataset.i], r = col.getBoundingClientRect();
-    tip.textContent = x.date.slice(8) + "." + x.date.slice(5, 7) + " — " + money(x.revenue) + ", " + x.cups + " чаш.";
-    tip.style.left = Math.min(innerWidth - 110, Math.max(110, r.left + r.width / 2)) + "px";
-    tip.style.top = (r.top + r.height - col.firstChild.offsetHeight) + "px"; tip.hidden = false;
+  $("range").addEventListener("click", e => {
+    const n = e.target.dataset && +e.target.dataset.n; if (!n || !state) return;
+    range = n; $("range").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.n === n)); chart();
   });
-  $("days").addEventListener("pointerleave", () => { tip.hidden = true; });
 
   // ---------- аппараты ----------
   const mf = $("machine-form");
@@ -351,15 +447,13 @@
     const items = requests.filter(r => !filter || r.kind === filter);
     $("requests").innerHTML = items.length ? items.map(r => {
       const m = r.machine_id && machines.find(x => x.id === r.machine_id);
-      return '<div class="req"><div class="head"><span class="pill">' + KIND[r.kind] + '</span><span class="pill ' + r.status + '">' + (r.status === "new" ? "новое" : "закрыто") + "</span><b>" + esc(r.name) + "</b><span>" + esc(r.contact) +
+      return '<div class="req"><div class="headline"><span class="pill">' + KIND[r.kind] + '</span><span class="pill ' + r.status + '">' + (r.status === "new" ? "новое" : "закрыто") + "</span><b>" + esc(r.name) + "</b><span>" + esc(r.contact) +
         '</span><span class="sub">' + esc(r.ts.slice(0, 16)) + (m ? " · " + esc(m.name) : "") + '</span></div><p class="text">' + esc(r.text || "Без комментария.") +
-        '</p><div class="note"><input type="text" maxlength="1000" placeholder="Заметка: что сделали" value="' + esc(r.note) + '" data-note="' + r.id + '"><button class="btn' + (r.status === "new" ? "" : " ghost") +
+        '</p><div class="note-row"><input type="text" maxlength="1000" placeholder="Заметка: что сделали" value="' + esc(r.note) + '" data-note="' + r.id + '"><button class="btn' + (r.status === "new" ? "" : " ghost") +
         '" type="button" data-req="' + r.id + '" data-status="' + (r.status === "new" ? "done" : "new") + '">' + (r.status === "new" ? "Закрыть" : "Вернуть") + "</button></div></div>";
     }).join("") : '<p class="sub">Здесь пока пусто.</p>';
   }
-  async function loadRequests() {
-    try { requests = (await call("/api/admin/requests")).requests; drawRequests(); } catch (e) {}
-  }
+  async function loadRequests() { try { requests = (await call("/api/admin/requests")).requests; drawRequests(); } catch (e) {} }
   $("req-filter").addEventListener("click", e => {
     if (!e.target.dataset || e.target.dataset.kind === undefined) return;
     filter = e.target.dataset.kind;
