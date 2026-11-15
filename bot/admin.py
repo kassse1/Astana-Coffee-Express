@@ -13,8 +13,8 @@ from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta
 
 from aiohttp import web
-from sqlalchemy import (Column, Integer, MetaData, String, Table, Text, create_engine, func, insert,
-                        select, update)
+from sqlalchemy import (Column, Float, Integer, MetaData, String, Table, Text, create_engine, func, insert,
+                        inspect, select, text, update)
 
 from .config import Config
 from .db import ASTANA_TZ, _now
@@ -31,6 +31,9 @@ machines = Table(
     Column("kind", String(40), nullable=False, default=""),
     Column("active", Integer, nullable=False, default=1),
     Column("created", String(19), nullable=False),
+    Column("hours", String(40)),  # часы работы: «08:00–20:00» или «24/7»
+    Column("lat", Float),
+    Column("lon", Float),
 )
 sales = Table(
     "sales", meta,
@@ -79,6 +82,11 @@ class AdminStore:
             url = f"sqlite:///{os.path.join(folder, 'admin.db')}"
         self.engine = create_engine(url, pool_pre_ping=True, pool_recycle=300)
         meta.create_all(self.engine)
+        have = {c["name"] for c in inspect(self.engine).get_columns("machines")}
+        with self.engine.begin() as conn:  # база от прошлой версии: добавляем новые колонки
+            for name, kind in (("hours", "VARCHAR(40)"), ("lat", "FLOAT"), ("lon", "FLOAT")):
+                if name not in have:
+                    conn.execute(text(f"ALTER TABLE machines ADD COLUMN {name} {kind}"))
 
     # ---------- настройки ----------
     def get(self, key: str, default: str = "") -> str:
@@ -104,7 +112,13 @@ class AdminStore:
 
     def save_machine(self, data: dict) -> int:
         values = {"name": _clean(data.get("name"), 80, required=True), "address": _clean(data.get("address"), 200),
-                  "kind": _clean(data.get("kind"), 40), "active": 1 if data.get("active", True) else 0}
+                  "kind": _clean(data.get("kind"), 40), "active": 1 if data.get("active", True) else 0,
+                  "hours": _clean(data.get("hours"), 40)}
+        for key, low, high in (("lat", -90, 90), ("lon", -180, 180)):
+            raw = str(data.get(key) if data.get(key) is not None else "").replace(",", ".").strip()
+            values[key] = float(raw) if raw else None
+            if values[key] is not None and not low <= values[key] <= high:
+                raise AdminError("Проверьте координаты: широта и долгота указаны неверно.")
         with self.engine.begin() as conn:
             if data.get("id"):
                 if not conn.execute(update(machines).where(machines.c.id == int(data["id"])).values(**values)).rowcount:
@@ -252,7 +266,7 @@ def setup_admin_api(app: web.Application, db, store: AdminStore, cfg: Config, bo
     async def public(_: web.Request) -> web.Response:
         def read():
             return {"price": store.price(), "promo": store.get("promo"), "free_every": cfg.free_every,
-                    "machines": [{k: m[k] for k in ("id", "name", "address", "kind")}
+                    "machines": [{k: m[k] for k in ("id", "name", "address", "kind", "hours", "lat", "lon")}
                                  for m in store.machines(only_active=True)]}
         return web.json_response(await asyncio.to_thread(read))
 

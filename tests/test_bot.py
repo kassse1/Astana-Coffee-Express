@@ -310,6 +310,10 @@ def test_admin_panel(tmp_path):
                                                           "kind": "Университет"}, headers=auth)
             mid = (await r.json())["id"]
             await c.post("/api/admin/machines", json={"name": "Склад", "active": False}, headers=auth)
+            assert (await c.post("/api/admin/machines", json={"name": "X", "lat": "151"}, headers=auth)).status == 400
+            assert (await c.post("/api/admin/machines", json={"id": mid, "name": "ЕНУ, главный корпус", "address": "Сатпаева 2",
+                                                              "kind": "Университет", "hours": "08:00–20:00", "lat": "51,1612",
+                                                              "lon": 71.469}, headers=auth)).status == 200
             store.add_sale(2, "Капучино", mid, False)
             store.add_sale(2, "Капучино", mid, False)
             assert (await c.post("/api/admin/settings", json={"price": 0}, headers=auth)).status == 400
@@ -327,6 +331,7 @@ def test_admin_panel(tmp_path):
             pub = await (await c.get("/api/public")).json()
             assert pub["price"] == 700 and pub["promo"] == "Сироп в подарок"
             assert [m["name"] for m in pub["machines"]] == ["ЕНУ, главный корпус"]
+            assert pub["machines"][0]["lat"] == 51.1612 and pub["machines"][0]["hours"] == "08:00–20:00"
             # обращения с сайта
             assert (await c.post("/api/request", json={"kind": "spam", "name": "a", "contact": "b"})).status == 400
             assert (await c.post("/api/request", json={"kind": "refund", "name": "Aida", "contact": "a@b.kz"})).status == 400

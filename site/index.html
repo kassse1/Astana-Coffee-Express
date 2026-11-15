@@ -359,6 +359,34 @@
   .intro-flood { position: absolute; left: -70px; top: -70px; width: 140px; height: 140px; border-radius: 50%; background: var(--cream); transform: scale(0); animation: flood .8s cubic-bezier(.7,0,.3,1) 3.45s forwards; }
   @keyframes flood { to { transform: scale(30); } }
 
+  /* список и карта аппаратов */
+  .machines { list-style: none; padding: 0; margin-top: 28px; border-top: 1px solid var(--line); max-height: 440px; overflow-y: auto; scrollbar-width: thin; }
+  .machines li { border-bottom: 1px solid var(--line); }
+  .machines button { display: block; width: 100%; text-align: left; background: none; border: 0; border-left: 3px solid transparent; color: inherit; font: inherit; padding: 13px 10px 13px 12px; cursor: pointer; transition: background .2s, border-color .2s; }
+  .machines button:hover { background: rgba(244,236,223,.05); }
+  .machines button.on { background: rgba(224,181,106,.1); border-left-color: var(--gold); }
+  .m-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .m-top b { font-weight: 600; }
+  .m-sub { display: block; color: var(--muted); font-size: .88rem; margin-top: 2px; }
+  .machines i, .pop i { font-style: normal; font-size: .76rem; font-weight: 700; white-space: nowrap; }
+  i.open { color: #86cfa0; } i.shut { color: #c9a08f; }
+  i.open::before, i.shut::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: 1px; }
+  #map { height: 520px; background: #1d1510; }
+  #map .leaflet-tile-pane { filter: invert(.92) hue-rotate(180deg) sepia(.35) saturate(.7) brightness(.95); }
+  .pin i { display: block; width: 18px; height: 18px; margin: 5px; border-radius: 50%; background: var(--gold); border: 3px solid #120d0a; box-shadow: 0 0 0 2px var(--gold), 0 4px 10px rgba(0,0,0,.6); transition: transform .25s cubic-bezier(.3,1.5,.5,1); }
+  .pin:hover i, .pin.on i { transform: scale(1.35); background: #fff; }
+  #map .leaflet-popup-content-wrapper, #map .leaflet-popup-tip { background: #1d1510; color: var(--cream); box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+  #map .leaflet-popup-content-wrapper { border: 1px solid rgba(244,236,223,.16); border-radius: 12px; }
+  #map .leaflet-popup-content { margin: 14px 16px; font: 400 .9rem/1.45 var(--sans); }
+  .pop b { display: block; font-weight: 700; font-size: .98rem; }
+  .pop > span { display: block; color: var(--muted); }
+  .pop .pop-h { display: flex; gap: 10px; align-items: baseline; margin-top: 8px; color: var(--cream); }
+  .pop em { font-style: normal; font-weight: 600; }
+  .pop a { display: inline-block; margin-top: 10px; background: var(--gold); color: var(--ink) !important; font-weight: 700; text-decoration: none; padding: 7px 14px; border-radius: 8px; }
+  #map .leaflet-control-zoom a { background: #1d1510; color: var(--cream); border-color: rgba(244,236,223,.16); }
+  #map .leaflet-control-attribution { background: rgba(18,13,10,.7); color: #8f8073; }
+  #map .leaflet-control-attribution a { color: #b9a999; }
+
   /* тёмная тема всего сайта */
   :root { --muted: #b9a999; --line: rgba(244,236,223,.14); --paper: #17100c; --card: #1d1510; --copper: #d6a06c; }
   body { color: var(--cream); background: #120d0a; }
@@ -371,7 +399,6 @@
   .steps li, .cols > div, .people > div { border-top-color: rgba(244,236,223,.3); }
   .card-box { border: 1px solid var(--line); box-shadow: 0 34px 70px -28px rgba(0,0,0,.9); }
   .map-box { background: #1d1510; box-shadow: none; border: 1px solid var(--line); }
-  .map-box iframe { filter: invert(.92) hue-rotate(180deg) sepia(.35) saturate(.7) brightness(.95); }
   .req-form input, .req-form select, .req-form textarea { background: rgba(0,0,0,.3); color: var(--cream); }
   .req-form option { background: #1d1510; color: var(--cream); }
   .req-note.ok { color: #86cfa0; } .req-note.err { color: #ffa392; }
@@ -413,7 +440,8 @@
     .steps { grid-template-columns: minmax(0, 1fr); gap: 30px; margin-top: 36px; }
     .where, #partners .wrap, .cols, .people { grid-template-columns: minmax(0, 1fr); gap: 32px; }
     .req-form { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; }
-    .map-box iframe { height: 340px; }
+    #map { height: 380px; }
+    .machines { max-height: 340px; }
     #partners .calc { margin: 44px 22px 0; gap: 0; }
     .calc-in, .calc-out { padding: 24px 20px; }
     .calc-out { border-left: 0; border-top: 1px solid rgba(244,236,223,.18); }
@@ -596,17 +624,11 @@
     <div>
       <p class="eyebrow">Где найти</p>
       <h2>Там, где вы бываете каждый день</h2>
-      <ul class="rows">
-        <li><b>Университеты</b><span>между парами и перед экзаменом</span></li>
-        <li><b>Бизнес-центры</b><span>не выходя из здания</span></li>
-        <li><b>Клиники</b><span>пока ждёте приёма</span></li>
-        <li><b>Транспортные узлы</b><span>по пути, в любое время</span></li>
-      </ul>
-      <div id="machine-box" hidden><h3>Адреса аппаратов</h3><ul class="rows" id="machine-list"></ul></div>
-      <p class="where-note">Точные адреса аппаратов и новые точки присылает <a data-bot href="#bot">Telegram-бот</a>.</p>
+      <ul class="machines" id="machine-list"></ul>
+      <p class="where-note">Новые точки первыми присылает <a data-bot href="#bot">Telegram-бот</a>.</p>
     </div>
     <div class="map-box">
-      <iframe title="Карта Астаны" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=71.20%2C50.95%2C71.70%2C51.30&amp;layer=mapnik"></iframe>
+      <div id="map" role="application" aria-label="Карта Астаны"></div>
     </div>
   </div>
 </section>
@@ -793,7 +815,15 @@
     "Хотите аппарат в своём здании?": ["Ғимаратыңызға аппарат қойғыңыз келе ме?", "Want a machine in your building?"],
     "Ставим аппараты в университетах, бизнес-центрах, клиниках и на транспортных узлах. Напишите нам — расскажем об условиях размещения.": ["Аппараттарды университеттерге, бизнес-орталықтарға, емханаларға және көлік торабтарына орнатамыз. Бізге жазыңыз — орналастыру шарттарын айтып береміз.", "We place machines in universities, business centres, clinics and transport hubs. Write to us and we'll tell you about placement terms."],
     "Оставить заявку на размещение": ["Орналастыруға өтінім қалдыру", "Request a machine"],
-    "Адреса аппаратов": ["Аппараттардың мекенжайлары", "Machine addresses"],
+    "Новые точки первыми присылает": ["Жаңа нүктелерді бірінші болып жіберетін —", "New locations are announced first by the"],
+    "Открыто": ["Ашық", "Open"],
+    "Закрыто": ["Жабық", "Closed"],
+    "Круглосуточно": ["Тәулік бойы", "24/7"],
+    "Маршрут": ["Бағыт", "Directions"],
+    "Университет": ["Университет", "University"],
+    "Бизнес-центр": ["Бизнес-орталық", "Business centre"],
+    "Клиника": ["Емхана", "Clinic"],
+    "Транспортный узел": ["Көлік торабы", "Transport hub"],
     "Оставить обращение": ["Өтініш қалдыру", "Send us a request"],
     "Тема": ["Тақырып", "Topic"],
     "Установка аппарата": ["Аппарат орнату", "Machine placement"],
@@ -1091,10 +1121,86 @@
     const io = new IntersectionObserver(entries => entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
     }), { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-    document.querySelectorAll(".drinks, .steps, .card-box, .map-box, #partners .rows").forEach(el => {
+    document.querySelectorAll(".drinks, .steps, .card-box, #partners .rows").forEach(el => {
       el.classList.add("reveal");
       io.observe(el);
     });
+  })();
+
+  // ---------- Карта аппаратов ----------
+  // Пока в админ-панели нет аппаратов с координатами, показываются эти ДЕМО-точки (данные придуманы для примера).
+  // Настоящие точки добавляются в админ-панели: название, адрес, часы работы, широта и долгота.
+  const DEMO_MACHINES = [
+    { name: "ЕНУ им. Гумилёва, главный корпус", address: "ул. Сатпаева, 2 — 1 этаж, у гардероба", kind: "Университет", hours: "08:00–20:00", lat: 51.1612, lon: 71.4690 },
+    { name: "Назарбаев Университет, атриум", address: "пр. Кабанбай батыра, 53", kind: "Университет", hours: "07:00–23:00", lat: 51.0906, lon: 71.3987 },
+    { name: "Astana IT University", address: "пр. Мангилик Ел, C1 — холл", kind: "Университет", hours: "08:00–21:00", lat: 51.0908, lon: 71.4186 },
+    { name: "БЦ «Москва»", address: "ул. Достык, 18 — лобби", kind: "Бизнес-центр", hours: "08:00–22:00", lat: 51.1283, lon: 71.4262 },
+    { name: "Абу-Даби Плаза", address: "ул. Сыганак, 60/4 — 1 этаж", kind: "Бизнес-центр", hours: "08:00–22:00", lat: 51.1226, lon: 71.4290 },
+    { name: "Городская поликлиника", address: "пр. Республики, 50 — зона ожидания", kind: "Клиника", hours: "07:00–20:00", lat: 51.1640, lon: 71.4225 },
+    { name: "Вокзал Нұрлы Жол", address: "ул. Мынбаева, 31 — зал ожидания, 2 этаж", kind: "Транспортный узел", hours: "24/7", lat: 51.1124, lon: 71.5318 },
+    { name: "Аэропорт, терминал T2", address: "пр. Кабанбай батыра, 119 — зона вылета", kind: "Транспортный узел", hours: "24/7", lat: 51.0224, lon: 71.4668 },
+  ];
+  let showMachines = () => {};
+  (function () {
+    const list = document.getElementById("machine-list"), box = document.getElementById("map");
+    let items = [], map = null, markers = [], active = -1;
+    function isOpen(hours) {            // часы — по времени Астаны (UTC+5)
+      if (!hours || /24/.test(hours)) return true;
+      const m = hours.match(/(\d{1,2}):(\d{2})\D+(\d{1,2}):(\d{2})/); if (!m) return true;
+      const now = new Date(Date.now() + 5 * 3600e3), cur = now.getUTCHours() * 60 + now.getUTCMinutes();
+      const from = +m[1] * 60 + +m[2], to = +m[3] * 60 + +m[4];
+      return from <= to ? cur >= from && cur < to : cur >= from || cur < to;
+    }
+    const hoursText = h => !h || /24/.test(h) ? "Круглосуточно" : h;
+    function el(tag, cls, ru, raw) { const e = document.createElement(tag); if (cls) e.className = cls; if (ru != null) raw ? (e.textContent = ru) : put(e, ru); return e; }
+    function select(i, fly) {
+      active = i;
+      list.querySelectorAll("button").forEach((b, k) => b.classList.toggle("on", k === i));
+      markers.forEach((mk, k) => mk.getElement() && mk.getElement().classList.toggle("on", k === i));
+      if (map && markers[i]) { if (fly) map.flyTo(markers[i].getLatLng(), 14, { duration: .8 }); markers[i].openPopup(); }
+    }
+    function popup(m) {
+      const d = el("div", "pop");
+      d.append(el("b", "", m.name, true), el("span", "", m.address, true));
+      const row = el("span", "pop-h"); row.append(el("i", isOpen(m.hours) ? "open" : "shut", isOpen(m.hours) ? "Открыто" : "Закрыто"), el("em", "", hoursText(m.hours), /\d/.test(hoursText(m.hours))));
+      const a = el("a", "", "Маршрут"); a.href = "https://www.google.com/maps/dir/?api=1&destination=" + m.lat + "," + m.lon; a.target = "_blank"; a.rel = "noopener";
+      d.append(row, a); return d;
+    }
+    function draw() {
+      if (!map) return;
+      markers.forEach(mk => mk.remove());
+      markers = items.map((m, i) => L.marker([m.lat, m.lon], { icon: L.divIcon({ className: "pin", html: "<i></i>", iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -12] }), title: m.name, keyboard: false })
+        .addTo(map).bindPopup(() => popup(m), { closeButton: false, maxWidth: 240 }).on("click", () => select(i)));
+      if (markers.length) map.fitBounds(L.latLngBounds(items.map(m => [m.lat, m.lon])).pad(.15));
+    }
+    showMachines = function (ms) {
+      items = ms; list.textContent = "";
+      ms.forEach((m, i) => {
+        const li = el("li"), b = el("button"); b.type = "button";
+        const top = el("span", "m-top"); top.append(el("b", "", m.name, true), el("i", isOpen(m.hours) ? "open" : "shut", isOpen(m.hours) ? "Открыто" : "Закрыто"));
+        const sub = el("span", "m-sub"); sub.append(el("span", "", m.kind || ""), el("span", "", " · " + m.address + " · ", true), el("span", "", hoursText(m.hours), /\d/.test(hoursText(m.hours))));
+        b.append(top, sub); b.addEventListener("click", () => select(i, true)); li.appendChild(b); list.appendChild(li);
+      });
+      applyLang(); draw();
+    };
+    function start() {                   // карта и её библиотека грузятся, только когда до раздела долистали
+      const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "vendor/leaflet.css"; document.head.appendChild(css);
+      const js = document.createElement("script"); js.src = "vendor/leaflet.js";
+      js.onload = () => {
+        map = L.map(box, { scrollWheelZoom: false, zoomControl: true, attributionControl: true }).setView([51.128, 71.45], 11);
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(map);
+        map.attributionControl.setPrefix(false);
+        map.on("click", () => map.scrollWheelZoom.enable());   // колесо мыши двигает карту только после клика по ней
+        map.on("popupopen", () => applyLang());
+        draw();
+      };
+      document.head.appendChild(js);
+    }
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); start(); } }, { rootMargin: "600px" });
+      io.observe(box);
+    } else start();
+    showMachines(DEMO_MACHINES);
   })();
 
   // ---------- Данные из админ-панели: цена, акция, адреса аппаратов; форма обращений ----------
@@ -1106,14 +1212,11 @@
       if (d.price > 0 && d.price !== PRICE) { PRICE = d.price; applyLang(); document.dispatchEvent(new Event("ace-price")); }
       const bar = document.getElementById("promo-bar");
       bar.textContent = d.promo || ""; bar.hidden = !d.promo;
-      const list = document.getElementById("machine-list"), sel = form.machine_id, ms = d.machines || [];
-      list.textContent = ""; while (sel.options.length > 1) sel.remove(1);
-      ms.forEach(m => {
-        const li = document.createElement("li"), b = document.createElement("b"), sp = document.createElement("span");
-        b.textContent = m.name; sp.textContent = m.address; li.append(b, sp); list.appendChild(li);
-        sel.add(new Option(m.name, m.id));
-      });
-      document.getElementById("machine-box").hidden = !ms.length;
+      const sel = form.machine_id, ms = d.machines || [];
+      while (sel.options.length > 1) sel.remove(1);
+      ms.forEach(m => sel.add(new Option(m.name, m.id)));
+      const placed = ms.filter(m => m.lat && m.lon);   // настоящие точки из админ-панели заменяют демо
+      if (placed.length) showMachines(placed);
       syncKind();
     }
     function syncKind() { machineLabel.hidden = form.kind.value === "placement" || form.machine_id.options.length < 2; }
