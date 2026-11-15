@@ -394,6 +394,35 @@
   #map .leaflet-control-attribution { background: rgba(18,13,10,.7); color: #8f8073; }
   #map .leaflet-control-attribution a { color: #b9a999; }
 
+  /* баннер «чашка за подписку» */
+  .subban { padding: 56px 0; border-top: 0 !important; }
+  .sb { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); align-items: center; gap: 24px;
+    padding: 40px 44px; border-radius: 22px; border: 1px solid rgba(224,181,106,.35);
+    background: radial-gradient(ellipse 60% 90% at 85% 50%, rgba(42,171,238,.16), transparent 70%), linear-gradient(120deg, #2a1b12, #1a120d 55%, #13202a); }
+  .sb::before { content: ""; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; transform: skewX(-18deg);
+    background: linear-gradient(90deg, transparent, rgba(255,236,200,.09), transparent); animation: sb-shine 6s ease-in-out infinite; }
+  @keyframes sb-shine { 0%, 55% { left: -40%; } 100% { left: 120%; } }
+  .sb-tag { display: inline-block; font-size: .82rem; font-weight: 700; color: #1d1410; background: var(--gold); border-radius: 20px; padding: 4px 12px; margin-bottom: 14px; }
+  .sb h2 { font-size: clamp(1.7rem, 3.6vw, 2.6rem); }
+  .sb h2 span { color: var(--gold); }
+  .sb-steps { list-style: none; padding: 0; margin: 20px 0 26px; display: grid; gap: 10px; counter-reset: sb; }
+  .sb-steps li { counter-increment: sb; display: flex; align-items: center; gap: 12px; color: #d3c4b4; }
+  .sb-steps li::before { content: counter(sb); flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    font-weight: 800; font-size: .85rem; color: var(--gold); border: 1.5px solid rgba(224,181,106,.6); }
+  .sb-art svg { display: block; width: 100%; max-width: 280px; margin: 0 auto; overflow: visible; }
+  .sb-plane { animation: sb-fly 5s ease-in-out infinite; }
+  @keyframes sb-fly { 0% { transform: translate(196px, 60px) rotate(-8deg); } 50% { transform: translate(208px, 40px) rotate(6deg); } 100% { transform: translate(196px, 60px) rotate(-8deg); } }
+  .sb-coin { animation: sb-coin 3.6s ease-in-out infinite; }
+  @keyframes sb-coin { 0%, 100% { transform: translate(44px, 168px) rotate(-12deg); } 50% { transform: translate(38px, 154px) rotate(10deg); } }
+  .sb-steam path { animation: steam 3.2s ease-in-out infinite; opacity: 0; }
+  .sb-steam path:nth-child(2) { animation-delay: .8s; } .sb-steam path:nth-child(3) { animation-delay: 1.6s; }
+  @media (max-width: 880px) {
+    .subban { padding: 40px 0; }
+    .sb { grid-template-columns: minmax(0, 1fr); padding: 28px 22px; }
+    .sb-art { order: -1; } .sb-art svg { max-width: 190px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .sb::before, .sb-plane, .sb-coin, .sb-steam path { animation: none; } .sb-steam path { opacity: .5; } }
+
   /* тёмная тема всего сайта */
   :root { --muted: #b9a999; --line: rgba(244,236,223,.14); --paper: #17100c; --card: #1d1510; --copper: #d6a06c; }
   body { color: var(--cream); background: #120d0a; }
@@ -525,6 +554,43 @@
     </div>
   </div>
 </header>
+
+<section class="subban" aria-label="Чашка за подписку">
+  <div class="wrap">
+    <div class="sb">
+      <div class="sb-text">
+        <p class="sb-tag">Акция для подписчиков</p>
+        <h2>Подпишитесь на канал — <span>чашка кофе в подарок</span></h2>
+        <ol class="sb-steps">
+          <li>Подпишитесь на наш Telegram-канал</li>
+          <li>В боте нажмите «Кофе за подписку»</li>
+          <li>Покажите штрихкод у аппарата</li>
+        </ol>
+        <div class="cta">
+          <a class="btn" data-channel href="#">Подписаться на канал</a>
+          <a class="btn ghost" data-bot href="#bot">Получить в боте</a>
+        </div>
+      </div>
+      <div class="sb-art" aria-hidden="true">
+        <svg viewBox="0 0 240 220">
+          <defs>
+            <linearGradient id="sbcup" x1="0" x2="1"><stop offset="0" stop-color="#f4ecdf"/><stop offset="1" stop-color="#d9cbb8"/></linearGradient>
+            <radialGradient id="sbglow"><stop offset="0" stop-color="#e0b56a" stop-opacity=".45"/><stop offset="1" stop-color="#e0b56a" stop-opacity="0"/></radialGradient>
+          </defs>
+          <circle cx="120" cy="120" r="104" fill="url(#sbglow)"/>
+          <g class="sb-steam" fill="none" stroke="#f4ecdf" stroke-width="3" stroke-linecap="round" opacity=".6"><path d="M104 66c-8-10 8-14 0-26"/><path d="M122 62c-8-10 8-14 0-26"/><path d="M140 66c-8-10 8-14 0-26"/></g>
+          <path d="M78 84h88l-10 98q-1 10-11 10h-46q-10 0-11-10z" fill="url(#sbcup)"/>
+          <rect x="72" y="76" width="100" height="14" rx="5" fill="#fff"/>
+          <rect x="82" y="118" width="80" height="34" fill="#a8672f"/>
+          <path d="M122 118v34" stroke="#e0b56a" stroke-width="6"/>
+          <path d="M122 120c-10-14-26-8-18 2 4 5 18 0 18-2zm0 0c10-14 26-8 18 2-4 5-18 0-18-2z" fill="#e0b56a"/>
+          <g class="sb-plane"><circle cx="0" cy="0" r="24" fill="#2aabee"/><path d="M-12-1l22-9c1 0 2 1 2 2l-4 19c0 1-2 2-3 1l-6-4-3 3c-1 1-2 0-2-1v-4l10-9-12 7-5-2c-1-1-1-2 1-3z" fill="#fff"/></g>
+          <g class="sb-coin"><circle r="18" fill="#e0b56a"/><text y="5" text-anchor="middle" font-family="Manrope, sans-serif" font-weight="800" font-size="13" fill="#1d1410">0₸</text></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section id="menu">
   <div class="wrap">
@@ -777,6 +843,14 @@
     "Сколько чашек выпито и какой напиток вы берёте чаще всего.": ["Қанша шыныаяқ ішілгені және қай сусынды жиі алатыныңыз.", "How many cups you've had and which drink you order most."],
     "Акции первыми": ["Акциялар бірінші сізге", "Offers first"],
     "Новые точки и предложения приходят сообщением в Telegram.": ["Жаңа нүктелер мен ұсыныстар Telegram-ға хабарлама болып келеді.", "New locations and offers arrive as a Telegram message."],
+    "Акция для подписчиков": ["Жазылушыларға акция", "Subscriber offer"],
+    "Подпишитесь на канал —": ["Арнаға жазылыңыз —", "Subscribe to our channel —"],
+    "чашка кофе в подарок": ["бір шыныаяқ кофе сыйлық", "get a free cup of coffee"],
+    "Подпишитесь на наш Telegram-канал": ["Біздің Telegram-арнаға жазылыңыз", "Subscribe to our Telegram channel"],
+    "В боте нажмите «Кофе за подписку»": ["Ботта «Кофе за подписку» батырмасын басыңыз", "In the bot, tap «Кофе за подписку»"],
+    "Покажите штрихкод у аппарата": ["Аппаратта штрихкодты көрсетіңіз", "Show your barcode at the machine"],
+    "Подписаться на канал": ["Арнаға жазылу", "Subscribe"],
+    "Получить в боте": ["Ботта алу", "Get it in the bot"],
     "Чашка за подписку": ["Жазылым үшін шыныаяқ", "A cup for subscribing"],
     "Подпишитесь на наш": ["Біздің", "Subscribe to our"],
     "Telegram-канал": ["Telegram-арнамызға жазылып,", "Telegram channel"],
