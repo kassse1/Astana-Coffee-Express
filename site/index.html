@@ -319,41 +319,34 @@
   .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
   .js .reveal.in { opacity: 1; transform: none; }
 
-  /* ---------- заставка: зёрна → помол → струя в стакан → сайт ---------- */
+  /* ---------- заставка-ролик: камера проезжает по аппарату, от зёрен до готового стакана ---------- */
   .intro-lock { overflow: hidden; }
-  #intro { position: fixed; inset: 0; z-index: 100; overflow: hidden; cursor: pointer; background: radial-gradient(ellipse 70% 60% at 50% 42%, #2a1b12, #0d0907 72%); transition: opacity .55s ease; }
-  #intro.done { opacity: 0; pointer-events: none; }
-  #intro .st { position: absolute; left: 50%; top: 42%; width: 0; height: 0; transition: transform .6s cubic-bezier(.5,0,.2,1), opacity .5s; }
-  #intro.out .st { transform: scale(1.35) translateY(-20px); opacity: 0; }
-  .ib { position: absolute; left: -13px; top: -18px; width: 26px; height: 36px; opacity: 0; will-change: transform;
-    animation: i-fall .85s cubic-bezier(.35,.7,.45,1.15) var(--d) both, i-grind .42s cubic-bezier(.6,0,.9,.4) calc(.95s + var(--m)) forwards; }
-  @keyframes i-fall { from { opacity: 1; transform: translate(var(--sx), -70vh) rotate(var(--r0)); } to { opacity: 1; transform: translate(var(--tx), var(--ty)) rotate(var(--r)); } }
-  @keyframes i-grind { from { opacity: 1; transform: translate(var(--tx), var(--ty)) rotate(var(--r)); } to { opacity: 0; transform: translate(0, -128px) rotate(calc(var(--r) + 320deg)) scale(.15); } }
-  .ig { position: absolute; left: -2px; top: -126px; width: 4px; height: 4px; border-radius: 50%; background: #6a3d1f; opacity: 0;
-    animation: i-dust .55s cubic-bezier(.4,0,.8,.6) var(--d) forwards; }
-  @keyframes i-dust { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translate(var(--x), 76px); } }
-  .is { position: absolute; left: -3px; top: -128px; width: 6px; height: 118px; border-radius: 3px; transform-origin: 50% 0; transform: scaleY(0);
-    background: linear-gradient(90deg, #4a2a14, #8a5530 50%, #4a2a14); animation: i-stream 1.15s cubic-bezier(.4,0,.2,1) 1.25s forwards; }
-  @keyframes i-stream { 0% { transform: scaleY(0); } 18% { transform: scaleY(1); } 78% { transform: scaleY(1); top: -128px; height: 118px; } 100% { transform: scaleY(1); top: -10px; height: 0; } }
-  .iglass { position: absolute; left: -56px; top: -52px; width: 112px; height: 132px; overflow: visible; opacity: 0; animation: i-glass .6s cubic-bezier(.2,.8,.2,1) .35s forwards, i-pop .5s cubic-bezier(.3,1.6,.5,1) 2.15s; }
-  @keyframes i-glass { from { opacity: 0; transform: translateY(16px) scale(.92); } to { opacity: 1; transform: none; } }
-  @keyframes i-pop { 50% { transform: scale(1.06); } }
-  .iglass .lay { transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0); }
-  .iglass .l1 { animation: i-up 1s cubic-bezier(.3,.6,.3,1) 1.4s forwards; }
-  .iglass .l2 { animation: i-up .45s ease-out 2.15s forwards; }
-  @keyframes i-up { to { transform: scaleY(1); } }
-  .ihalo { position: absolute; left: -150px; top: -130px; width: 300px; height: 300px; border-radius: 50%; opacity: 0;
-    background: radial-gradient(circle, rgba(224,181,106,.32), transparent 62%); animation: i-halo 1.2s ease-out 2.1s forwards; }
-  @keyframes i-halo { 0% { opacity: 0; transform: scale(.6); } 40% { opacity: 1; } 100% { opacity: .75; transform: scale(1); } }
-  .iw { position: absolute; left: -22px; top: -110px; width: 44px; height: 80px; border-radius: 50%; opacity: 0;
-    background: radial-gradient(ellipse, rgba(255,246,230,.38), transparent 66%); animation: i-steam 1.4s ease-out var(--d) forwards; }
-  @keyframes i-steam { 0% { opacity: 0; transform: translateY(20px) scale(.5); } 35% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--x), -70px) scale(1.6); } }
-  .ititle { position: absolute; left: 0; right: 0; top: calc(42% + 108px); padding: 0 20px; text-align: center; color: #f4ecdf; opacity: 0;
-    font: 600 clamp(1.3rem, 4.4vw, 2rem)/1.15 var(--sans); letter-spacing: -.03em; animation: i-title .7s cubic-bezier(.2,.8,.2,1) 2.05s forwards; transition: opacity .4s; }
-  .ititle span { color: var(--gold); }
-  .ititle small { display: block; margin-top: 10px; font: 600 .95rem var(--sans); letter-spacing: 0; color: #cdbdae; }
-  @keyframes i-title { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-  #intro.out .ititle { opacity: 0; }
+  #intro { position: fixed; inset: 0; z-index: 100; overflow: hidden; cursor: pointer; background: #0b0807; transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
+  #intro.out { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  #intro .in-stage { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; gap: 24px; padding: 0 max(22px, calc((100vw - 1120px) / 2));
+    background: radial-gradient(60% 70% at 72% 50%, rgba(230,185,107,.16), transparent 70%); transition: opacity .7s ease; }
+  #intro .st-text { position: relative; height: 340px; }
+  #intro .st-step { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; opacity: 0; will-change: opacity, transform; }
+  #intro .st-k { color: var(--gold); font-size: .9rem; font-weight: 600; margin-bottom: 12px; }
+  #intro .st-step h2 { font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 600; line-height: 1.02; letter-spacing: -.04em; text-wrap: balance; color: #f4ecdf; }
+  #intro .st-step p:not(.st-k) { color: #cdbdae; margin: 18px 0 0; max-width: 34ch; font-size: 1.1rem; }
+  #intro .st-art { position: relative; height: 100%; }
+  #intro .st-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #intro .in-brand { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 12px; opacity: 0; pointer-events: none; padding: 0 20px; }
+  #intro .in-brand b { font: 600 clamp(2.2rem, 8vw, 5.4rem)/1 var(--sans); letter-spacing: -.045em; color: #f4ecdf; }
+  #intro .in-brand b span { color: var(--gold); }
+  #intro .in-brand small { font: 500 clamp(1rem, 2.6vw, 1.4rem) var(--sans); color: #cdbdae; }
+  #intro .in-bar { position: absolute; left: 0; right: 0; height: 0; background: #000; z-index: 2; transition: height .9s cubic-bezier(.2,.8,.2,1); }
+  #intro .in-bar.t { top: 0; } #intro .in-bar.b { bottom: 0; }
+  #intro.play .in-bar { height: 7vh; } #intro.out .in-bar { height: 0; }
+  #intro .in-skip { position: absolute; z-index: 3; right: max(18px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); border: 1px solid rgba(244,236,223,.28); background: rgba(0,0,0,.35); color: #cdbdae; font: 500 .85rem var(--sans); padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+  #intro .in-skip:hover { color: #f4ecdf; border-color: rgba(244,236,223,.5); }
+  @media (max-width: 880px) {
+    #intro .in-stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 0; align-items: start; padding: 0 22px; }
+    #intro .st-text { height: 220px; margin-top: 9vh; }
+    #intro .st-step h2 { font-size: clamp(2rem, 9vw, 2.8rem); } #intro .st-step p:not(.st-k) { font-size: 1rem; margin-top: 12px; }
+  }
+
 
   /* список и карта аппаратов */
   .machines { list-style: none; padding: 0; margin-top: 28px; border-top: 1px solid var(--line); max-height: 440px; overflow-y: auto; scrollbar-width: thin; }
@@ -382,33 +375,6 @@
   #map .leaflet-control-zoom a { background: #1d1510; color: var(--cream); border-color: rgba(244,236,223,.16); }
   #map .leaflet-control-attribution { background: rgba(18,13,10,.7); color: #8f8073; }
   #map .leaflet-control-attribution a { color: #b9a999; }
-
-  .fab { transition: opacity .2s; } body.in-story .fab { opacity: 0; pointer-events: none; }
-  /* сторителлинг: камера проезжает по аппарату, пока листаете страницу */
-  .story { position: relative; height: 480vh; padding: 0; border-top: 0 !important; }
-  .st-stage { position: sticky; top: 0; height: 100vh; min-height: 560px; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; gap: 24px; padding: 0 max(22px, calc((100vw - 1120px) / 2));
-    background: radial-gradient(60% 70% at 72% 50%, rgba(230,185,107,.1), transparent 70%), #120d0a; overflow: hidden; }
-  .st-text { position: relative; height: 340px; }
-  .st-step { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; opacity: 0; transform: translateY(24px); pointer-events: none; will-change: opacity, transform; }
-  .st-step.on { pointer-events: auto; }
-  .st-k { color: var(--gold); font-size: .9rem; font-weight: 600; margin-bottom: 12px; }
-  .st-step h2 { font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 600; line-height: 1.02; letter-spacing: -.04em; text-wrap: balance; }
-  .st-step p:not(.st-k) { color: #cdbdae; margin-top: 18px; max-width: 34ch; font-size: 1.1rem; }
-  .st-step .cta { margin-top: 26px; }
-  .st-art { position: relative; height: 100%; }
-  .st-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .st-rail { position: absolute; right: 0; top: 18%; bottom: 18%; width: 3px; border-radius: 3px; background: rgba(244,236,223,.14); }
-  .st-rail i { position: absolute; left: 0; top: 0; width: 100%; height: 0; border-radius: 3px; background: var(--gold); }
-  .st-hint { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); color: var(--muted); font-size: .86rem; transition: opacity .3s; margin: 0; }
-  @media (max-width: 880px) {
-    .story { height: 460vh; }
-    .st-stage { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 0; align-items: start; padding: 0 22px; }
-    .st-text { height: 230px; margin-top: 74px; }
-    .st-step h2 { font-size: clamp(2rem, 9vw, 2.8rem); } .st-step p:not(.st-k) { font-size: 1rem; margin-top: 12px; }
-    .st-step .cta { margin-top: 16px; }
-    .st-rail { right: -12px; }
-  }
-  @media (prefers-reduced-motion: reduce) { .story { height: auto; } .st-stage { position: relative; height: auto; min-height: 100vh; } .st-hint { display: none; } }
 
   /* баннер «чашка за подписку» */
   .subban { padding: 56px 0; border-top: 0 !important; }
@@ -575,16 +541,8 @@
   </div>
 </header>
 
-<section class="story" id="story" aria-label="Как аппарат готовит кофе">
-  <div class="st-stage">
-    <div class="st-text">
-      <div class="st-step" data-s="0"><p class="st-k">Шаг 1 из 4</p><h2>Свежие зёрна</h2><p>Аппарат хранит зёрна целыми и мелет их только перед приготовлением.</p></div>
-      <div class="st-step" data-s="1"><p class="st-k">Шаг 2 из 4</p><h2>Помол под каждую чашку</h2><p>Зерно мелется за секунды до того, как кофе попадёт в стакан.</p></div>
-      <div class="st-step" data-s="2"><p class="st-k">Шаг 3 из 4</p><h2>Готово за 45 секунд</h2><p>Напиток льётся прямо в стакан, без очереди и без ожидания.</p></div>
-      <div class="st-step" data-s="3"><p class="st-k">Шаг 4 из 4</p><h2>Заберите стакан</h2><p>Оплатите Kaspi QR, картой или телефоном. Каждая шестая чашка бесплатно.</p><div class="cta"><a class="btn" href="#where">Найти аппарат</a></div></div>
-    </div>
-    <div class="st-art" aria-hidden="true">
-      <svg id="st-svg" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid meet">
+<template id="machine-tpl">
+<svg id="st-svg" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="st-gl"><stop offset="0" stop-color="#e6b96b" stop-opacity=".34"/><stop offset="1" stop-color="#e6b96b" stop-opacity="0"/></radialGradient>
           <linearGradient id="st-body" x1="0" x2="1"><stop offset="0" stop-color="#2b231d"/><stop offset=".5" stop-color="#17110d"/><stop offset="1" stop-color="#241c16"/></linearGradient>
@@ -634,11 +592,7 @@
           <g fill="#2e251d"><rect x="212" y="1106" width="3" height="9"/><rect x="224" y="1106" width="3" height="9"/><rect x="236" y="1106" width="3" height="9"/><rect x="248" y="1106" width="3" height="9"/><rect x="260" y="1106" width="3" height="9"/><rect x="272" y="1106" width="3" height="9"/></g>
         </g>
       </svg>
-      <div class="st-rail" aria-hidden="true"><i id="st-fill"></i></div>
-    </div>
-    <p class="st-hint" id="st-hint">Листайте</p>
-  </div>
-</section>
+</template>
 
 <section class="subban" aria-label="Чашка за подписку">
   <div class="wrap">
@@ -938,6 +892,7 @@
     "Напиток льётся прямо в стакан, без очереди и без ожидания.": ["Сусын тікелей стақанға құйылады, кезексіз және күтусіз.", "The drink pours straight into your cup, no queue and no wait."],
     "Оплатите Kaspi QR, картой или телефоном. Каждая шестая чашка бесплатно.": ["Kaspi QR, карта немесе телефонмен төлеңіз. Әр алтыншы шыныаяқ тегін.", "Pay with Kaspi QR, a card or your phone. Every sixth cup is free."],
     "Листайте": ["Төмен жылжытыңыз", "Scroll"],
+    "Пропустить": ["Өткізіп жіберу", "Skip"],
     "Акция для подписчиков": ["Жазылушыларға акция", "Subscriber offer"],
     "Подпишитесь на канал —": ["Арнаға жазылыңыз —", "Subscribe to our channel —"],
     "чашка кофе в подарок": ["бір шыныаяқ кофе сыйлық", "get a free cup of coffee"],
@@ -1473,89 +1428,6 @@
     brew.addEventListener("animationiteration", () => { k = (k + 1) % DRINKS.length; show(DRINKS[k]); });
   })();
 
-  // ---------- Сторителлинг: камера едет по аппарату от зёрен до готового стакана ----------
-  (function () {
-    const root = document.getElementById("story"); if (!root) return;
-    const $ = id => document.getElementById(id), NS = "http://www.w3.org/2000/svg";
-    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)), mix = (a, b, t) => a + (b - a) * t;
-    const ease = t => t * t * (3 - 2 * t), win = (p, a, b) => clamp((p - a) / (b - a));
-    const cam = $("st-cam"), glow = $("st-glow"), steps = [...root.querySelectorAll(".st-step")];
-
-    // зёрна в бункере: место, куда каждое ложится, и высота, с которой падает
-    const beans = [];
-    for (let k = 0; k < 32; k++) {
-      const row = Math.floor(k / 7), col = k % 7, y = 238 - row * 22 - (col % 2) * 4;
-      const l = 172 + (y - 72) * .3889, r = 428 - (y - 72) * .3889, x = l + 18 + (col + (row % 2) * .5) * ((r - l - 36) / 6.5) + Math.sin(k * 5.1) * 3;
-      const g = document.createElementNS(NS, "g"); g.innerHTML = '<use href="#st-b"/>'; $("st-beans").appendChild(g);
-      beans.push({ g, x, y, y0: -70 - k * 11, rot: (k * 47) % 180, spin: 120 + (k % 5) * 40 });
-    }
-    const grounds = [];
-    for (let k = 0; k < 40; k++) { const c = document.createElementNS(NS, "circle"); c.setAttribute("r", (1.6 + (k % 3) * .6).toFixed(1)); c.setAttribute("fill", k % 2 ? "#5a3319" : "#3a1f0f"); $("st-grounds").appendChild(c); grounds.push(c); }
-
-    // ключевые кадры камеры: [прогресс, центр x, центр y, масштаб]
-    const KEYS = [[0, 300, 120, 1.55], [.2, 300, 150, 1.6], [.3, 300, 390, 1.95], [.47, 300, 390, 1.95], [.56, 300, 840, 1.45], [.74, 300, 880, 1.5], [.86, 300, 1010, 1.85], [1, 300, 1010, 1.85]];
-    function camAt(p) {
-      for (let i = 0; i < KEYS.length - 1; i++) {
-        const a = KEYS[i], b = KEYS[i + 1];
-        if (p <= b[0]) { const t = ease(clamp((p - a[0]) / (b[0] - a[0]))); return [mix(a[1], b[1], t), mix(a[2], b[2], t), mix(a[3], b[3], t)]; }
-      }
-      const e = KEYS[KEYS.length - 1]; return [e[1], e[2], e[3]];
-    }
-    const WIN = [[0, .26], [.27, .5], [.51, .78], [.79, 1.01]];
-
-    let ticking = false, last = -1;
-    function frame(p) {
-      const [cx, cy, s] = camAt(p);
-      cam.setAttribute("transform", "translate(" + (300 - s * cx).toFixed(1) + " " + (350 - s * cy).toFixed(1) + ") scale(" + s.toFixed(3) + ")");
-      glow.setAttribute("cy", cy.toFixed(0));
-      // зёрна падают, затем уходят в жернова
-      beans.forEach((b, i) => {
-        const q = ease(win(p, i * .0032, i * .0032 + .1)), d = win(p, .25 + i * .004, .25 + i * .004 + .1);
-        const y = mix(b.y0, b.y, q * q), x = mix(b.x, 300, ease(d)), yy = mix(y, 262, ease(d)), sc = 1 - d * .6;
-        b.g.setAttribute("transform", "translate(" + x.toFixed(1) + " " + yy.toFixed(1) + ") rotate(" + (b.rot + q * b.spin).toFixed(0) + ") scale(" + sc.toFixed(2) + ")");
-        b.g.setAttribute("opacity", d >= 1 ? 0 : 1);
-      });
-      // жернова
-      $("st-b1").setAttribute("transform", "rotate(" + (p * 1800).toFixed(1) + " 300 385)");
-      $("st-b2").setAttribute("transform", "rotate(" + (-p * 2600).toFixed(1) + " 300 385)");
-      // молотый кофе сыплется по желобу
-      const gv = win(p, .3, .36) * (1 - win(p, .55, .6));
-      grounds.forEach((c, i) => {
-        const ph = (i / grounds.length + p * 7) % 1;
-        c.setAttribute("cx", (300 + Math.sin(i * 7.3) * (10 + ph * 6)).toFixed(1)); c.setAttribute("cy", (524 + ph * 112).toFixed(1)); c.setAttribute("opacity", gv.toFixed(2));
-      });
-      $("st-mound").setAttribute("opacity", (win(p, .34, .5) * (1 - win(p, .8, .9)) * .9).toFixed(2));
-      // струя кофе и уровень в стакане
-      const fill = ease(win(p, .56, .76)), surf = 1086 - fill * 112 - (fill > 0 ? 0 : 0);
-      const ext = ease(win(p, .52, .56)), ret = ease(win(p, .76, .8));
-      const top = mix(724, surf, ret), bot = mix(724, surf, ext), h = Math.max(0, bot - top);
-      $("st-stream").setAttribute("y", top.toFixed(1)); $("st-stream").setAttribute("height", h.toFixed(1));
-      $("st-hl").setAttribute("y", top.toFixed(1)); $("st-hl").setAttribute("height", h.toFixed(1));
-      $("st-liq").setAttribute("y", surf.toFixed(1)); $("st-cr").setAttribute("y", surf.toFixed(1));
-      // пар над готовым стаканом
-      const st = win(p, .82, .92); $("st-steam").setAttribute("opacity", (st * .7).toFixed(2));
-      $("st-steam").setAttribute("transform", "translate(0 " + (-(p * 60) % 14).toFixed(1) + ")");
-      // тексты шагов
-      steps.forEach((el, i) => {
-        const [a, b] = WIN[i], inn = win(p, a, a + .04), out = i === 3 ? 0 : win(p, b - .03, b + .01), o = inn * (1 - out);
-        el.style.opacity = o.toFixed(2); el.style.transform = "translateY(" + ((1 - inn) * 24 - out * 24).toFixed(1) + "px)"; el.classList.toggle("on", o > .5);
-      });
-      $("st-fill").style.height = (p * 100).toFixed(1) + "%";
-      $("st-hint").style.opacity = p < .03 ? 1 : 0;
-    }
-    function update() {
-      ticking = false;
-      const r = root.getBoundingClientRect(), total = r.height - innerHeight;
-      const p = calm ? .98 : clamp(total > 0 ? -r.top / total : 0);
-      if (Math.abs(p - last) < .0004) return; last = p; frame(p);
-    }
-    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
-    addEventListener("scroll", onScroll, { passive: true }); addEventListener("resize", onScroll);
-    if ("IntersectionObserver" in window) new IntersectionObserver(es => document.body.classList.toggle("in-story", es[0].isIntersecting)).observe(root);
-    update(); window.__story = { frame };
-  })();
-
   // ---------- Калькулятор дохода для владельца помещения ----------
   (function () {
     const cups = document.getElementById("calc-cups"), share = document.getElementById("calc-share");
@@ -1575,47 +1447,99 @@
     calc();
   })();
 
-  // ---------- Заставка: зёрна падают, перемалываются, кофе льётся в стакан ----------
-  // Показывается один раз за визит; клик пропускает. При «уменьшении движения» в системе не показывается.
+  // ---------- Заставка-ролик: камера проезжает по аппарату, зёрна → помол → кофе в стакан → название ----------
+  // Показывается один раз за визит; клик или Esc пропускает. При «уменьшении движения» в системе не показывается.
   (function () {
     let seen = false;
     try { seen = sessionStorage.getItem("ace-intro") === "1"; sessionStorage.setItem("ace-intro", "1"); } catch (e) {}
-    if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const R = (a, b) => a + Math.random() * (b - a);
-    let html = '<svg width="0" height="0" style="position:absolute"><defs>' +
-      '<radialGradient id="ibg" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#a06a3a"/><stop offset=".6" stop-color="#6a3d1f"/><stop offset="1" stop-color="#3a1f0f"/></radialGradient>' +
-      '<g id="ibean"><ellipse cx="13" cy="18" rx="11.5" ry="16.5" fill="url(#ibg)"/><path d="M14.5 2.5C7 11 20 23 11.5 33.5" fill="none" stroke="#2a160b" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="9" cy="10" rx="3" ry="5" fill="#fff" opacity=".12"/></g>' +
-      '</defs></svg><div class="st"><div class="ihalo"></div>';
-    for (let i = 0; i < 18; i++) {             // зёрна ложатся воронкой над стаканом
-      const row = i % 3, a = (i / 18) * Math.PI * 2;
-      html += '<div class="ib" style="--sx:' + Math.round(R(-45, 45)) + 'vw;--tx:' + Math.round(Math.cos(a) * (34 + row * 18)) + 'px;--ty:' +
-        Math.round(-150 - row * 14 + Math.sin(a) * 12) + 'px;--r0:' + Math.round(R(-540, 540)) + 'deg;--r:' + Math.round(R(0, 360)) + 'deg;--d:' +
-        R(0, .45).toFixed(2) + 's;--m:' + R(0, .22).toFixed(2) + 's"><svg viewBox="0 0 26 36" width="26" height="36"><use href="#ibean"/></svg></div>';
-    }
-    for (let i = 0; i < 16; i++)               // молотый кофе сыплется вниз
-      html += '<i class="ig" style="--x:' + Math.round(R(-14, 14)) + 'px;--d:' + R(1.05, 1.5).toFixed(2) + 's"></i>';
-    html += '<i class="is"></i>' +
-      '<svg class="iglass" viewBox="0 0 112 132" aria-hidden="true"><clipPath id="icl"><path d="M10 4h92l-9 118q-1 6-7 6H26q-6 0-7-6z"/></clipPath>' +
-      '<g clip-path="url(#icl)"><rect class="lay l1" x="0" y="44" width="112" height="88" fill="#4a2a14"/><rect class="lay l2" x="0" y="34" width="112" height="12" fill="#c98d4f"/></g>' +
-      '<path d="M10 4h92l-9 118q-1 6-7 6H26q-6 0-7-6z" fill="rgba(255,255,255,.05)" stroke="rgba(244,236,223,.7)" stroke-width="2.5" stroke-linejoin="round"/>' +
-      '<path d="M22 14l7 98" stroke="#fff" stroke-opacity=".16" stroke-width="5" stroke-linecap="round"/></svg>';
-    for (let i = 0; i < 3; i++)
-      html += '<i class="iw" style="--x:' + [-18, 8, 24][i] + 'px;--d:' + (2.3 + i * .25).toFixed(2) + 's;margin-left:' + [-16, 4, 18][i] + 'px"></i>';
-    html += '</div><div class="ititle">Astana Coffee <span>Express</span><small>' + t("кофе за 45 секунд") + '</small></div>';
+    const tpl = document.getElementById("machine-tpl");
+    if (seen || !tpl || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    const NS = "http://www.w3.org/2000/svg";
+    const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)), mix = (a, b, t) => a + (b - a) * t;
+    const ease = t => t * t * (3 - 2 * t), win = (p, a, b) => clamp((p - a) / (b - a));
+    const STEPS = [["Шаг 1 из 4", "Свежие зёрна", "Аппарат хранит зёрна целыми и мелет их только перед приготовлением."],
+                   ["Шаг 2 из 4", "Помол под каждую чашку", "Зерно мелется за секунды до того, как кофе попадёт в стакан."],
+                   ["Шаг 3 из 4", "Готово за 45 секунд", "Напиток льётся прямо в стакан, без очереди и без ожидания."],
+                   ["Шаг 4 из 4", "Заберите стакан", "Оплатите Kaspi QR, картой или телефоном. Каждая шестая чашка бесплатно."]];
     const el = document.createElement("div");
-    el.id = "intro"; el.setAttribute("aria-hidden", "true"); el.innerHTML = html;
+    el.id = "intro"; el.setAttribute("aria-hidden", "true");
+    el.innerHTML = '<div class="in-stage"><div class="st-text">' +
+      STEPS.map(s => '<div class="st-step"><p class="st-k">' + t(s[0]) + "</p><h2>" + t(s[1]) + "</h2><p>" + t(s[2]) + "</p></div>").join("") +
+      '</div><div class="st-art"></div></div><div class="in-brand"><b>Astana Coffee <span>Express</span></b><small>' + t("кофе за 45 секунд") + '</small></div>' +
+      '<i class="in-bar t"></i><i class="in-bar b"></i><button class="in-skip" type="button">' + t("Пропустить") + "</button>";
+    el.querySelector(".st-art").appendChild(tpl.content.firstElementChild.cloneNode(true));
     document.body.appendChild(el);
     document.documentElement.classList.add("intro-lock");
-    let finished = false;
-    function finish() {
-      if (finished) return; finished = true;
-      el.classList.add("out");
-      setTimeout(() => { el.classList.add("done"); document.documentElement.classList.remove("intro-lock"); }, 250);
-      setTimeout(() => el.remove(), 900);
+
+    const $ = id => document.getElementById(id), cam = $("st-cam"), glow = $("st-glow"), steps = [...el.querySelectorAll(".st-step")], brand = el.querySelector(".in-brand"), stage = el.querySelector(".in-stage"), art = el.querySelector(".st-art");
+    const beans = [];
+    for (let k = 0; k < 32; k++) {
+      const row = Math.floor(k / 7), col = k % 7, y = 238 - row * 22 - (col % 2) * 4;
+      const l = 172 + (y - 72) * .3889, r = 428 - (y - 72) * .3889, x = l + 18 + (col + (row % 2) * .5) * ((r - l - 36) / 6.5) + Math.sin(k * 5.1) * 3;
+      const g = document.createElementNS(NS, "g"); g.innerHTML = '<use href="#st-b"/>'; $("st-beans").appendChild(g);
+      beans.push({ g, x, y, y0: -70 - k * 11, rot: (k * 47) % 180, spin: 120 + (k % 5) * 40 });
     }
-    el.addEventListener("click", finish);
-    setTimeout(finish, 3300);
+    const grounds = [];
+    for (let k = 0; k < 40; k++) { const c = document.createElementNS(NS, "circle"); c.setAttribute("r", (1.6 + (k % 3) * .6).toFixed(1)); c.setAttribute("fill", k % 2 ? "#5a3319" : "#3a1f0f"); $("st-grounds").appendChild(c); grounds.push(c); }
+    const KEYS = [[0, 300, 120, 1.55], [.2, 300, 150, 1.6], [.3, 300, 390, 1.95], [.47, 300, 390, 1.95], [.56, 300, 840, 1.45], [.74, 300, 880, 1.5], [.86, 300, 1010, 1.85], [1, 300, 1010, 1.85]];
+    function camAt(p) {
+      for (let i = 0; i < KEYS.length - 1; i++) { const a = KEYS[i], b = KEYS[i + 1]; if (p <= b[0]) { const q = ease(clamp((p - a[0]) / (b[0] - a[0]))); return [mix(a[1], b[1], q), mix(a[2], b[2], q), mix(a[3], b[3], q)]; } }
+      const e = KEYS[KEYS.length - 1]; return [e[1], e[2], e[3]];
+    }
+    const WIN = [[0, .26], [.27, .5], [.51, .78], [.79, 1.02]];
+    function frame(p) {
+      const [cx, cy, s] = camAt(p);
+      cam.setAttribute("transform", "translate(" + (300 - s * cx).toFixed(1) + " " + (350 - s * cy).toFixed(1) + ") scale(" + s.toFixed(3) + ")");
+      glow.setAttribute("cy", cy.toFixed(0));
+      beans.forEach((b, i) => {
+        const q = ease(win(p, i * .0032, i * .0032 + .1)), d = win(p, .25 + i * .004, .25 + i * .004 + .1);
+        const y = mix(b.y0, b.y, q * q), x = mix(b.x, 300, ease(d)), yy = mix(y, 262, ease(d)), sc = 1 - d * .6;
+        b.g.setAttribute("transform", "translate(" + x.toFixed(1) + " " + yy.toFixed(1) + ") rotate(" + (b.rot + q * b.spin).toFixed(0) + ") scale(" + sc.toFixed(2) + ")");
+        b.g.setAttribute("opacity", d >= 1 ? 0 : 1);
+      });
+      $("st-b1").setAttribute("transform", "rotate(" + (p * 1800).toFixed(1) + " 300 385)");
+      $("st-b2").setAttribute("transform", "rotate(" + (-p * 2600).toFixed(1) + " 300 385)");
+      const gv = win(p, .3, .36) * (1 - win(p, .55, .6));
+      grounds.forEach((c, i) => { const ph = (i / grounds.length + p * 7) % 1; c.setAttribute("cx", (300 + Math.sin(i * 7.3) * (10 + ph * 6)).toFixed(1)); c.setAttribute("cy", (524 + ph * 112).toFixed(1)); c.setAttribute("opacity", gv.toFixed(2)); });
+      $("st-mound").setAttribute("opacity", (win(p, .34, .5) * (1 - win(p, .8, .9)) * .9).toFixed(2));
+      const fill = ease(win(p, .56, .76)), surf = 1086 - fill * 112, ext = ease(win(p, .52, .56)), ret = ease(win(p, .76, .8));
+      const top = mix(724, surf, ret), bot = mix(724, surf, ext), h = Math.max(0, bot - top);
+      $("st-stream").setAttribute("y", top.toFixed(1)); $("st-stream").setAttribute("height", h.toFixed(1));
+      $("st-hl").setAttribute("y", top.toFixed(1)); $("st-hl").setAttribute("height", h.toFixed(1));
+      $("st-liq").setAttribute("y", surf.toFixed(1)); $("st-cr").setAttribute("y", surf.toFixed(1));
+      $("st-steam").setAttribute("opacity", (win(p, .82, .92) * .7).toFixed(2));
+      $("st-steam").setAttribute("transform", "translate(0 " + (-(p * 60) % 14).toFixed(1) + ")");
+      steps.forEach((s, i) => {
+        const [a, b] = WIN[i], inn = win(p, a, a + .04), out = win(p, b - .03, b + .01), o = inn * (1 - out);
+        s.style.opacity = o.toFixed(2); s.style.transform = "translateY(" + ((1 - inn) * 24 - out * 24).toFixed(1) + "px)";
+      });
+    }
+
+    // сценарий: 5,8 с — путь камеры, затем название и плавный переход на сайт
+    const T_MACH = 5800, T_END = 7300;
+    let raf = 0, t0 = 0, finished = false;
+    function tick(now) {
+      if (!t0) t0 = now;
+      const dt = now - t0;
+      frame(clamp(dt / T_MACH));
+      const bp = ease(win(dt, T_MACH - 100, T_MACH + 600)), bo = 1 - ease(win(dt, T_END - 450, T_END));
+      brand.style.opacity = (bp * bo).toFixed(2); brand.style.transform = "translateY(" + ((1 - bp) * 18).toFixed(1) + "px)";
+      stage.style.opacity = (1 - ease(win(dt, T_MACH - 350, T_MACH + 250)) * .92).toFixed(2);
+      if (dt >= T_END) return finish();
+      raf = requestAnimationFrame(tick);
+    }
+    function finish() {
+      if (finished) return; finished = true; cancelAnimationFrame(raf);
+      document.removeEventListener("keydown", onKey);
+      el.classList.add("out");
+      document.documentElement.classList.remove("intro-lock");
+      setTimeout(() => el.remove(), 800);
+    }
+    function onKey(e) { if (e.key === "Escape") finish(); }
+    el.addEventListener("click", finish); document.addEventListener("keydown", onKey);
+    frame(0);
+    requestAnimationFrame(() => { el.classList.add("play"); raf = requestAnimationFrame(tick); });
   })();
 
   applyLang();
