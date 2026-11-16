@@ -242,7 +242,7 @@
   .rows b { font-weight: 600; }
   .rows span { color: var(--muted); font-size: .93rem; text-align: right; }
   .where-note { margin-top: 22px; color: var(--muted); font-size: .95rem; }
-  .where-note a, .people a { color: var(--copper); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .where-note a, footer .credit a { color: var(--copper); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
   .map-box { border-radius: 18px; overflow: hidden; background: var(--line); box-shadow: 0 34px 70px -34px rgba(38,23,15,.5); }
   .map-box iframe { display: block; width: 100%; height: 460px; border: 0; filter: sepia(.28) saturate(.85); }
 
@@ -293,10 +293,6 @@
   details p { color: var(--muted); padding: 0 0 18px; max-width: 62ch; }
 
   /* контакты */
-  .people { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px; margin-top: 40px; }
-  .people > div { border-top: 1px solid var(--espresso); padding-top: 20px; }
-  .people .role { font-size: .9rem; color: var(--muted); margin: 2px 0 14px; }
-  .people a { font: 600 clamp(1.05rem, 2.2vw, 1.45rem) var(--serif); overflow-wrap: anywhere; }
 
   .req-form { margin-top: 48px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 30px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; scroll-margin-top: 90px; }
   .req-form h3 { grid-column: 1 / -1; font-size: 1.3rem; }
@@ -420,7 +416,7 @@
   .btn:hover { background: #ebc682; }
   .btn.ghost { background: transparent; color: var(--cream); border-color: rgba(244,236,223,.4); }
   .btn.ghost:hover { background: rgba(244,236,223,.1); }
-  .steps li, .cols > div, .people > div { border-top-color: rgba(244,236,223,.3); }
+  .steps li, .cols > div { border-top-color: rgba(244,236,223,.3); }
   .card-box { border: 1px solid var(--line); box-shadow: 0 34px 70px -28px rgba(0,0,0,.9); }
   .map-box { background: #1d1510; box-shadow: none; border: 1px solid var(--line); }
   .req-form input, .req-form select, .req-form textarea { background: rgba(0,0,0,.3); color: var(--cream); }
@@ -461,7 +457,7 @@
     .drink { border-left: 0; border-top: 1px solid rgba(244,236,223,.18); padding: 26px 6px 22px; }
     .drink svg { width: 60px; }
     .steps { grid-template-columns: minmax(0, 1fr); gap: 30px; margin-top: 36px; }
-    .where, #partners .wrap, .cols, .people { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .where, #partners .wrap, .cols { grid-template-columns: minmax(0, 1fr); gap: 32px; }
     .req-form { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; }
     #map { height: 380px; }
     .machines { max-height: 340px; }
@@ -811,10 +807,6 @@
     <p class="eyebrow">Контакты</p>
     <h2>Напишите нам</h2>
     <p class="lead" style="margin-top:18px">Возвраты, работа аппаратов, размещение — по любому вопросу.</p>
-    <div class="people">
-      <div><h3>Санжар Мурат</h3><p class="role">Генеральный директор</p><a href="mailto:wamaff@gmail.com">wamaff@gmail.com</a></div>
-      <div><h3>Рахман Даниал</h3><p class="role">Финансовый директор</p><a href="mailto:rahmanzavisnik@gmail.com">rahmanzavisnik@gmail.com</a></div>
-    </div>
     <form class="req-form" id="request">
       <h3>Оставить обращение</h3>
       <label>Тема<select name="kind"><option value="placement">Установка аппарата</option><option value="complaint">Жалоба</option><option value="refund">Возврат денег</option></select></label>
@@ -830,7 +822,7 @@
 <a class="fab" href="#request">Оставить заявку</a>
 
 <footer>
-  <div class="wrap"><span>© <span id="year"></span> Astana Coffee Express</span><span><a data-channel href="#">Наш Telegram-канал</a> · <span>Астана, Казахстан</span></span></div>
+  <div class="wrap"><span>© <span id="year"></span> Astana Coffee Express</span><span><a data-channel href="#">Наш Telegram-канал</a> · <span>Астана, Казахстан</span></span><span class="credit">Проект и разработка: <a href="https://github.com/kassse1/Astana-Coffee-Express" target="_blank" rel="noopener">Даниал Рахман</a></span></div>
 </footer>
 
 <script>
@@ -1015,10 +1007,8 @@
     "Нет. Для оплаты хватит Kaspi или карты, а карта гостя работает в обычном Telegram и на этом сайте.": ["Жоқ. Төлеуге Kaspi немесе карта жеткілікті, ал қонақ картасы кәдімгі Telegram-да және осы сайтта жұмыс істейді.", "No. Kaspi or a card is enough to pay, and the guest card works in regular Telegram and on this site."],
     "Напишите нам": ["Бізге жазыңыз", "Write to us"],
     "Возвраты, работа аппаратов, размещение — по любому вопросу.": ["Қайтарымдар, аппараттардың жұмысы, орналастыру — кез келген сұрақ бойынша.", "Refunds, machine issues, placement — any question."],
-    "Санжар Мурат": ["Санжар Мұрат", "Sanzhar Murat"],
-    "Генеральный директор": ["Бас директор", "Chief Executive Officer"],
-    "Рахман Даниал": ["Рахман Даниал", "Rakhman Danial"],
-    "Финансовый директор": ["Қаржы директоры", "Chief Financial Officer"],
+    "Проект и разработка:": ["Жоба және әзірлеу:", "Concept and development:"],
+    "Даниал Рахман": ["Даниал Рахман", "Danial Rakhman"],
     "Астана, Казахстан": ["Астана, Қазақстан", "Astana, Kazakhstan"],
     "кофе за 45 секунд": ["45 секундта кофе", "coffee in 45 seconds"],
     "Astana Coffee Express — кофе за 45 секунд, 24/7": ["Astana Coffee Express — 45 секундта кофе, 24/7", "Astana Coffee Express — coffee in 45 seconds, 24/7"],
