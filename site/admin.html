@@ -157,6 +157,9 @@
   .req-who b { font-weight: 600; font-size: 1.02rem; overflow-wrap: anywhere; } .req-who .sub { overflow-wrap: anywhere; }
   .req .text { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
   .req .note-row { display: flex; gap: 10px; } .req .note-row input { margin: 0; flex: 1; min-width: 0; }
+  .btn.danger { background: rgba(255,154,138,.12); color: var(--bad); border-color: rgba(255,154,138,.35); box-shadow: none; }
+  .btn.danger:hover { background: rgba(255,154,138,.22); }
+  .req-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
 
   /* вход */
   .gate { max-width: 460px; margin: 14vh auto 0; text-align: center; }
@@ -176,6 +179,7 @@
     nav .badge { margin-left: 4px; }
     .head .chips { width: 100%; display: flex; } .head .chips button { flex: 1; padding: 6px 6px; }
     .req .note-row { flex-direction: column; } .req .note-row .btn { width: 100%; }
+    .req-tools .btn { width: 100%; }
     .req-top .when { margin-left: 0; width: 100%; }
     /* аппараты: таблица превращается в карточки */
     #machines tr:first-child { display: none; }
@@ -270,6 +274,7 @@
           <button type="button" data-kind="refund" aria-pressed="false">Возвраты</button>
         </div>
       </div>
+      <div class="req-tools"><button class="btn danger" type="button" id="req-clear" hidden>Удалить все закрытые</button><span class="msg" id="req-msg" role="status"></span></div>
       <div id="requests"></div>
     </div>
   </section>
@@ -474,8 +479,9 @@
       return '<div class="req"><div class="req-top"><span class="pill">' + KIND[r.kind] + '</span><span class="pill ' + r.status + '">' + (r.status === "new" ? "новое" : "закрыто") + '</span><span class="when">' + esc(r.ts.slice(0, 16).replace("T", " ")) + "</span></div>" +
         '<div class="req-who"><b>' + esc(r.name) + '</b><span class="sub">' + esc(r.contact) + (m ? " · " + esc(m.name) : "") + '</span></div><p class="text">' + esc(r.text || "Без комментария.") +
         '</p><div class="note-row"><input type="text" maxlength="1000" placeholder="Заметка: что сделали" value="' + esc(r.note) + '" data-note="' + r.id + '"><button class="btn' + (r.status === "new" ? "" : " ghost") +
-        '" type="button" data-req="' + r.id + '" data-status="' + (r.status === "new" ? "done" : "new") + '">' + (r.status === "new" ? "Закрыть" : "Вернуть") + "</button></div></div>";
+        '" type="button" data-req="' + r.id + '" data-status="' + (r.status === "new" ? "done" : "new") + '">' + (r.status === "new" ? "Закрыть" : "Вернуть") + '</button><button class="btn danger" type="button" data-del="' + r.id + '">Удалить</button></div></div>';
     }).join("") : '<p class="sub">Здесь пока пусто.</p>';
+    $("req-clear").hidden = !requests.some(r => r.status === "done");
   }
   async function loadRequests() { try { requests = (await call("/api/admin/requests")).requests; drawRequests(); } catch (e) {} }
   $("req-filter").addEventListener("click", e => {
@@ -485,12 +491,29 @@
     drawRequests();
   });
   $("requests").addEventListener("click", async e => {
+    const del = e.target.dataset && e.target.dataset.del;
+    if (del) {
+      if (!confirm("Удалить это обращение насовсем? Вернуть его будет нельзя.")) return;
+      e.target.disabled = true;
+      try { await call("/api/admin/requests/" + del + "/delete", {}); say("req-msg", "Удалено.", true); await loadRequests(); load(); }
+      catch (err) { e.target.disabled = false; if (err.message !== "auth") say("req-msg", err.message); }
+      return;
+    }
     const id = e.target.dataset && e.target.dataset.req; if (!id) return;
     e.target.disabled = true;
     try {
       await call("/api/admin/requests/" + id, { status: e.target.dataset.status, note: document.querySelector('[data-note="' + id + '"]').value });
       await loadRequests(); load();
     } catch (err) { e.target.disabled = false; }
+  });
+
+  $("req-clear").addEventListener("click", async e => {
+    const n = requests.filter(r => r.status === "done").length;
+    if (!confirm("Удалить все закрытые обращения (" + n + ")? Новые останутся. Вернуть удалённые будет нельзя.")) return;
+    e.target.disabled = true;
+    try { const r = await call("/api/admin/requests/clear-closed", {}); say("req-msg", "Удалено: " + r.deleted + ".", true); await loadRequests(); load(); }
+    catch (err) { if (err.message !== "auth") say("req-msg", err.message); }
+    e.target.disabled = false;
   });
 
   // ---------- цена, акция, рассылка ----------

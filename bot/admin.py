@@ -13,7 +13,7 @@ from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta
 
 from aiohttp import web
-from sqlalchemy import (Column, Float, Integer, MetaData, String, Table, Text, create_engine, func, insert,
+from sqlalchemy import (Column, Float, Integer, MetaData, String, Table, Text, create_engine, delete, func, insert,
                         inspect, select, text, update)
 
 from .config import Config
@@ -217,6 +217,16 @@ class AdminStore:
                                 .values(status=status, note=str(note or "").strip()[:1000])).rowcount:
                 raise AdminError("Обращение не найдено.")
 
+    def delete_request(self, request_id: int) -> None:
+        with self.engine.begin() as conn:
+            if not conn.execute(delete(requests).where(requests.c.id == request_id)).rowcount:
+                raise AdminError("Обращение не найдено.")
+
+    def delete_closed_requests(self) -> int:
+        """Удаляет все закрытые обращения; новые не трогает. Возвращает, сколько удалено."""
+        with self.engine.begin() as conn:
+            return conn.execute(delete(requests).where(requests.c.status == "done")).rowcount
+
 
 # ---------- вход в панель ----------
 def _secret(cfg: Config) -> bytes:
@@ -325,6 +335,15 @@ def setup_admin_api(app: web.Application, db, store: AdminStore, cfg: Config, bo
         return web.json_response({"ok": True})
 
     @admin
+    async def request_delete(request: web.Request) -> web.Response:
+        await asyncio.to_thread(store.delete_request, int(request.match_info["id"]))
+        return web.json_response({"ok": True})
+
+    @admin
+    async def requests_clear_closed(_: web.Request) -> web.Response:
+        return web.json_response({"deleted": await asyncio.to_thread(store.delete_closed_requests)})
+
+    @admin
     async def machine_save(request: web.Request) -> web.Response:
         return web.json_response({"id": await asyncio.to_thread(store.save_machine, await body(request))})
 
@@ -365,6 +384,9 @@ def setup_admin_api(app: web.Application, db, store: AdminStore, cfg: Config, bo
     app.router.add_get("/api/admin/summary", summary)
     app.router.add_get("/api/admin/requests", requests_list)
     app.router.add_post("/api/admin/requests/{id:\\d+}", request_update)
+    # POST, а не DELETE: панель на другом домене, так обходимся без лишнего CORS-запроса
+    app.router.add_post("/api/admin/requests/{id:\\d+}/delete", request_delete)
+    app.router.add_post("/api/admin/requests/clear-closed", requests_clear_closed)
     app.router.add_post("/api/admin/machines", machine_save)
     app.router.add_post("/api/admin/settings", settings_save)
     app.router.add_post("/api/admin/promo", promo_send)

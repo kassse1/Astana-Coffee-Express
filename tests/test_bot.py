@@ -351,6 +351,16 @@ def test_admin_panel(tmp_path):
                                  headers=auth)).status == 200
             data = await (await c.get("/api/admin/summary", headers=auth)).json()
             assert data["new_requests"] == 1
+            # удаление: без входа нельзя, закрытые чистятся пачкой, новые остаются
+            assert (await c.post(f"/api/admin/requests/{items[0]['id']}/delete", json={})).status == 401
+            r = await c.post("/api/admin/requests/clear-closed", json={}, headers=auth)
+            assert r.status == 200 and (await r.json())["deleted"] == 1
+            left = (await (await c.get("/api/admin/requests", headers=auth)).json())["requests"]
+            assert [x["id"] for x in left] == [items[0]["id"]]
+            assert (await c.post(f"/api/admin/requests/{items[0]['id']}/delete", json={}, headers=auth)).status == 200
+            assert (await (await c.get("/api/admin/requests", headers=auth)).json())["requests"] == []
+            assert (await c.post(f"/api/admin/requests/{items[0]['id']}/delete", json={}, headers=auth)).status == 400
+            assert (await (await c.get("/api/admin/summary", headers=auth)).json())["new_requests"] == 0
             for _ in range(6):
                 r = await c.post("/api/request", json={"kind": "placement", "name": "x", "contact": "y"})
             assert r.status == 429
